@@ -1,0 +1,49 @@
+services:
+
+  bd:
+    image: postgres
+    container_name: bd
+    environment:
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: galacticos
+        POSTGRES_DB: espacio_bd
+    ports:
+      - "5432:5432"
+    volumes:
+      - bd_espacio:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "admin"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - "./backend:/usr/src/app"
+    environment:
+      - DB_HOST=bd
+      - DB_USER=admin
+      - DB_PASSWORD=galacticos
+      - DB_NAME=espacio_bd
+    depends_on:
+      bd:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "8080:80"
+    volumes:
+      - "./frontend:/usr/share/nginx/html"
+    depends_on:
+      - backend
+
+volumes:
+  bd_espacio:
+  
