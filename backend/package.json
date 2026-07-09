@@ -1,0 +1,17 @@
+{
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "Backend para el proyecto de intro-1C-2026",
+    "main": "index.js",
+    "dependencies": {
+        "express": "^5.1.0",
+        "cors": "^2.8.6",
+        "pg": "^8.22"
+    },
+    "devDependencies": {
+        "nodemon":"3.1.4"
+    },
+    "engines": {
+        "node": "^26.0.0"
+    }
+}
