@@ -27,9 +27,10 @@ services:
       - "./backend:/usr/src/app"
     environment:
       - DB_HOST=bd
-      - DB_USER=admin
+      - DB_USER=postgres
       - DB_PASSWORD=galacticos
       - DB_NAME=espacio_bd
+      - DB_PORT=5432
     depends_on:
       bd:
         condition: service_healthy
