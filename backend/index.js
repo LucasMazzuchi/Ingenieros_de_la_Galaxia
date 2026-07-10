@@ -1,4 +1,8 @@
-const express = require('express');
+import express from "express";
+import {endpointsVehiculos} from "./backend/vehiculos.js"
+import {endpointsCuerposCelestes} from "./backend/cuerpos_celestes.js"
+import {endpointsMisiones} from "./backend/misiones.js"
+
 const app = express();
 const port = 3000;
 
