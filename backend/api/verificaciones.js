@@ -1,75 +1,59 @@
+import * as constantes from "../constantes.js";
+import {validarEntrada, validarNombre, validarTipo, validarColor} from "./validaciones_errores.js"
 
-// La función valida que hayan enviado un entero positivo dentro del rango 1-2.147.483.647.
-// Si hay un error en la solicitud, enía un error 400 y devuelve. Sino, pasa a la función next pasada por parámetro.
-export const validarId = (req, res, next) => {
-    const id = Number(req.params.id);
-    if (!Number.isInteger(id) || id<=0 || id>2147483647){
-        res.status(400).json({error: "El id ingresado debe ser un entero dentro del rango 1-2.147.483.647."});
+export const validarVehiculo = (req, res, next) => {
+    const reglasVehiculo = {
+    [constantes.NOMBRE]:validarNombre,
+    [constantes.TIPO]:validarTipo,
+    [constantes.MOTOR]:validarMotor,
+    [constantes.ESTRUCTURA]:validarEstructura,
+    [constantes.COLOR]:validarColor,
+    [constantes.COMBUSTIBLE]:validarCombustible,
+    [constantes.UBICACION]:validarUbicacion
+    };
+    const entrada = {
+    [constantes.NOMBRE]:req.body.nombre,
+    [constantes.TIPO]:req.body.tipo,
+    [constantes.MOTOR]:req.body.motor,
+    [constantes.ESTRUCTURA]:req.body.estructura,
+    [constantes.COLOR]:req.body.color,
+    [constantes.COMBUSTIBLE]:req.body.combustible,
+    [constantes.UBICACION]:req.body.ubicacionId
+    };
+    const {errores, procesados} = validarEntrada(entrada, reglasVehiculo);
+    if (errores.length !== 0){
+        res.status(400).json({error:errores});
         return;
     }
+    req.body = procesados;
     next();
 };
 
-export const validarEntrada = (parametros, validaciones) => {
-    let errores = [];
-    let procesados = {};
-    for (const [campo, validador] of Object.entries(validaciones)) {
-        const error = validador(parametros[campo]);
-        if (error.length !== 0){
-            errores.push(error);
-        }
-        procesados[campo] = parametros[campo];
-    };
-    return {errores, procesados};
-}
 
-export const validarNombre = (nombre) => {
-    if (typeof nombre !== "string" || nombre.length===0 || nombre.length>50){
-       return "El nombre ingresado es incorrecto, debe ser un string que contiene entre 1-50 caracteres.";
-    }
-    return "";
-};
-export const validarTipo = (tipo) => {
-    if (typeof tipo != "string" || tipo.length===0 || tipo.length>20){
-        return "El tipo ingresado es incorrecto, deber ser un string que contiene entre 1-20 caracteres.";
-    }
-    return "";
-}
-
-export const validarMotor = (motor) => {
-    const motor_d = Number(motor);
-    if (typeof motor != "number" || !Number.isInteger(motor_d) || motor_d<1 || motor_d>4){
-        return "El motor ingresado es incorrecto, tiene que ser un entero en el rango 1-4.";
-    }
-    return "";
-}
-
-export const validarEstructura = (estructura) => {
-    const estructura_d = Number(estructura);
-    if (typeof estructura != "number" || !Number.isInteger(estructura_d)|| estructura_d<1 || estructura_d>4){
-        return "La estructura ingresada es incorrecta, tiene que ser un entero en el rango 1-4.";
-    }
-    return "";
-}
-
-export const validarColor = (color) => {
-    if (typeof color != "string" || color.length===0 || color.length>10){
-        return "El color ingresdo es incorrecto, tiene que ser un string que contiene entre 1-10 caracteres.";
-    }
-    return "";
-};
-export const validarCombustible = (combustible) => {
-    const combustible_d = Number(combustible);
-    if (typeof combustible != "number" || !Number.isInteger(combustible_d) || combustible_d<0 || combustible_d>100){
-        return "El combustible ingresado es incorrecto, debe ser un entero entre 0-100"
+const validarMotor = (motor) => {
+    if (typeof motor != "number" || !Number.isInteger(motor) || motor<1 || motor>4){
+        return constantes.ERROR_INT(constantes.MOTOR, 1, 4);
     }
     return "";
 };
 
-export const validarUbicacion = (ubicacion) => {
-    const ubicaion_d = Number(ubicacion);
-    if (typeof ubicacion != "number" || !Number.isInteger(ubicacion_d)|| ubicacion_d<1){
-        return "La ubicación ingresada es incorrecta, tiene que ser un entero positivo.";
+const validarEstructura = (estructura) => {
+    if (typeof estructura != "number" || !Number.isInteger(estructura)|| estructura<1 || estructura>4){
+        return constantes.ERROR_INT(constantes.ESTRUCTURA, 1, 4);
+    }
+    return "";
+};
+
+const validarCombustible = (combustible) => {
+    if (typeof combustible != "number" || !Number.isInteger(combustible) || combustible<0 || combustible>100){
+        return constantes.ERROR_INT(constantes.COMBUSTIBLE, 0,100)
+    }
+    return "";
+};
+
+const validarUbicacion = (ubicacion) => {
+    if (typeof ubicacion != "number" || !Number.isInteger(ubicacion)|| ubicacion<1 || ubicacion>2147483647){
+        return constantes.ERROR_INT("ubicacion",0,2147483647);
     }
     return "";
 };
