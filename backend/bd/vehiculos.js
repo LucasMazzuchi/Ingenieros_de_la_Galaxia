@@ -21,13 +21,13 @@ export async function createVehiculo(vehiculo) {
 }
 
 export async function removeVehiculo(id){
-    const solicitud = "DELETE FROM Vehiculos WHERE id=$1";
+    const solicitud = "DELETE FROM Vehiculos WHERE id=$1  RETURNING *";
     const res = await db.query(solicitud, [id]);
-  return res.rowCount == 1;
+    return {ok : res.rowCount == 1, vehiculo : res.rows[0]};
 }
-export async function updateVehiculo(vehiculo){
+export async function updateVehiculo(id, vehiculo){
     const solicitud = "Update Vehiculos SET nombre=$2, tipo=$3, motor=$4, estructura=$5, color=$6, combustible=$7, ubicacionId=$8 WHERE id=$1";
-    const valores = [vehiculo.id, vehiculo.nombre, vehiculo.tipo, vehiculo.motor, vehiculo.estructura, vehiculo.color, vehiculo.combustible, vehiculo.ubicacionId];
+    const valores = [id, vehiculo.nombre, vehiculo.tipo, vehiculo.motor, vehiculo.estructura, vehiculo.color, vehiculo.combustible, vehiculo.ubicacionId];
     const res = await db.query(solicitud, valores);
-      return res.rowCount == 1;
+    return res.rowCount == 1;
 }
