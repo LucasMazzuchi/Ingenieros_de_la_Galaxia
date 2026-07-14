@@ -7,28 +7,48 @@ export const validarEntrada = (parametros, validaciones) => {
         if (error.length !== 0){
             errores.push(error);
         }
-        procesados[campo] = parametros[campo];
+        procesados[campo] = parametros[campo].campo;
     };
     return {errores, procesados};
 }
 
 
-export const validarNombre = (nombre) => {
-    if (typeof nombre !== "string" || nombre.length===0 || nombre.length>50){
-       return constantes.ERROR_STRING(constantes.NOMBRE, 0 ,50);
+export const validarString = ({ campo,min, max, error }) => {
+    if (typeof campo !== "string" || campo.length<min || campo.length>max){
+       return constantes.ERROR_STRING(error, min ,max);
     }
     return "";
 };
-export const validarTipo = (tipo) => {
-    if (typeof tipo != "string" || tipo.length===0 || tipo.length>20){
-        return constantes.ERROR_STRING(constantes.TIPO, 0, 20);
+export const validarEntero = ({ campo, min, max, error }) => {
+    if (typeof campo !== "number" || !Number.isInteger(campo) || campo<min || campo>max){
+            return constantes.ERROR_INT(error, min, max);
+        }
+    return "";
+};
+
+export const validarBool = ({ campo, error }) => {
+    if (typeof campo !== "boolean"){
+        return constantes.ERROR_BOOL(error);
     }
     return "";
 };
 
-export const validarColor = (color) => {
-    if (typeof color != "string" || color.length===0 || color.length>10){
-        return constantes.ERROR_STRING(constantes.COLOR, 0, 10);
+export const validarFloat = ({ campo, min, max, error }) => {
+    if (typeof campo !== "number" || campo<min || campo>max){
+        return constantes.ERROR_FLOAT(error, min, max);
+    }
+    return "";
+};
+
+export const validarImagen = ({ campo }) => {
+    const err = validarString({ campo: campo, min : 0, max : constantes.IMAGEN_MAX, error : "imagen" });
+    if (err !== ""){
+        return err;
+    }
+    // Mira que sea una URL o una dirección válida a la carpeta donde se guardan las imagenes.
+    // La carpeta puede tenerse que cambiar, depende de donde se guarden las imagenes.
+    if (!/^(https?:\/\/|\/imagenes\/)/.test(campo)){
+        return constantes.ERROR_URL("imagen");
     }
     return "";
 };
@@ -45,15 +65,16 @@ export const validarId = (req, res, next) => {
     next();
 };
 
+
 export const manejarError = (error) => {
     switch (error) {
         case constantes.CODIGO_REPETIDO:
-            return {estado : 400 , msjError : constantes.ERROR_REPETIDO}
+            return {estado : 400 , msjError : constantes.ERROR_REPETIDO};
         case constantes.CODIGO_FK:
-            return {estado : 400, msjError : constantes.ERROR_FK}
-        
+            return {estado : 400, msjError : constantes.ERROR_FK};
         default:
-            return {estado : 500, msjError: constantes.ERROR_CONEXION}
+            return {estado : 500, msjError: constantes.ERROR_CONEXION};
     }
 };
+
 

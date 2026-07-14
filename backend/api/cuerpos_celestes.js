@@ -1,0 +1,65 @@
+import { Router } from "express";
+import * as cuerpos from "../db/cuerpos_celestes.js";
+import { validarCuerpoCeleste } from "./verificaciones_cuerpo_celeste.js";
+import * as constantes from "../constantes.js";
+import { validarId, manejarError } from "./validaciones_errores.js"
+export const endpointsCuerpoCeleste = Router();
+
+endpointsCuerpoCeleste.get("/", async (req, res) => {
+    const listaCuerposCelestes = await cuerpos.getAllCuerposCelestes();
+    res.json(listaCuerposCelestes);
+});
+
+endpointsCuerpoCeleste.get("/:id", validarId, async (req, res) => {
+    try {
+        const cuerpoCeleste = await cuerpos.getCuerpoCeleste(req.params.id);
+        if (!cuerpoCeleste){
+            res.status(404).json({error: constantes.ERROR_INEXISTENTE});
+        } else {
+            res.status(200).json(cuerpoCeleste);
+        }
+    } catch (error) {
+        const {estado, msjError} = manejarError(error);
+        res.status(estado).json(msjError);
+    }
+});
+
+endpointsCuerpoCeleste.post("/", validarCuerpoCeleste, async (req, res)=> {
+    try{
+        if (!await cuerpos.createCuerpoCeleste(req.body)){
+            res.status(500).json({error: constantes.ERROR_CONSULTA("cuerpo celeste", "creada")});
+        } else {
+            res.status(201).json({exito : constantes.EXITO_CONSULTA("cuerpo celeste", "creada")});
+        }
+    } catch (error) {
+        const {estado, msjError} = manejarError(error);
+        res.status(estado).json(msjError);
+    }
+});
+
+endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req, res) => {
+    try{
+        if (!await cuerpos.updateCuerpoCeleste(req.params.id, req.body)){
+            return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
+        } else {
+            res.sendStatus(204);
+        }
+    } catch (error) {
+        const {estado, msjError} = manejarError(error);
+        res.status(estado).json(msjError);
+    }
+});
+
+endpointsCuerpoCeleste.delete("/:id", validarId, async (req, res) => {
+    try{
+        const {ok, cuerpoCeleste} = await cuerpos.removeCuerpoCeleste(req.params.id);
+        if (!ok){
+            return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
+        } else {
+            res.status(200).json({exito : constantes.EXITO_CONSULTA("cuerpo celeste", "eliminada"), entidad : cuerpoCeleste});
+        }
+    } catch (error) {
+        const {estado, msjError} = manejarError(error);
+        res.status(estado).json(msjError);
+    }
+});
