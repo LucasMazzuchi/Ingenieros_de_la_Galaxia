@@ -1,13 +1,19 @@
 import { Router } from "express";
-import * as vehiculos from "../db/vehiculos.js";
-import {validarVehiculo} from "./verificaciones_vehiculo.js";
+import * as vehiculos from "../bd/vehiculos.js";
+import {validarVehiculo, validarFiltrosVehiculo} from "./verificaciones_vehiculo.js";
 import * as constantes from "../constantes.js";
-import {validarId, manejarError} from "./validaciones_errores.js"
+import {validarId, manejarError} from "./validaciones_errores.js";
 export const endpointsVehiculos = Router();
 
-endpointsVehiculos.get("/", async (req, res) => {
-    const listaVehiculos = await vehiculos.getAllVehiculos();
-    res.json(listaVehiculos);
+endpointsVehiculos.get("/", validarFiltrosVehiculo, async (req, res) => {
+    try {
+        const texto = "SELECT v.id, v.nombre, v.tipo, c.nombre as ubicacion, v.motor, v.estructura, v.color, v.combustible FROM Vehiculos as v, CuerposCelestes as c WHERE c.id=v.ubicacionId AND v.borrado = FALSE";
+        const listaVehiculos = await vehiculos.getAllVehiculos(constantes.consulta(req.query, "vehiculo", texto));
+        res.json(listaVehiculos);
+    } catch(error) {
+        const {estado, msjError} = manejarError(error);
+        res.status(estado).json({error : msjError});
+    }
 });
 
 endpointsVehiculos.get("/:id", validarId, async (req, res) => {
@@ -20,7 +26,7 @@ endpointsVehiculos.get("/:id", validarId, async (req, res) => {
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
-        res.status(estado).json(msjError);
+        res.status(estado).json({error : msjError});
     }
 });
 
@@ -33,7 +39,7 @@ endpointsVehiculos.post("/", validarVehiculo, async (req, res)=> {
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
-        res.status(estado).json(msjError);
+        res.status(estado).json({error : msjError});
     }
 });
 
@@ -46,7 +52,7 @@ endpointsVehiculos.patch("/:id", validarId, validarVehiculo, async (req, res) =>
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
-        res.status(estado).json(msjError);
+        res.status(estado).json({error : msjError});
     }
 });
 
@@ -60,6 +66,6 @@ endpointsVehiculos.delete("/:id", validarId, async (req, res) => {
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
-        res.status(estado).json(msjError);
+        res.status(estado).json({error : msjError});
     }
 });

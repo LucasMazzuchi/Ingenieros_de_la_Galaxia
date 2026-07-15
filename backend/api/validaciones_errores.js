@@ -1,8 +1,11 @@
-import * as constantes from "../constantes.js"
-export const validarEntrada = (parametros, validaciones) => {
+import * as constantes from "../constantes.js";
+export const validarEntrada = (parametros, validaciones, metodo) => {
     let errores = [];
     let procesados = {};
     for (const [campo, validador] of Object.entries(validaciones)) {
+        if (metodo === "PATCH" && parametros[campo].campo === "undefined"){
+            continue;
+        }
         const error = validador(parametros[campo]);
         if (error.length !== 0){
             errores.push(error);
@@ -12,6 +15,40 @@ export const validarEntrada = (parametros, validaciones) => {
     return {errores, procesados};
 }
 
+export const validarFiltros = (filtros, camposPermitidos) => {
+    return filtros.filter(function (filtro) {
+        return !camposPermitidos.has(filtro);
+    });
+};
+
+export const validarValorFiltro = (filtros, validadores) => {
+    let valores = {};
+    let erroresValores = [];
+    for (const [filtro, valor] of Object.entries(filtros)) {
+        let clave = filtro;
+        if (clave.endsWith("_min") || clave.endsWith("_max")) {
+            clave = filtro.substring(0, filtro.length-4);
+        }
+        if (!validadores[clave].regex.test(valor)){
+            erroresValores.push(validadores[clave].error);
+            continue;
+        }
+        valores[filtro]=(validadores[clave].caster(valor));
+    }
+    return {valores, erroresValores};
+};
+
+export const validarRango = (filtros, valores) => {
+    let errores = [];
+    for (const filtro of filtros){
+        const min = valores[filtro + "_min"];
+        const max = valores[filtro + "_max"];
+        if (min !== undefined && max !== undefined && min > max){
+            errores.push(constantes.ERROR_FILTRO_RANGO(filtro));
+        }
+    }
+    return errores;
+};
 
 export const validarString = ({ campo,min, max, error }) => {
     if (typeof campo !== "string" || campo.length<min || campo.length>max){
@@ -41,7 +78,7 @@ export const validarFloat = ({ campo, min, max, error }) => {
 };
 
 export const validarImagen = ({ campo }) => {
-    const err = validarString({ campo: campo, min : 0, max : constantes.IMAGEN_MAX, error : "imagen" });
+    const err = validarString({ campo: campo, min : 1, max : constantes.IMAGEN_MAX, error : "imagen" });
     if (err !== ""){
         return err;
     }
@@ -62,12 +99,13 @@ export const validarId = (req, res, next) => {
         res.status(400).json({error: constantes.ERROR_INT("id", 1, 2147483647)});
         return;
     }
+    req.parms.id = id
     next();
 };
 
 
 export const manejarError = (error) => {
-    switch (error) {
+    switch (error.code) {
         case constantes.CODIGO_REPETIDO:
             return {estado : 400 , msjError : constantes.ERROR_REPETIDO};
         case constantes.CODIGO_FK:
@@ -78,3 +116,12 @@ export const manejarError = (error) => {
 };
 
 
+export const orden = (filtro) => {
+    let cadena = String(filtro);
+    if (cadena.toUpperCase() === "DESC"){
+        cadena = "DESC";
+    } else {
+        cadena = "ASC";
+    }
+    return cadena;
+};

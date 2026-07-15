@@ -13,3 +13,6 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
+app.use(cors({
+    origin: 'https://url' // Hay que agregar la url del front
+}));

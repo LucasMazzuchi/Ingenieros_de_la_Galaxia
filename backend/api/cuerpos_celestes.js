@@ -1,13 +1,19 @@
 import { Router } from "express";
-import * as cuerpos from "../db/cuerpos_celestes.js";
-import { validarCuerpoCeleste } from "./verificaciones_cuerpo_celeste.js";
+import * as cuerpos from "../bd/cuerpos_celestes.js";
+import { validarCuerpoCeleste, validarFiltrosCuerpoCeleste } from "./verificaciones_cuerpo_celeste.js";
 import * as constantes from "../constantes.js";
-import { validarId, manejarError } from "./validaciones_errores.js"
+import { validarId, manejarError } from "./validaciones_errores.js";
 export const endpointsCuerpoCeleste = Router();
 
-endpointsCuerpoCeleste.get("/", async (req, res) => {
-    const listaCuerposCelestes = await cuerpos.getAllCuerposCelestes();
-    res.json(listaCuerposCelestes);
+endpointsCuerpoCeleste.get("/", validarFiltrosCuerpoCeleste, async (req, res) => {
+    try {
+        const texto = "SELECT c.id, c.nombre, c.tipo, c.diametro, c.gravedad, c.temperatura, c.habitable, c.terreno FROM cuerposCelestes as c";
+        const listaCuerposCelestes = await cuerpos.getAllCuerposCelestes(constantes.consulta(req.query, "cuerpoCeleste", texto));
+        res.json(listaCuerposCelestes);
+    } catch(error) {
+        const {estado, msjError} = manejarError(error);
+        res.status(estado).json({error : msjError});
+    }
 });
 
 endpointsCuerpoCeleste.get("/:id", validarId, async (req, res) => {
@@ -20,7 +26,7 @@ endpointsCuerpoCeleste.get("/:id", validarId, async (req, res) => {
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
-        res.status(estado).json(msjError);
+        res.status(estado).json({error : msjError});
     }
 });
 
@@ -33,7 +39,7 @@ endpointsCuerpoCeleste.post("/", validarCuerpoCeleste, async (req, res)=> {
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
-        res.status(estado).json(msjError);
+        res.status(estado).json({error : msjError});
     }
 });
 
@@ -46,7 +52,7 @@ endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
-        res.status(estado).json(msjError);
+        res.status(estado).json({error : msjError});
     }
 });
 
@@ -60,6 +66,6 @@ endpointsCuerpoCeleste.delete("/:id", validarId, async (req, res) => {
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
-        res.status(estado).json(msjError);
+        res.status(estado).json({error : msjError});
     }
 });

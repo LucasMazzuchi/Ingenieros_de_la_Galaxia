@@ -1,5 +1,6 @@
 import * as constantes from "../constantes.js";
-import {validarEntrada, validarString, validarEntero, validarBool, validarFloat, validarImagen} from "./validaciones_errores.js";
+import {validarEntrada, validarString, validarEntero, validarBool, validarFloat, validarImagen,
+    validarFiltros, validarValorFiltro, validarRango, orden} from "./validaciones_errores.js";
 
 export const validarCuerpoCeleste = (req, res, next) => {
     const reglasCuerpoCeleste = {
@@ -28,11 +29,62 @@ export const validarCuerpoCeleste = (req, res, next) => {
     [constantes.POS_Y]: { campo: req.body.pos_y, min: constantes.COORDENADA_MIN, max: constantes.COORDENADA_MAX, error: constantes.POS_Y },
     [constantes.IMAGEN]: { campo: req.body.imagenURL }
     };
-    const {errores, procesados} = validarEntrada(entrada, reglasCuerpoCeleste);
+    const {errores, procesados} = validarEntrada(entrada, reglasCuerpoCeleste, req.method);
         if (errores.length !== 0){
             res.status(400).json({error:errores});
             return;
         }
         req.body = procesados;
         next();
+};
+
+export const validarFiltrosCuerpoCeleste = (req, res, next) => {
+    // 1. Armamos la regex dinámica para las columnas válidas de ordenamiento
+    const regex = [constantes.ID, constantes.NOMBRE, constantes.TIPO, 
+    constantes.DIAMETRO, constantes.GRAVEDAD, constantes.TEMPERATURA,
+    constantes.TERRENO, constantes.HABITABLE].join('|');
+    const regexOrdenarPor = new RegExp( `^(${regex})$`, "i");
+
+    const validadores = {
+        [constantes.ID] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
+        [constantes.NOMBRE] : {regex: constantes.REGEX_STRING, error: constantes.ERROR_FILTRO_STRING, caster : String},
+        [constantes.TIPO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
+        [constantes.DIAMETRO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
+        [constantes.GRAVEDAD] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_BOOL, caster : Number},
+        [constantes.TEMPERATURA] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
+        [constantes.HABITABLE] : {regex: constantes.REGEX_BOOL, error: constantes.ERROR_FILTRO_BOOL, caster : (bool) => String(bool).toLowerCase() === 'true'},
+        [constantes.TERRENO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : String},
+        [constantes.LIMITE]: { regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number },
+        [constantes.ORDENAR_POR]: { regex: regexOrdenarPor, error: constantes.ERROR_FILTRO_ORDENAR, caster: String },
+        [constantes.ORDEN]: { regex: constantes.REGEX_ORDEN, error: constantes.ERROR_ORDEN, caster: orden }
+    };
+
+    const permitidos = new Set([
+        constantes.ID, constantes.ID + "_min", constantes.ID + "_max",
+        constantes.NOMBRE, constantes.HABITABLE,
+        constantes.TIPO, constantes.TIPO + "_min", constantes.TIPO + "_max",
+        constantes.DIAMETRO, constantes.DIAMETRO + "_min", constantes.DIAMETRO + "_max",
+        constantes.GRAVEDAD, constantes.GRAVEDAD + "_min", constantes.GRAVEDAD + "_max",
+        constantes.TEMPERATURA, constantes.TEMPERATURA + "_min", constantes.TEMPERATURA + "_max",
+        constantes.TERRENO, constantes.TERRENO + "_min", constantes.TERRENO + "_max",
+        constantes.LIMITE, constantes.ORDENAR_POR, constantes.ORDEN
+    ]);
+
+    const erroresClaves = validarFiltros(Object.keys(req.query), permitidos);
+    if (erroresClaves.length !== 0){
+        return res.status(400).json({ error: constantes.ERROR_FILTROS, errores: erroresClaves });
+    }
+
+    const { valores, erroresValores } = validarValorFiltro(req.query, validadores);
+    if (erroresValores.length !== 0){
+        return res.status(400).json({ error: constantes.ERROR_FILTROS, errores: erroresValores });
+    }
+
+    const erroresRangos = validarRango(Object.keys(validadores), valores);
+    if (erroresRangos.length !== 0){
+        return res.status(400).json({ error: constantes.ERROR_FILTROS, errores: erroresRangos });
+    }
+
+    req.query = valores;
+    next();
 };

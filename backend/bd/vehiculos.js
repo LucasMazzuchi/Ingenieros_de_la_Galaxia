@@ -1,14 +1,12 @@
 import { db } from "bd/pool.js";
-
-export async function getAllVehiculos() {
-    const res = await db.query(
-        "SELECT v.nombre, v.tipo, c.nombre as ubicacion, v.motor, v.estructura, v.color, v.combustible, v.imagenURL FROM Vehiculos as v, CuerposCelestes as c WHERE c.id=v.ubicacionId"
-    );
+import { armar_consulta } from "bd/consultas";
+export async function getAllVehiculos({ texto, procesados }) {
+    const res = await db.query(texto, procesados);
     return res.rows;
 }
 
 export async function getVehiculo(id) {
-    const solicitud = "SELECT v.nombre, c.nombre as ubicacion, v.tipo, v.motor, v.estructura, v.color, v.combustible, v.imagenURL FROM Vehiculos as v, CuerposCelestes as c WHERE v.id=$1 and c.id=v.ubicacionId";
+    const solicitud = "SELECT v.id, v.nombre, c.nombre as ubicacion, v.tipo, v.motor, v.estructura, v.color, v.combustible, v.imagenURL FROM Vehiculos as v, CuerposCelestes as c WHERE v.id=$1 and c.id=v.ubicacionId";
     const res = await db.query(solicitud, [id]);
     return res.rows[0];
 }
@@ -26,8 +24,8 @@ export async function removeVehiculo(id){
     return {ok : res.rowCount == 1, vehiculo : res.rows[0]};
 }
 export async function updateVehiculo(id, vehiculo){
-    const solicitud = "Update Vehiculos SET nombre=$2, tipo=$3, motor=$4, estructura=$5, color=$6, combustible=$7, ubicacionId=$8, imagenURL=$9 WHERE id=$1";
-    const valores = [id, vehiculo.nombre, vehiculo.tipo, vehiculo.motor, vehiculo.estructura, vehiculo.color, vehiculo.combustible, vehiculo.ubicacionId, vehiculo.imagenURL];
+    const { consulta, valores } = armar_consulta(vehiculo);
+    const solicitud = `UPDATE Vehiculos SET ${consulta} WHERE id=$1`;
     const res = await db.query(solicitud, valores);
     return res.rowCount == 1;
 }

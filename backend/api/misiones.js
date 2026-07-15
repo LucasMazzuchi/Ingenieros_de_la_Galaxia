@@ -1,13 +1,19 @@
 import { Router } from "express";
-import * as misiones from "../db/misiones.js";
-import {validarMision} from "./verificaciones_mision.js";
+import * as misiones from "../bd/misiones.js";
+import {validarMision, validarFiltrosMision } from "./verificaciones_mision.js";
 import * as constantes from "../constantes.js";
-import {validarId, manejarError} from "./validaciones_errores.js"
+import {validarId, manejarError} from "./validaciones_errores.js";
 export const endpointsMisiones = Router();
 
-endpointsMisiones.get("/", async (req, res) => {
-    const listaMisiones = await misiones.getAllMisiones();
-    res.json(listaMisiones);
+endpointsMisiones.get("/", validarFiltrosMision, async (req, res) => {
+    try {
+        const texto = `SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.relevancia, m.porcentaje, m.disponible, m.imagen FROM Misiones as m, CuerposCelestes as c WHERE c.id = m.cuerpoCelesteId AND m.borrado = FALSE`;
+        const listaMisiones = await misiones.getAllMisiones(constantes.consulta(req.query, "mision", texto));
+        res.json(listaMisiones);
+    } catch(error) {
+        const {estado, msjError} = manejarError(error);
+        res.status(estado).json({error : msjError});
+    }
 });
 
 endpointsMisiones.get("/:id", validarId, async (req, res) => {
@@ -20,7 +26,7 @@ endpointsMisiones.get("/:id", validarId, async (req, res) => {
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
-        res.status(estado).json(msjError);
+        res.status(estado).json({error : msjError});
     }
 });
 
@@ -33,7 +39,7 @@ endpointsMisiones.post("/", validarMision, async (req, res)=> {
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
-        res.status(estado).json(msjError);
+        res.status(estado).json({error : msjError});
     }
 });
 
@@ -46,7 +52,7 @@ endpointsMisiones.patch("/:id", validarId, validarMision, async (req, res) => {
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
-        res.status(estado).json(msjError);
+        res.status(estado).json({error : msjError});
     }
 });
 
@@ -60,6 +66,6 @@ endpointsMisiones.delete("/:id", validarId, async (req, res) => {
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
-        res.status(estado).json(msjError);
+        res.status(estado).json({error : msjError});
     }
 });
