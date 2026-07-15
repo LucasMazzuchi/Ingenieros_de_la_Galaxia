@@ -3,7 +3,7 @@ export const validarEntrada = (parametros, validaciones, metodo) => {
     let errores = [];
     let procesados = {};
     for (const [campo, validador] of Object.entries(validaciones)) {
-        if (metodo === "PATCH" && parametros[campo].campo === "undefined"){
+        if (metodo === "PATCH" && parametros[campo].campo === undefined) {
             continue;
         }
         const error = validador(parametros[campo]);
@@ -26,7 +26,7 @@ export const validarValorFiltro = (filtros, validadores) => {
     let erroresValores = [];
     for (const [filtro, valor] of Object.entries(filtros)) {
         let clave = filtro;
-        if (clave.endsWith("_min") || clave.endsWith("_max")) {
+        if (clave.endsWith("_min") || clave.endsWith("_max")) {
             clave = filtro.substring(0, filtro.length-4);
         }
         if (!validadores[clave].regex.test(valor)){
@@ -99,7 +99,7 @@ export const validarId = (req, res, next) => {
         res.status(400).json({error: constantes.ERROR_INT("id", 1, 2147483647)});
         return;
     }
-    req.parms.id = id
+    req.params.id = id;
     next();
 };
 

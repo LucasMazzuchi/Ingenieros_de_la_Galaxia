@@ -7,7 +7,7 @@ export const endpointsMisiones = Router();
 
 endpointsMisiones.get("/", validarFiltrosMision, async (req, res) => {
     try {
-        const texto = `SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.relevancia, m.porcentaje, m.disponible, m.imagen FROM Misiones as m, CuerposCelestes as c WHERE c.id = m.cuerpoCelesteId AND m.borrado = FALSE`;
+        const texto = `SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.relevancia, m.porcentaje, m.disponible, m.imagenURL FROM Misiones as m, CuerposCelestes as c WHERE c.id = m.cuerpoCelesteId AND m.borrado = FALSE AND c.borrado = FALSE`;
         const listaMisiones = await misiones.getAllMisiones(constantes.consulta(req.query, "mision", texto));
         res.json(listaMisiones);
     } catch(error) {

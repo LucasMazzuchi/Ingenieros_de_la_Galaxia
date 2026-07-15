@@ -3,6 +3,9 @@ import {validarEntrada, validarString, validarEntero, validarBool, validarFloat,
     validarFiltros, validarValorFiltro, validarRango, orden} from "./validaciones_errores.js";
 
 export const validarCuerpoCeleste = (req, res, next) => {
+    if (!req.body || Object.keys(req.body).length === 0) {
+        return res.status(400).json({ error: constantes.ERROR_BODY_VACIO });
+    }
     const reglasCuerpoCeleste = {
     [constantes.NOMBRE]: validarString,
     [constantes.DESCRIPCION]: validarString,
@@ -25,8 +28,8 @@ export const validarCuerpoCeleste = (req, res, next) => {
     [constantes.GRAVEDAD]: { campo: req.body.gravedad, min: 1, max: constantes.GRAVEDAD_MAX, error: constantes.GRAVEDAD },
     [constantes.TEMPERATURA]: { campo: req.body.temperatura, min: constantes.TEMPERATURA_MIN, max: constantes.TEMPERATURA_MAX, error: constantes.TEMPERATURA },
     [constantes.HABITABLE]: { campo: req.body.habitable, error: constantes.HABITABLE },
-    [constantes.POS_X]: { campo: req.body.pos_x, min: constantes.COORDENADA_MIN, max: constantes.COORDENADA_MAX, error: constantes.POS_X },
-    [constantes.POS_Y]: { campo: req.body.pos_y, min: constantes.COORDENADA_MIN, max: constantes.COORDENADA_MAX, error: constantes.POS_Y },
+    [constantes.POS_X]: { campo: req.body.x, min: constantes.COORDENADA_MIN, max: constantes.COORDENADA_MAX, error: constantes.POS_X },
+    [constantes.POS_Y]: { campo: req.body.y, min: constantes.COORDENADA_MIN, max: constantes.COORDENADA_MAX, error: constantes.POS_Y },
     [constantes.IMAGEN]: { campo: req.body.imagenURL }
     };
     const {errores, procesados} = validarEntrada(entrada, reglasCuerpoCeleste, req.method);
@@ -50,10 +53,10 @@ export const validarFiltrosCuerpoCeleste = (req, res, next) => {
         [constantes.NOMBRE] : {regex: constantes.REGEX_STRING, error: constantes.ERROR_FILTRO_STRING, caster : String},
         [constantes.TIPO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
         [constantes.DIAMETRO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
-        [constantes.GRAVEDAD] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_BOOL, caster : Number},
+        [constantes.GRAVEDAD] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
         [constantes.TEMPERATURA] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
         [constantes.HABITABLE] : {regex: constantes.REGEX_BOOL, error: constantes.ERROR_FILTRO_BOOL, caster : (bool) => String(bool).toLowerCase() === 'true'},
-        [constantes.TERRENO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : String},
+        [constantes.TERRENO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
         [constantes.LIMITE]: { regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number },
         [constantes.ORDENAR_POR]: { regex: regexOrdenarPor, error: constantes.ERROR_FILTRO_ORDENAR, caster: String },
         [constantes.ORDEN]: { regex: constantes.REGEX_ORDEN, error: constantes.ERROR_ORDEN, caster: orden }

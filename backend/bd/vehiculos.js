@@ -1,12 +1,12 @@
-import { db } from "bd/pool.js";
-import { armar_consulta } from "bd/consultas";
+import { db } from "./pool.js";
+import { armar_consulta } from "./consultas.js";
 export async function getAllVehiculos({ texto, procesados }) {
     const res = await db.query(texto, procesados);
     return res.rows;
 }
 
 export async function getVehiculo(id) {
-    const solicitud = "SELECT v.id, v.nombre, c.nombre as ubicacion, v.tipo, v.motor, v.estructura, v.color, v.combustible, v.imagenURL FROM Vehiculos as v, CuerposCelestes as c WHERE v.id=$1 and c.id=v.ubicacionId";
+    const solicitud = "SELECT v.id, v.nombre, c.nombre as ubicacion, v.tipo, v.motor, v.estructura, v.color, v.combustible, v.imagenURL FROM Vehiculos as v, CuerposCelestes as c WHERE v.id=$1 AND c.id=v.ubicacionId AND v.borrado = FALSE AND c.borrado = FALSE";
     const res = await db.query(solicitud, [id]);
     return res.rows[0];
 }
@@ -19,12 +19,12 @@ export async function createVehiculo(vehiculo) {
 }
 
 export async function removeVehiculo(id){
-    const solicitud = "DELETE FROM Vehiculos WHERE id=$1  RETURNING *";
+    const solicitud = "UPDATE Vehiculos SET borrado = TRUE WHERE id=$1 RETURNING *";
     const res = await db.query(solicitud, [id]);
     return {ok : res.rowCount == 1, vehiculo : res.rows[0]};
 }
 export async function updateVehiculo(id, vehiculo){
-    const { consulta, valores } = armar_consulta(vehiculo);
+    const { consulta, valores } = armar_consulta(id, vehiculo);
     const solicitud = `UPDATE Vehiculos SET ${consulta} WHERE id=$1`;
     const res = await db.query(solicitud, valores);
     return res.rowCount == 1;

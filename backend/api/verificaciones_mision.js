@@ -2,6 +2,9 @@ import * as constantes from "../constantes.js";
 import {validarEntrada, validarString, validarEntero, validarBool, validarFloat, validarImagen,
     validarFiltros, validarValorFiltro, validarRango, orden} from "./validaciones_errores.js";
 export const validarMision = (req, res, next) => {
+    if (!req.body || Object.keys(req.body).length === 0) {
+        return res.status(400).json({ error: constantes.ERROR_BODY_VACIO });
+    }
     const reglasMision = {
     [constantes.NOMBRE]: validarString,
     [constantes.DESCRIPCION]: validarString,

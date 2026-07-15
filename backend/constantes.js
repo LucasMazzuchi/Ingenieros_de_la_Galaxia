@@ -52,6 +52,17 @@ export const EXITO_CONSULTA = (entidad, consulta) => {
     return `La entidad ${entidad} fue ${consulta} exitosamente.`;
 };
 
+// Claves genéricas.
+export const ID = "id";
+export const NOMBRE = "nombre";
+export const DESCRIPCION = "descripcion";
+export const TIPO = "tipo";
+export const COLOR = "color";
+export const UBICACION = "ubicacionId";
+export const IMAGEN = "imagenURL";
+export const POS_X = "x";
+export const POS_Y = "y";
+
 /* La función arma la consulta con los filtros que se le pasen, para la entidad especificada,
 comenzando con el texto ingresado por parámetro.*/
 export const consulta = (filtros, entidad, texto) => {
@@ -73,9 +84,9 @@ export const consulta = (filtros, entidad, texto) => {
         procesados.push(filtro);
         indice++;
     }
-    const filtro = filtros.ordenar_por || ID;
-    const orden = filtros.orden || "ASC";
-    const limite = filtros.limite || 100;
+    const filtro = filtros[ORDENAR_POR] || ID;
+    const orden = filtros[ORDEN] || "ASC";
+    const limite = filtros[LIMITE] || 100;
     texto += ` ORDER BY ${entidad[0]}.${filtro} ${orden}`;
 
     texto += ` LIMIT $${indice}`;
@@ -95,16 +106,6 @@ export const CODIGO_REPETIDO = "23505";
 export const CODIGO_FK = "23503";
 
 
-// Claves genéricas.
-export const ID = "id";
-export const NOMBRE = "nombre";
-export const DESCRIPCION = "descripcion";
-export const TIPO = "tipo";
-export const COLOR = "color";
-export const UBICACION = "ubicacionId";
-export const IMAGEN = "imagenURL";
-export const POS_X = "x";
-export const POS_Y = "y";
 
 // Claves de vehículos.
 export const MOTOR = "motor";
