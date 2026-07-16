@@ -3,6 +3,7 @@ import * as cuerpos from "../bd/cuerpos_celestes.js";
 import { validarCuerpoCeleste, validarFiltrosCuerpoCeleste } from "./verificaciones_cuerpo_celeste.js";
 import * as constantes from "../constantes.js";
 import { validarId, manejarError } from "./validaciones_errores.js";
+import { borrarImagen } from "./gestor_imagenes.js";
 export const endpointsCuerpoCeleste = Router();
 
 endpointsCuerpoCeleste.get("/", validarFiltrosCuerpoCeleste, async (req, res) => {
@@ -45,9 +46,16 @@ endpointsCuerpoCeleste.post("/", validarCuerpoCeleste, async (req, res)=> {
 
 endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req, res) => {
     try{
+        const cuerpoCeleste = await cuerpos.getCuerpoCeleste(req.params.id)
+        if (!cuerpoCeleste) {
+            return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
+        }
         if (!await cuerpos.updateCuerpoCeleste(req.params.id, req.body)){
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         } else {
+            if (req.body.imagenURL !== cuerpoCeleste.imagenURL) {
+                await borrarImagen(cuerpoCeleste.imagen);
+            }
             res.sendStatus(204);
         }
     } catch (error) {
@@ -65,6 +73,9 @@ endpointsCuerpoCeleste.delete("/:id", validarId, async (req, res) => {
             }
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         } else {
+            if (cuerpoCeleste && cuerpoCeleste.imagen) {
+            await borrarImagen(cuerpoCeleste.imagen);
+        }
             res.status(200).json({exito : constantes.EXITO_CONSULTA("cuerpo celeste", "eliminada"), entidad : cuerpoCeleste});
         }
     } catch (error) {
