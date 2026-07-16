@@ -1,36 +1,110 @@
-import * as constantes from "../constantes.js"
-export const validarEntrada = (parametros, validaciones) => {
+import * as constantes from "../constantes.js";
+export const validarEntrada = (parametros, validaciones, metodo, camposRecibidos) => {
     let errores = [];
     let procesados = {};
     for (const [campo, validador] of Object.entries(validaciones)) {
+        if (metodo === "PATCH" && parametros[campo].campo === undefined) {
+            continue;
+        }
         const error = validador(parametros[campo]);
         if (error.length !== 0){
             errores.push(error);
+            continue;
         }
-        procesados[campo] = parametros[campo];
+        procesados[campo] = parametros[campo].campo;
     };
-    return {errores, procesados};
+    const camposInvalidos = camposRecibidos.filter(function(campo){
+        return !Object.hasOwn(validaciones, campo);
+    });
+    return {errores, procesados, camposInvalidos};
 }
 
+export const validarFiltros = (filtros, camposPermitidos) => {
+    return filtros.filter(function (filtro) {
+        return !camposPermitidos.has(filtro);
+    });
+};
 
-export const validarNombre = (nombre) => {
-    if (typeof nombre !== "string" || nombre.length===0 || nombre.length>50){
-       return constantes.ERROR_STRING(constantes.NOMBRE, 0 ,50);
+export const validarValorFiltro = (filtros, validadores) => {
+    let valores = {};
+    let erroresValores = [];
+    for (const [filtro, valor] of Object.entries(filtros)) {
+        let clave = filtro;
+        if (clave.endsWith("_min") || clave.endsWith("_max")) {
+            clave = filtro.substring(0, filtro.length-4);
+        }
+        if (!validadores[clave].regex.test(valor)){
+            erroresValores.push(validadores[clave].error);
+            continue;
+        }
+        if (validadores[clave].min< validadores[clave].caster(valor) < validadores[clave].max){
+            valores[filtro] = validadores[clave].caster(valor);
+            continue;
+        }
+        erroresValores.push(validadores[clave].error);
+        
+    }
+    return {valores, erroresValores};
+};
+
+export const validarRango = (filtros, valores) => {
+    let errores = [];
+    for (const filtro of filtros){
+        const min = valores[filtro + "_min"];
+        const max = valores[filtro + "_max"];
+        if (min !== undefined && max !== undefined && min > max){
+            errores.push(constantes.ERROR_FILTRO_RANGO(filtro));
+        }
+    }
+    return errores;
+};
+
+export const validarString = ({ campo,min, max, error }) => {
+    if (typeof campo !== "string" || campo.length<min || campo.length>max){
+       return constantes.ERROR_STRING(error, min ,max);
     }
     return "";
 };
-export const validarTipo = (tipo) => {
-    if (typeof tipo != "string" || tipo.length===0 || tipo.length>20){
-        return constantes.ERROR_STRING(constantes.TIPO, 0, 20);
+export const validarEntero = ({ campo, min, max, error }) => {
+    if (typeof campo !== "number" || !Number.isInteger(campo) || campo<min || campo>max){
+            return constantes.ERROR_INT(error, min, max);
+        }
+    return "";
+};
+
+export const validarBool = ({ campo, error }) => {
+    if (typeof campo !== "boolean"){
+        return constantes.ERROR_BOOL(error);
     }
     return "";
 };
 
-export const validarColor = (color) => {
-    if (typeof color != "string" || color.length===0 || color.length>10){
-        return constantes.ERROR_STRING(constantes.COLOR, 0, 10);
+export const validarFloat = ({ campo, min, max, error }) => {
+    if (typeof campo !== "number" || !Number.isFinite(campo) || campo<min || campo>max){
+        return constantes.ERROR_FLOAT(error, min, max);
     }
     return "";
+};
+
+export const validarImagen = ({ campo }) => {
+    const err = validarString({ campo: campo, min : 1, max : constantes.IMAGEN_MAX, error : "imagen" });
+    if (err !== ""){
+        return err;
+    }
+    // Mira que sea una URL o una dirección válida a la carpeta donde se guardan las imagenes.
+    // La carpeta puede tenerse que cambiar, depende de donde se guarden las imagenes.
+    if (campo.startsWith("/imagenes/") && campo.length > "/imagenes/".length){
+        return "";
+    }
+    try { // Chequea que sea una url válida
+        const url = new URL(campo);
+        if (url.protocol === "http:" || url.protocol === "https:") {
+            return "";
+        }
+    } catch {
+        return constantes.ERROR_URL("imagen");
+    }
+    return constantes.ERROR_URL("imagen");
 };
 
 // La función valida que hayan enviado un entero positivo dentro del rango 1-2.147.483.647.
@@ -42,18 +116,29 @@ export const validarId = (req, res, next) => {
         res.status(400).json({error: constantes.ERROR_INT("id", 1, 2147483647)});
         return;
     }
+    req.params.id = id;
     next();
 };
 
+
 export const manejarError = (error) => {
-    switch (error) {
+    switch (error.code) {
         case constantes.CODIGO_REPETIDO:
-            return {estado : 400 , msjError : constantes.ERROR_REPETIDO}
+            return {estado : 400 , msjError : constantes.ERROR_REPETIDO};
         case constantes.CODIGO_FK:
-            return {estado : 400, msjError : constantes.ERROR_FK}
-        
+            return {estado : 400, msjError : constantes.ERROR_FK};
         default:
-            return {estado : 500, msjError: constantes.ERROR_CONEXION}
+            return {estado : 500, msjError: constantes.ERROR_CONEXION};
     }
 };
 
+
+export const orden = (filtro) => {
+    let cadena = String(filtro);
+    if (cadena.toUpperCase() === "DESC"){
+        cadena = "DESC";
+    } else {
+        cadena = "ASC";
+    }
+    return cadena;
+};
