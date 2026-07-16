@@ -22,9 +22,8 @@ export const ORDENAR_POR = "ORDER BY";
 // REGEX
 export const REGEX_STRING = /^[a-zA-Z_]+$/
 export const REGEX_ORDEN = /^(ASC|DESC)$/i;
-export const REGEX_URL = /^[a-zA-Z0-9\-\.\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\%]+$/;
 export const REGEX_ENTERO = /^[0-9]+$/;
-export const REGEX_FLOAT = /^[0-9]+\.[0-9]+$/;
+export const REGEX_FLOAT = /^[0-9]+(\.[0-9]+)?$/;
 export const REGEX_BOOL = /^(TRUE|FALSE)$/i;
 
 // Errores filtro
@@ -97,8 +96,10 @@ export const consulta = (filtros, entidad, texto) => {
 // Errores de consultas.
 export const ERROR_BODY_VACIO = "El cuerpo de la solicitud (body) no puede estar vacío.";
 export const ERROR_INEXISTENTE = "La entidad no existe.";
+export const ERROR_DEPENDENCIAS = "No se puede eliminar el cuerpo celeste porque tiene vehículos o misiones activos asociados.";
 export const ERROR_FILTROS = "Los filtros enviados son incorrectos.";
 export const ERROR_FILTROS_VALORES = "Los valores envíados para filtrar son incorrectos.";
+export const ERROR_CAMPOS = "El cuerpo de la solicitud contiene campos no permitidos.";
 export const ERROR_FK = "La clave foránea es incorrecta. Debe referenciar a una entidad existente.";
 export const ERROR_REPETIDO = "El id ingresado es incorrecto, pues ya existe en el sistema.";
 export const ERROR_CONEXION = "Ocurrió un error con la conexión a la base de datos.";
@@ -153,3 +154,4 @@ export const COMBUSTIBLE_MAX = 100;
 // Límites a parámetros de misiones.
 export const RELEVANCIA_MAX = 3;
 export const PORCENTAJE_MAX = 100;
+export const LIMITE_MAX = 100;

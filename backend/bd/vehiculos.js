@@ -12,20 +12,20 @@ export async function getVehiculo(id) {
 }
 
 export async function createVehiculo(vehiculo) {
-    const solicitud = "INSERT INTO Vehiculos (nombre, tipo, motor, estructura, color, combustible, ubicacionId, imagenURL) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
-    const valores = [vehiculo.nombre, vehiculo.tipo, vehiculo.motor, vehiculo.estructura, vehiculo.color, vehiculo.combustible, vehiculo.ubicacionId, vehiculo.imagenURL];
+    const solicitud = "INSERT INTO Vehiculos (nombre, tipo, motor, estructura, color, combustible, ubicacionId, imagenURL, borrado) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)";
+    const valores = [vehiculo.nombre, vehiculo.tipo, vehiculo.motor, vehiculo.estructura, vehiculo.color, vehiculo.combustible, vehiculo.ubicacionId, vehiculo.imagenURL, false];
     const res = await db.query(solicitud, valores);
       return res.rowCount == 1;
 }
 
 export async function removeVehiculo(id){
-    const solicitud = "UPDATE Vehiculos SET borrado = TRUE WHERE id=$1 RETURNING *";
+    const solicitud = "UPDATE Vehiculos SET borrado = TRUE WHERE id=$1 AND borrado = FALSE RETURNING *";
     const res = await db.query(solicitud, [id]);
     return {ok : res.rowCount == 1, vehiculo : res.rows[0]};
 }
 export async function updateVehiculo(id, vehiculo){
     const { consulta, valores } = armar_consulta(id, vehiculo);
-    const solicitud = `UPDATE Vehiculos SET ${consulta} WHERE id=$1`;
+    const solicitud = `UPDATE Vehiculos SET ${consulta} WHERE id=$1 AND borrado = FALSE`;
     const res = await db.query(solicitud, valores);
     return res.rowCount == 1;
 }

@@ -19,15 +19,22 @@ export async function createCuerpoCeleste(cuerpo) {
     return res.rowCount == 1;
 }
 
-export async function removeCuerpoCeleste(id){
-    const solicitud = "UPDATE CuerposCelestes SET borrado = TRUE WHERE id=$1 RETURNING *";
-    const res = await db.query(solicitud, [id]);
-    return {ok : res.rowCount == 1, cuerpoCeleste : res.rows[0]};
+export async function removeCuerpoCeleste(id) {
+    const consultaVehiculos = "SELECT 1 FROM Vehiculos WHERE ubicacionId = $1 AND borrado = FALSE LIMIT 1";
+    const resVehiculos = await db.query(consultaVehiculos, [id]);
+    const consultaMisiones = "SELECT 1 FROM Misiones WHERE cuerpoCelesteId = $1 AND borrado = FALSE LIMIT 1";
+    const resMisiones = await db.query(consultaMisiones, [id]);
+    if (resVehiculos.rowCount > 0 || resMisiones.rowCount > 0) {
+        return {ok: false, cuerpoCeleste: null, tieneDependientes: true};
+    }
+    const consultaUpdate = "UPDATE CuerposCelestes SET borrado = TRUE WHERE id = $1 AND borrado = FALSE RETURNING *";
+    const resBorrado = await db.query(consultaUpdate, [id]);
+    return { ok: resBorrado.rowCount === 1, cuerpoCeleste: resBorrado.rows[0], tieneDependientes: false };
 }
 
 export async function updateCuerpoCeleste(id, cuerpo){
     const { consulta, valores } = armar_consulta(id, cuerpo)
-    const solicitud = `UPDATE CuerposCelestes SET ${consulta} WHERE id=$1`;
+    const solicitud = `UPDATE CuerposCelestes SET ${consulta} WHERE id=$1 AND borrado = FALSE`;
     const res = await db.query(solicitud, valores);
     return res.rowCount == 1;
 }

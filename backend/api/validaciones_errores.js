@@ -1,5 +1,5 @@
 import * as constantes from "../constantes.js";
-export const validarEntrada = (parametros, validaciones, metodo) => {
+export const validarEntrada = (parametros, validaciones, metodo, camposRecibidos) => {
     let errores = [];
     let procesados = {};
     for (const [campo, validador] of Object.entries(validaciones)) {
@@ -9,10 +9,14 @@ export const validarEntrada = (parametros, validaciones, metodo) => {
         const error = validador(parametros[campo]);
         if (error.length !== 0){
             errores.push(error);
+            continue;
         }
         procesados[campo] = parametros[campo].campo;
     };
-    return {errores, procesados};
+    const camposInvalidos = camposRecibidos.filter(function(campo){
+        return !Object.hasOwn(validaciones, campo);
+    });
+    return {errores, procesados, camposInvalidos};
 }
 
 export const validarFiltros = (filtros, camposPermitidos) => {
@@ -33,7 +37,12 @@ export const validarValorFiltro = (filtros, validadores) => {
             erroresValores.push(validadores[clave].error);
             continue;
         }
-        valores[filtro]=(validadores[clave].caster(valor));
+        if (validadores[clave].min< validadores[clave].caster(valor) < validadores[clave].max){
+            valores[filtro] = validadores[clave].caster(valor);
+            continue;
+        }
+        erroresValores.push(validadores[clave].error);
+        
     }
     return {valores, erroresValores};
 };
@@ -71,7 +80,7 @@ export const validarBool = ({ campo, error }) => {
 };
 
 export const validarFloat = ({ campo, min, max, error }) => {
-    if (typeof campo !== "number" || campo<min || campo>max){
+    if (typeof campo !== "number" || !Number.isFinite(campo) || campo<min || campo>max){
         return constantes.ERROR_FLOAT(error, min, max);
     }
     return "";
@@ -84,10 +93,18 @@ export const validarImagen = ({ campo }) => {
     }
     // Mira que sea una URL o una dirección válida a la carpeta donde se guardan las imagenes.
     // La carpeta puede tenerse que cambiar, depende de donde se guarden las imagenes.
-    if (!/^(https?:\/\/|\/imagenes\/)/.test(campo)){
+    if (campo.startsWith("/imagenes/") && campo.length > "/imagenes/".length){
+        return "";
+    }
+    try { // Chequea que sea una url válida
+        const url = new URL(campo);
+        if (url.protocol === "http:" || url.protocol === "https:") {
+            return "";
+        }
+    } catch {
         return constantes.ERROR_URL("imagen");
     }
-    return "";
+    return constantes.ERROR_URL("imagen");
 };
 
 // La función valida que hayan enviado un entero positivo dentro del rango 1-2.147.483.647.

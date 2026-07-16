@@ -20,14 +20,14 @@ export async function createMision(mision) {
 }
 
 export async function removeMision(id){
-    const solicitud = "UPDATE Misiones SET borrado = TRUE WHERE id=$1 RETURNING *";
+    const solicitud = "UPDATE Misiones SET borrado = TRUE WHERE id=$1 AND borrado = FALSE RETURNING *";
     const res = await db.query(solicitud, [id]);
     return {ok : res.rowCount == 1, mision : res.rows[0]};
 }
 
 export async function updateMision(id, mision){
     const { consulta, valores } = armar_consulta(id, mision)
-    const solicitud = `UPDATE Misiones SET ${consulta} WHERE id=$1`;
+    const solicitud = `UPDATE Misiones SET ${consulta} WHERE id=$1 AND borrado = FALSE`;
     const res = await db.query(solicitud, valores);
     return res.rowCount == 1;
 }

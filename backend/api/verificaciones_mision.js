@@ -23,7 +23,10 @@ export const validarMision = (req, res, next) => {
     [constantes.CUERPO_CELESTE]: { campo: req.body.cuerpoCelesteId, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE },
     [constantes.IMAGEN]: { campo: req.body.imagenURL }
     };
-    const {errores, procesados} = validarEntrada(entrada, reglasMision, req.method);
+    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasMision, req.method, Object.keys(req.body));
+        if (camposInvalidos.length !== 0) {
+            return res.status(400).json({error: constantes.ERROR_CAMPOS, campos: camposInvalidos});
+        }
         if (errores.length !== 0){
             res.status(400).json({error:errores});
             return;
@@ -38,13 +41,13 @@ export const validarFiltrosMision = (req, res, next) => {
     const regexOrdenarPor = new RegExp( `^(${regex})$`, "i");
 
     const validadores = {
-        [constantes.ID] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
+        [constantes.ID] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.ID_MAX},
         [constantes.NOMBRE] : {regex: constantes.REGEX_STRING, error: constantes.ERROR_FILTRO_STRING, caster : String},
-        [constantes.RELEVANCIA] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
-        [constantes.PORCENTAJE] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
+        [constantes.RELEVANCIA] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.RELEVANCIA_MAX},
+        [constantes.PORCENTAJE] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 0, max: constantes.PORCENTAJE_MAX},
         [constantes.DISPONIBLE] : {regex: constantes.REGEX_BOOL, error: constantes.ERROR_FILTRO_BOOL, caster : (val) => String(val).toLowerCase() === 'true'},
-        [constantes.CUERPO_CELESTE] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
-        [constantes.LIMITE]: { regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number },
+        [constantes.CUERPO_CELESTE] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.ID_MAX},
+        [constantes.LIMITE]: { regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min: 1, max: constantes.LIMITE_MAX },
         [constantes.ORDENAR_POR]: { regex: regexOrdenarPor, error: constantes.ERROR_FILTRO_ORDENAR, caster: String },
         [constantes.ORDEN]: { regex: constantes.REGEX_ORDEN, error: constantes.ERROR_ORDEN, caster: orden }
     };

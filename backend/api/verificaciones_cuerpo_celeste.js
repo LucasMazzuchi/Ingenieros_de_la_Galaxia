@@ -32,7 +32,10 @@ export const validarCuerpoCeleste = (req, res, next) => {
     [constantes.POS_Y]: { campo: req.body.y, min: constantes.COORDENADA_MIN, max: constantes.COORDENADA_MAX, error: constantes.POS_Y },
     [constantes.IMAGEN]: { campo: req.body.imagenURL }
     };
-    const {errores, procesados} = validarEntrada(entrada, reglasCuerpoCeleste, req.method);
+    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasCuerpoCeleste, req.method, Object.keys(req.body));
+        if (camposInvalidos.length !== 0) {
+            return res.status(400).json({error: constantes.ERROR_CAMPOS, campos: camposInvalidos});
+        }
         if (errores.length !== 0){
             res.status(400).json({error:errores});
             return;
@@ -49,15 +52,15 @@ export const validarFiltrosCuerpoCeleste = (req, res, next) => {
     const regexOrdenarPor = new RegExp( `^(${regex})$`, "i");
 
     const validadores = {
-        [constantes.ID] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
+        [constantes.ID] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.ID_MAX},
         [constantes.NOMBRE] : {regex: constantes.REGEX_STRING, error: constantes.ERROR_FILTRO_STRING, caster : String},
-        [constantes.TIPO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
-        [constantes.DIAMETRO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
-        [constantes.GRAVEDAD] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
-        [constantes.TEMPERATURA] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
+        [constantes.TIPO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.TIPO_MAX},
+        [constantes.DIAMETRO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.DIAMETRO_MAX},
+        [constantes.GRAVEDAD] : {regex: constantes.REGEX_FLOAT, error: constantes.ERROR_FILTRO_FLOAT, caster : Number, min: 1, max: constantes.GRAVEDAD_MAX},
+        [constantes.TEMPERATURA] : {regex: /^-?[0-9]+$/, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: constantes.TEMPERATURA_MIN, max: constantes.TEMPERATURA_MAX},
         [constantes.HABITABLE] : {regex: constantes.REGEX_BOOL, error: constantes.ERROR_FILTRO_BOOL, caster : (bool) => String(bool).toLowerCase() === 'true'},
-        [constantes.TERRENO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number},
-        [constantes.LIMITE]: { regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number },
+        [constantes.TERRENO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.TERRENO_MAX},
+        [constantes.LIMITE]: { regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min: 1, max: constantes.LIMITE_MAX },
         [constantes.ORDENAR_POR]: { regex: regexOrdenarPor, error: constantes.ERROR_FILTRO_ORDENAR, caster: String },
         [constantes.ORDEN]: { regex: constantes.REGEX_ORDEN, error: constantes.ERROR_ORDEN, caster: orden }
     };

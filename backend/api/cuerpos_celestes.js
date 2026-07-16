@@ -58,8 +58,11 @@ endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req
 
 endpointsCuerpoCeleste.delete("/:id", validarId, async (req, res) => {
     try{
-        const {ok, cuerpoCeleste} = await cuerpos.removeCuerpoCeleste(req.params.id);
+        const {ok, cuerpoCeleste, tieneDependientes} = await cuerpos.removeCuerpoCeleste(req.params.id);
         if (!ok){
+            if (tieneDependientes) {
+                return res.status(409).json({error: constantes.ERROR_DEPENDENCIAS});
+            }
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         } else {
             res.status(200).json({exito : constantes.EXITO_CONSULTA("cuerpo celeste", "eliminada"), entidad : cuerpoCeleste});
