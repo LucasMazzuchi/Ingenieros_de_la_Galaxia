@@ -7,7 +7,7 @@ export async function getAllCuerposCelestes({ texto, procesados }) {
 }
 
 export async function getCuerpoCeleste(id) {
-    const solicitud = "SELECT id, nombre, descripcion, tipo, diametro, gravedad, temperatura, habitable, terreno, x, y, imagenURL FROM cuerposCelestes WHERE id=$1 AND borrado = FALSE";
+    const solicitud = "SELECT id, nombre, descripcion, tipo, diametro, gravedad, temperatura, habitable, terreno, x, y, imagenURL FROM CuerposCelestes WHERE id=$1 AND borrado = FALSE";
     const res = await db.query(solicitud, [id]);
     return res.rows[0];
 }

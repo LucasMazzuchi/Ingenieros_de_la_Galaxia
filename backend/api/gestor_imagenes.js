@@ -45,21 +45,20 @@ const subirNube = async (file, nombreArchivo) => {
         );
         stream.end(file.buffer);
     });
-    throw new Error("La función subirNube aún no está configurada con un proveedor.");
 };
 
 const borrarNube = async (imagenURL) => {
     try {
-         await cloudinary.uploader.destroy(`ingenieros_galaxia/${publicId}`);
+        const publicId = imagenURL.split("/").pop().split(".")[0];
+        await cloudinary.uploader.destroy(`ingenieros_galaxia/${publicId}`);
     } catch (error) {
         console.error("Error borrando imagen en la nube:", error);
     }
-    console.log("Simulando borrado en la nube para:", imagenURL);
 };
 
 
 export const procesarSubida = async (file) => {
-    const modo = process.env.MODO_ALMACENAMIENTO || "local";
+    const modo = process.env.MODO_ALMACENAMIENTO;
     const nombreArchivo = `${Date.now()}-${file.originalname.replace(/\s+/g, '_')}`;
 
     if (modo === "nube") {
@@ -69,10 +68,10 @@ export const procesarSubida = async (file) => {
     }
 };
 
-export const borrarImagenFisica = async (imagenURL) => {
+export const borrarImagen = async (imagenURL) => {
     if (!imagenURL) return;
 
-    const modo = process.env.MODO_ALMACENAMIENTO || "local";
+    const modo = process.env.MODO_ALMACENAMIENTO;
 
     if (modo === "nube" && imagenURL.startsWith("http")) {
         await borrarNube(imagenURL);

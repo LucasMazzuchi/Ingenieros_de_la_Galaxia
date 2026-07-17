@@ -8,7 +8,7 @@ export const endpointsCuerpoCeleste = Router();
 
 endpointsCuerpoCeleste.get("/", validarFiltrosCuerpoCeleste, async (req, res) => {
     try {
-        const texto = "SELECT c.id, c.nombre, c.tipo, c.diametro, c.gravedad, c.temperatura, c.habitable, c.terreno FROM cuerposCelestes as c WHERE c.borrado = FALSE";
+        const texto = "SELECT c.id, c.nombre, c.tipo, c.diametro, c.gravedad, c.temperatura, c.habitable, c.terreno FROM CuerposCelestes as c WHERE c.borrado = FALSE";
         const listaCuerposCelestes = await cuerpos.getAllCuerposCelestes(constantes.consulta(req.query, "cuerpoCeleste", texto));
         res.json(listaCuerposCelestes);
     } catch(error) {
@@ -54,7 +54,7 @@ endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         } else {
             if (req.body.imagenURL !== cuerpoCeleste.imagenURL) {
-                await borrarImagen(cuerpoCeleste.imagen);
+                await borrarImagen(cuerpoCeleste.imagenURL);
             }
             res.sendStatus(204);
         }

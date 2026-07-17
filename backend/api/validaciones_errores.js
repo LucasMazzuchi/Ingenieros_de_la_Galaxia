@@ -37,7 +37,7 @@ export const validarValorFiltro = (filtros, validadores) => {
             erroresValores.push(validadores[clave].error);
             continue;
         }
-        if (validadores[clave].min< validadores[clave].caster(valor) < validadores[clave].max){
+        if (validadores[clave].min< validadores[clave].caster(valor) && validadores[clave].caster(valor) < validadores[clave].max){
             valores[filtro] = validadores[clave].caster(valor);
             continue;
         }
