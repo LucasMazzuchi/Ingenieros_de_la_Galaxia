@@ -5,5 +5,5 @@ export const db = new Pool({
   password: process.env.DB_PASSWORD ?? "galacticos",
   host: process.env.DB_HOST ?? "bd",
   port: process.env.DB_PORT ?? 5432,
-  database: process.env.DB_NAME ?? "esapcio_bd",
+  database: process.env.DB_NAME ?? "espacio_bd",
 });
