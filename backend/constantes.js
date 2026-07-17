@@ -15,9 +15,9 @@ export const ERROR_FLOAT = (campo, min, max) => {
 };
 
 // Cadenas de consulta
-export const LIMITE = "LIMIT";
-export const ORDEN = "ORDER";
-export const ORDENAR_POR = "ORDER BY";
+export const LIMITE = "limit";
+export const ORDEN = "order";
+export const ORDENAR_POR = "order_by";
 
 // REGEX
 export const REGEX_STRING = /^[a-zA-Z_]+$/
@@ -57,8 +57,8 @@ export const NOMBRE = "nombre";
 export const DESCRIPCION = "descripcion";
 export const TIPO = "tipo";
 export const COLOR = "color";
-export const UBICACION = "ubicacionId";
-export const IMAGEN = "imagenURL";
+export const UBICACION = "ubicacion_id";
+export const IMAGEN = "imagen_url";
 export const POS_X = "x";
 export const POS_Y = "y";
 
@@ -125,7 +125,7 @@ export const HABITABLE = "habitable";
 export const RELEVANCIA = "relevancia";
 export const PORCENTAJE = "porcentaje";
 export const DISPONIBLE = "disponible";
-export const CUERPO_CELESTE = "cuerpoCelesteId";
+export const CUERPO_CELESTE = "cuerpo_celeste_id";
 
 // Límites a parámetros genéricos.
 export const ID_MAX = 2147483647;

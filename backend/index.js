@@ -6,10 +6,10 @@ import {endpointsMisiones} from "./api/misiones.js";
 import {endpointsImagenes} from "./api/imagen.js";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 5000;
 
 app.use(cors({
-    origin: 'https://url' // Hay que agregar la url del front
+    origin: 'https://localhost:8080' // Hay que agregar la url del front
 }));
 
 app.use(express.json());
