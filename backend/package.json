@@ -6,7 +6,9 @@
     "dependencies": {
         "express": "^5.1.0",
         "cors": "^2.8.6",
-        "pg": "^8.22"
+        "pg": "^8.22",
+        "multer" : "^2.2.0",
+        "cloudinary": "^2.1.0"
     },
     "devDependencies": {
         "nodemon":"3.1.4"
@@ -14,5 +16,9 @@
     "engines": {
         "node": "^26.0.0"
     },
+    "scripts": {
+    "start": "node index.js"
+    },
     "type": "module"
+    
 }

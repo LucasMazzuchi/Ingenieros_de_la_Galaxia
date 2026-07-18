@@ -15,9 +15,9 @@ export const ERROR_FLOAT = (campo, min, max) => {
 };
 
 // Cadenas de consulta
-export const LIMITE = "LIMIT";
-export const ORDEN = "ORDER";
-export const ORDENAR_POR = "ORDER BY";
+export const LIMITE = "limite";
+export const ORDEN = "orden";
+export const ORDENAR_POR = "ordenar_por";
 
 // REGEX
 export const REGEX_STRING = /^[a-zA-Z_]+$/
@@ -47,6 +47,10 @@ export const ERROR_CONSULTA = (entidad, consulta) => {
     return `La entidad ${entidad} no pudo ser ${consulta}`;
 };
 
+export const ERROR_ENTIDAD_LLENA = (entidad, max, extra = ".") => {
+    return `La entidad ${entidad} no puede tener más de ${max} objetos${extra}`;
+};
+
 export const EXITO_CONSULTA = (entidad, consulta) => {
     return `La entidad ${entidad} fue ${consulta} exitosamente.`;
 };
@@ -56,11 +60,9 @@ export const ID = "id";
 export const NOMBRE = "nombre";
 export const DESCRIPCION = "descripcion";
 export const TIPO = "tipo";
-export const COLOR = "color";
-export const UBICACION = "ubicacionId";
-export const IMAGEN = "imagenURL";
-export const POS_X = "x";
-export const POS_Y = "y";
+export const UBICACION = "ubicacion_id";
+export const IMAGEN = "imagen_url";
+export const POSICION = "posicion";
 
 /* La función arma la consulta con los filtros que se le pasen, para la entidad especificada,
 comenzando con el texto ingresado por parámetro.*/
@@ -125,33 +127,34 @@ export const HABITABLE = "habitable";
 export const RELEVANCIA = "relevancia";
 export const PORCENTAJE = "porcentaje";
 export const DISPONIBLE = "disponible";
-export const CUERPO_CELESTE = "cuerpoCelesteId";
+export const CUERPO_CELESTE = "cuerpo_celeste_id";
 
 // Límites a parámetros genéricos.
 export const ID_MAX = 2147483647;
 export const NOMBRE_MAX = 30;
 export const IMAGEN_MAX = 250;
 export const DESCRIPCION_MAX = 1000;
-export const TIPO_MAX = 4;
+export const TIPO_MAX = 3;
 
 // Límites a parámetros de cuerpos celestes.
 export const TEMPERATURA_MIN = -273;
 export const TEMPERATURA_MAX = 10000;
+export const CUERPOS_CELESTES_MAX = 10;
 
-export const COORDENADA_MIN = -20000;
-export const COORDENADA_MAX = 20000;
+export const POSICION_MAX = 8; //Cambiar en base a la cantidad de planetas que se hagan en el front
 
-export const TERRENO_MAX = 5;
+export const TERRENO_MAX = 3;
 export const DIAMETRO_MAX = 10000000;
 export const GRAVEDAD_MAX = 1000;
 
 // Límites a parámetros de vehículos.
-export const COLOR_MAX = 10;
 export const MOTOR_MAX = 4;
 export const ESTRUCTURA_MAX = 4;
 export const COMBUSTIBLE_MAX = 100;
+export const VEHICULOS_MAX = 3;
 
 // Límites a parámetros de misiones.
 export const RELEVANCIA_MAX = 3;
 export const PORCENTAJE_MAX = 100;
 export const LIMITE_MAX = 100;
+export const MISIONES_MAX = 4;

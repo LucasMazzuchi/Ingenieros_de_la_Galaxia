@@ -7,3 +7,7 @@ export const db = new Pool({
   port: process.env.DB_PORT ?? 5432,
   database: process.env.DB_NAME ?? "espacio_bd",
 });
+
+db.on('connect', () => {
+  console.log('Conexión establecida con la base de datos PostgreSQL.');
+});

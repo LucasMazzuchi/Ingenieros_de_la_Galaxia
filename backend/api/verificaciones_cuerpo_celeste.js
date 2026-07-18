@@ -15,8 +15,8 @@ export const validarCuerpoCeleste = (req, res, next) => {
     [constantes.GRAVEDAD]: validarFloat,
     [constantes.TEMPERATURA]: validarEntero,
     [constantes.HABITABLE]: validarBool,
-    [constantes.POS_X]: validarFloat,
-    [constantes.POS_Y]: validarFloat,
+    [constantes.TERRENO]: validarEntero,
+    [constantes.POSICION]: validarEntero,
     [constantes.IMAGEN]: validarImagen
     };
     const entrada = {
@@ -28,9 +28,9 @@ export const validarCuerpoCeleste = (req, res, next) => {
     [constantes.GRAVEDAD]: { campo: req.body.gravedad, min: 1, max: constantes.GRAVEDAD_MAX, error: constantes.GRAVEDAD },
     [constantes.TEMPERATURA]: { campo: req.body.temperatura, min: constantes.TEMPERATURA_MIN, max: constantes.TEMPERATURA_MAX, error: constantes.TEMPERATURA },
     [constantes.HABITABLE]: { campo: req.body.habitable, error: constantes.HABITABLE },
-    [constantes.POS_X]: { campo: req.body.x, min: constantes.COORDENADA_MIN, max: constantes.COORDENADA_MAX, error: constantes.POS_X },
-    [constantes.POS_Y]: { campo: req.body.y, min: constantes.COORDENADA_MIN, max: constantes.COORDENADA_MAX, error: constantes.POS_Y },
-    [constantes.IMAGEN]: { campo: req.body.imagenURL }
+    [constantes.TERRENO]: {campo:req.body.terreno, min: 1, max:constantes.TERRENO_MAX, error: constantes.TERRENO },
+    [constantes.POSICION]: { campo: req.body.posicion, min: 1, max: constantes.POSICION_MAX, error: constantes.POSICION },
+    [constantes.IMAGEN]: { campo: req.body.imagen_url }
     };
     const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasCuerpoCeleste, req.method, Object.keys(req.body));
         if (camposInvalidos.length !== 0) {
@@ -75,22 +75,23 @@ export const validarFiltrosCuerpoCeleste = (req, res, next) => {
         constantes.TERRENO, constantes.TERRENO + "_min", constantes.TERRENO + "_max",
         constantes.LIMITE, constantes.ORDENAR_POR, constantes.ORDEN
     ]);
-
     const erroresClaves = validarFiltros(Object.keys(req.query), permitidos);
     if (erroresClaves.length !== 0){
         return res.status(400).json({ error: constantes.ERROR_FILTROS, errores: erroresClaves });
     }
-
     const { valores, erroresValores } = validarValorFiltro(req.query, validadores);
     if (erroresValores.length !== 0){
         return res.status(400).json({ error: constantes.ERROR_FILTROS, errores: erroresValores });
     }
-
     const erroresRangos = validarRango(Object.keys(validadores), valores);
     if (erroresRangos.length !== 0){
         return res.status(400).json({ error: constantes.ERROR_FILTROS, errores: erroresRangos });
     }
-
-    req.query = valores;
+    for (const key in req.query) {
+        delete req.query[key];
+    }
+    for (const key in valores) {
+        req.query[key] = valores[key];
+    }
     next();
 };

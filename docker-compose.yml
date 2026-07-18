@@ -11,8 +11,9 @@ services:
       - "5432:5432"
     volumes:
       - bd_espacio:/var/lib/postgresql
+      - ./bd/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "admin"]
+      test: ["CMD", "pg_isready", "-U", "admin", "-d", "espacio_bd"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -24,7 +25,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - "./backend:/usr/src/app"
+      - ./backend:/usr/src/app
       - /usr/src/app/node_modules # Para no pisar con los locales
     environment:
       - DB_HOST=bd

@@ -7,7 +7,7 @@ export const endpointsVehiculos = Router();
 
 endpointsVehiculos.get("/", validarFiltrosVehiculo, async (req, res) => {
     try {
-        const texto = "SELECT v.id, v.nombre, v.tipo, c.nombre as ubicacion, v.motor, v.estructura, v.color, v.combustible FROM Vehiculos as v, CuerposCelestes as c WHERE c.id=v.ubicacionId AND v.borrado = FALSE AND c.borrado = FALSE";
+        const texto = "SELECT v.id, v.nombre, v.tipo, c.nombre as ubicacion, v.motor, v.estructura, v.combustible FROM vehiculos as v, cuerpos_celestes as c WHERE c.id=v.ubicacion_id AND v.borrado = FALSE AND c.borrado = FALSE";
         const listaVehiculos = await vehiculos.getAllVehiculos(constantes.consulta(req.query, "vehiculo", texto));
         res.json(listaVehiculos);
     } catch(error) {
@@ -32,10 +32,14 @@ endpointsVehiculos.get("/:id", validarId, async (req, res) => {
 
 endpointsVehiculos.post("/", validarVehiculo, async (req, res)=> {
     try{
-        if (!await vehiculos.createVehiculo(req.body)){
+        if (await vehiculos.cantidadVehiculos() >= constantes.VEHICULOS_MAX){
+            return res.status(403).json({error: constantes.ERROR_ENTIDAD_LLENA("vehiculo", constantes.VEHICULOS_MAX)});
+        }
+        const { vehiculo, id } = await vehiculos.createVehiculo(req.body);
+        if (!vehiculo){
             res.status(500).json({error: constantes.ERROR_CONSULTA("vehiculo", "creada")});
         } else {
-            res.status(201).json({exito : constantes.EXITO_CONSULTA("vehiculo", "creada")});
+            res.status(201).json({exito : constantes.EXITO_CONSULTA("vehiculo", "creada"), id: id});
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);

@@ -8,8 +8,7 @@ CREATE TABLE IF NOT EXISTS cuerpos_celestes (
     temperatura INT NOT NULL,
     habitable BOOLEAN NOT NULL,
     terreno INT NOT NULL,
-    x INT NOT NULL,
-    y INT NOT NULL,
+    posicion INT NOT NULL,
     imagen_url VARCHAR(255) NOT NULL,
     borrado BOOLEAN DEFAULT FALSE
 );

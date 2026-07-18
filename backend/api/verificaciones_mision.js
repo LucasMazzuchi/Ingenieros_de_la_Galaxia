@@ -1,5 +1,5 @@
 import * as constantes from "../constantes.js";
-import {validarEntrada, validarString, validarEntero, validarBool, validarFloat, validarImagen,
+import {validarEntrada, validarString, validarEntero, validarBool,
     validarFiltros, validarValorFiltro, validarRango, orden} from "./validaciones_errores.js";
 export const validarMision = (req, res, next) => {
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -12,7 +12,6 @@ export const validarMision = (req, res, next) => {
     [constantes.PORCENTAJE]: validarEntero,
     [constantes.DISPONIBLE]: validarBool,
     [constantes.CUERPO_CELESTE]: validarEntero,
-    [constantes.IMAGEN]: validarImagen
     };
     const entrada = {
     [constantes.NOMBRE]: { campo: req.body.nombre, min: 1, max: constantes.NOMBRE_MAX, error: constantes.NOMBRE },
@@ -20,8 +19,7 @@ export const validarMision = (req, res, next) => {
     [constantes.RELEVANCIA]: { campo: req.body.relevancia, min: 1, max: constantes.RELEVANCIA_MAX, error: constantes.RELEVANCIA },
     [constantes.PORCENTAJE]: { campo: req.body.porcentaje, min: 0, max: constantes.PORCENTAJE_MAX, error: constantes.PORCENTAJE },
     [constantes.DISPONIBLE]: { campo: req.body.disponible, error: constantes.DISPONIBLE },
-    [constantes.CUERPO_CELESTE]: { campo: req.body.cuerpoCelesteId, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE },
-    [constantes.IMAGEN]: { campo: req.body.imagenURL }
+    [constantes.CUERPO_CELESTE]: { campo: req.body.cuerpo_celeste_id, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE },
     };
     const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasMision, req.method, Object.keys(req.body));
         if (camposInvalidos.length !== 0) {
@@ -75,6 +73,10 @@ export const validarFiltrosMision = (req, res, next) => {
         return res.status(400).json({ error: constantes.ERROR_FILTROS, errores: erroresRangos });
     }
 
-    req.query = valores;
-    next();
+    for (const key in req.query) {
+        delete req.query[key];
+    }
+    for (const key in valores) {
+        req.query[key] = valores[key];
+    }    next();
 };

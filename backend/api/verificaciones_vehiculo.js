@@ -1,5 +1,5 @@
 import * as constantes from "../constantes.js";
-import {validarEntrada, validarString, validarEntero, validarImagen,
+import {validarEntrada, validarString, validarEntero,
     validarFiltros, validarValorFiltro, validarRango, orden} from "./validaciones_errores.js";
 export const validarVehiculo = (req, res, next) => {
         if (!req.body || Object.keys(req.body).length === 0) {
@@ -10,10 +10,8 @@ export const validarVehiculo = (req, res, next) => {
     [constantes.TIPO]:validarEntero,
     [constantes.MOTOR]:validarEntero,
     [constantes.ESTRUCTURA]:validarEntero,
-    [constantes.COLOR]:validarString,
     [constantes.COMBUSTIBLE]:validarEntero,
-    [constantes.UBICACION]:validarEntero,
-    [constantes.IMAGEN]:validarImagen
+    [constantes.UBICACION]:validarEntero
     };
     const body = req.body || {};
     const entrada = {
@@ -21,10 +19,8 @@ export const validarVehiculo = (req, res, next) => {
     [constantes.TIPO]: { campo: req.body.tipo, min: 1, max: constantes.TIPO_MAX, error: constantes.TIPO },
     [constantes.MOTOR]:{ campo : req.body.motor, min : 1, max : constantes.MOTOR_MAX, error : constantes.MOTOR },
     [constantes.ESTRUCTURA]:{ campo : req.body.estructura, min : 1, max : constantes.ESTRUCTURA_MAX, error : constantes.ESTRUCTURA },
-    [constantes.COLOR]:{ campo : req.body.color, min : 1, max : constantes.COLOR_MAX, error : constantes.COLOR },
     [constantes.COMBUSTIBLE]:{ campo : req.body.combustible, min : 0, max : constantes.COMBUSTIBLE_MAX, error : constantes.COMBUSTIBLE },
-    [constantes.UBICACION]:{ campo : req.body.ubicacionId, min : 1, max : constantes.ID_MAX, error : constantes.UBICACION },
-    [constantes.IMAGEN]: { campo: req.body.imagenURL }
+    [constantes.UBICACION]:{ campo : req.body.ubicacion_id, min : 1, max : constantes.ID_MAX, error : constantes.UBICACION },
     };
     const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasVehiculo, req.method, Object.keys(req.body));
     if (camposInvalidos.length !== 0) {
@@ -40,7 +36,7 @@ export const validarVehiculo = (req, res, next) => {
 
 export const validarFiltrosVehiculo = (req, res, next) => {
     const regex = [constantes.ID, constantes.NOMBRE, constantes.TIPO, constantes.MOTOR, 
-    constantes.ESTRUCTURA, constantes.COLOR, constantes.COMBUSTIBLE, constantes.UBICACION].join('|');
+    constantes.ESTRUCTURA, constantes.COMBUSTIBLE, constantes.UBICACION].join('|');
     const regexOrdenarPor = new RegExp( `^(${regex})$`, "i");
     const validadores = {
         [constantes.ID] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.ID_MAX},
@@ -48,16 +44,14 @@ export const validarFiltrosVehiculo = (req, res, next) => {
         [constantes.TIPO] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.TIPO_MAX},
         [constantes.MOTOR] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.MOTOR_MAX},
         [constantes.ESTRUCTURA] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.ESTRUCTURA_MAX},
-        [constantes.COLOR] : {regex: constantes.REGEX_STRING, error: constantes.ERROR_FILTRO_STRING, caster : String},
         [constantes.COMBUSTIBLE] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 0, max: constantes.COMBUSTIBLE_MAX},
-        [constantes.UBICACION] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.ID_MAX},
         [constantes.LIMITE]: { regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min: 1, max: constantes.LIMITE_MAX },
         [constantes.ORDENAR_POR]: { regex: regexOrdenarPor, error: constantes.ERROR_FILTRO_ORDENAR, caster: String },
         [constantes.ORDEN]: { regex: constantes.REGEX_ORDEN, error: constantes.ERROR_ORDEN, caster: orden }
     }
     const permitidos = new Set([
         constantes.ID, constantes.ID + "_min", constantes.ID + "_max",
-        constantes.NOMBRE, constantes.COLOR,
+        constantes.NOMBRE,
         constantes.TIPO, constantes.TIPO + "_min", constantes.TIPO + "_max" ,
         constantes.MOTOR, constantes.MOTOR + "_min", constantes.MOTOR + "_max",
         constantes.ESTRUCTURA, constantes.ESTRUCTURA + "_min", constantes.ESTRUCTURA +"_max",
@@ -77,6 +71,10 @@ export const validarFiltrosVehiculo = (req, res, next) => {
     if (erroresRango.length !== 0){
         return res.status(400).json({ error:constantes.ERROR_FILTROS, errores : erroresRango });
     }
-    req.query = valores;
-    next();
+    for (const key in req.query) {
+        delete req.query[key];
+    }
+    for (const key in valores) {
+        req.query[key] = valores[key];
+    }    next();
 };
