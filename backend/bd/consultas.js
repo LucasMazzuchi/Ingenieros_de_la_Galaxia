@@ -40,14 +40,3 @@ export const verificarDependencia = async (id) => {
     }
 };
 
-/**
- * EJEMPLO DE USO (Podés dejarlo de guía o adaptarlo a tus modelos):
- * Así es como el controlador o modelo del backend usará tus funciones dinámicas para actualizar:
- * 
- * export const actualizarCuerpoCeleste = async (id, datosNuevos) => {
- *     const { consulta, valores, numeroId } = armar_consulta(id, datosNuevos);
- *     const queryFull = `UPDATE cuerpos_celestes SET ${consulta} WHERE id = $${numeroId} RETURNING *`;
- *     const resultado = await db.query(queryFull, valores);
- *     return resultado.rows[0];
- * };
- */
