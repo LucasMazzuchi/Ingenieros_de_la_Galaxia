@@ -2,18 +2,28 @@ import { Router } from "express";
 import * as cuerpos from "../bd/cuerpos_celestes.js";
 import { validarCuerpoCeleste, validarFiltrosCuerpoCeleste } from "./verificaciones_cuerpo_celeste.js";
 import * as constantes from "../constantes.js";
-import { validarId, manejarError } from "./validaciones_errores.js";
+import { validarId, manejarError, validarEntero } from "./validaciones_errores.js";
 import { borrarImagen } from "./gestor_imagenes.js";
 export const endpointsCuerpoCeleste = Router();
  
 endpointsCuerpoCeleste.get("/", validarFiltrosCuerpoCeleste, async (req, res) => {
     try {
-        const texto = "SELECT c.id, c.nombre, c.tipo, c.diametro, c.gravedad, c.temperatura, c.habitable, c.terreno FROM cuerpos_celestes as c WHERE c.borrado = FALSE";
-        const listaCuerposCelestes = await cuerpos.getAllCuerposCelestes(constantes.consulta(req.query, "cuerpo_celeste", texto));
+        const texto = "SELECT c.id, c.nombre, c.tipo, c.diametro, c.gravedad, c.temperatura, c.habitable, c.terreno, c.imagen_url, c.posicion FROM cuerpos_celestes as c WHERE c.borrado = FALSE";
+        const listaCuerposCelestes = await cuerpos.getAllCuerposCelestes(constantes.consulta(req.query, "cuerpo_celeste", texto));        
+        if (req.query.vehiculo_id && validarEntero(req.query.vehiculo_id, 1, constantes.ID_MAX, ERROR_INT("vehiculo_id", 1, constantes.ID_MAX))) {
+            const vehiculoUsuario = await vehiculos.getVehiculoById(req.query.vehiculo_id);
+            listaCuerposCelestes = listaCuerposCelestes.map(planeta => {
+                return {
+                    ...planeta, // Desempaqueta los pares clave, valor del planeta
+                    disponible: logica.PuedeViajar(vehiculoUsuario, planeta)
+                };
+            });
+        }
         res.status(200).json(listaCuerposCelestes);
     } catch(error) {
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
+        
     }
 });
  
