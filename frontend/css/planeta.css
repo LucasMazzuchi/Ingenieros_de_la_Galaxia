@@ -1,0 +1,81 @@
+.interior-planeta {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: var(--fondo-planeta, url("../assets/marte-fondo.jpg"));
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.nombre-planeta-interior {
+  position: absolute;
+  top: 1rem;
+  left: 80%;
+  transform: translateX(-50%);
+  color: #f7f5f4;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 5rem;
+  font-weight: 700;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px #ff6b35, 0 0 40px rgba(255, 107, 53, 0.6), 0 2px 8px rgba(0,0,0,0.9);
+  z-index: 2;
+}
+
+.camino-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.camino-svg polyline {
+  fill: none;
+  stroke: #e8e6ff;
+  stroke-width: 0.5;
+  stroke-dasharray: 2, 2;
+}
+
+.punto-interes {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  transition: transform 0.2s ease;
+}
+
+.punto-interes:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.punto-interes img {
+  width: 50px;
+  height: 50px;
+}
+
+.punto-interes p {
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+  margin-top: 4px;
+  font-size: 0.85rem;
+}
+
+.vehiculo {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  transition: top 1.5s linear, left 1.5s linear;
+}
+
+.punto-interes.bloqueado {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planeta</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="../css/planeta.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet"> 
+</head>
+<body>
+
+  <section class="interior-planeta">
+
+    <img src="../assets/img/fondo-marte.png" class="fondo-planeta">
+
+    <h1 class="nombre-planeta-interior">Marte</h1>
+
+    <svg class="camino-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <polyline points="12,15 78,50 20,85" />
+    </svg>
+
+    <div class="punto-interes" id="punto-1" style="top:15%; left:12%;">
+     <img src="../assets/img/marcador.png" alt="punto de interés">
+     <p>Cráter Rojo</p>
+    </div>
+
+    <div class="punto-interes bloqueado" id="punto-2" style="top:50%; left:78%;">
+     <img src="../assets/img/marcador.png" alt="punto de interés">
+     <p>Valle Seco</p>
+    </div>
+
+    <div class="punto-interes bloqueado" id="punto-3" style="top:85%; left:20%;">
+     <img src="../assets/img/marcador.png" alt="punto de interés">
+     <p>Base Antigua</p>
+    </div>
+
+    <img src="../assets/img/nave.png" class="vehiculo" id="vehiculo" style="top:15%; left:12%;">
+
+  </section>
+
+  <script src="../js/planeta.js"></script>
+</body>
+</html>

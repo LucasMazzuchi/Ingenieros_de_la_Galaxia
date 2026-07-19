@@ -1,15 +1,30 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bienvenido</title>
-  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="css/estilos_index.css">
 </head>
 <body>
-    <main class="Bienvenido">
-        <h1>Nuestra Galaxia nos ESPERA!!</h1>
 
+  <section class="hero is-fullheight is-dark bienvenida">
+    <video autoplay muted loop playsinline class="video-fondo">
+      <source src="assets/img/audio/video/index-galaxia.mp4" type="video/mp4"> 
+    </video>
+    <div class="hero-body">
+      <div class="container has-text-centered">
+        <h1 class="title is-1">Bienvenido a la Galaxia</h1>
+        <p class="subtitle is-4"> Una Galaxia te espera, completa todas las misiones y conviertete en un astronauta </p>
+        <div class="buttons is-centered is-flex is-flex-direction-column">
+         <button class="button is-primary is-large" id="btnIniciar">Iniciar viaje</button>
+         <button class="button is-primary is-large" id="btncrear">Crea tu viaje</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    </main>
-
+  <script src="js/bienvenida.js"></script>
 </body>
+</html>
