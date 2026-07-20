@@ -13,29 +13,21 @@
 
   <section class="interior-planeta">
 
-    <img src="../assets/img/fondo-marte.png" class="fondo-planeta">
+    <!-- Imagen de fondo que cambiará según el planeta -->
+    <img id="fondo-planeta" src="../assets/img/fondo-marte.png" class="fondo-planeta">
 
-    <h1 class="nombre-planeta-interior">Marte</h1>
+    <!-- Título del planeta que vendrá de la BD -->
+    <h1 id="nombre-planeta" class="nombre-planeta-interior">Cargando...</h1>
 
+    <!-- SVG dinámico para trazar la línea entre puntos -->
     <svg class="camino-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-      <polyline points="12,15 78,50 20,85" />
+      <polyline id="camino-polyline" points="" />
     </svg>
 
-    <div class="punto-interes" id="punto-1" style="top:15%; left:12%;">
-     <img src="../assets/img/marcador.png" alt="punto de interés">
-     <p>Cráter Rojo</p>
-    </div>
+    <!-- Contenedor donde JS inyectará los puntos de interés reales -->
+    <div id="contenedor-puntos"></div>
 
-    <div class="punto-interes bloqueado" id="punto-2" style="top:50%; left:78%;">
-     <img src="../assets/img/marcador.png" alt="punto de interés">
-     <p>Valle Seco</p>
-    </div>
-
-    <div class="punto-interes bloqueado" id="punto-3" style="top:85%; left:20%;">
-     <img src="../assets/img/marcador.png" alt="punto de interés">
-     <p>Base Antigua</p>
-    </div>
-
+    <!-- Vehículo espacial -->
     <img src="../assets/img/nave.png" class="vehiculo" id="vehiculo" style="top:15%; left:12%;">
 
   </section>
