@@ -7,7 +7,7 @@
   color: #e8e6ff;
 }
 
-/* Fondo de la galaxia */
+
 .mapa-galaxia {
   position: relative;
   width: 100%;
@@ -21,6 +21,7 @@
   position: absolute;
   text-align: center;
   cursor: pointer;
+  transform: translate(-50%, -50%);
 }
 
 .planeta img {
@@ -32,19 +33,14 @@
   margin-top: 5px;
 }
 
-/* Posición de cada planeta  */
-.planeta-tierra {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
 
-#p-marte {
-  top: 30%;
-  left: 25%;
-}
-
-#p-mercurio {
-  top: 65%;
-  left: 70%;
-}
+.pos-0 { top: 50%; left: 50%; } 
+.pos-1 { top: 30%; left: 25%; }
+.pos-2 { top: 65%; left: 70%; }
+.pos-3 { top: 15%; left: 60%; }
+.pos-4 { top: 80%; left: 30%; }
+.pos-5 { top: 40%; left: 85%; }
+.pos-6 { top: 70%; left: 10%; }
+.pos-7 { top: 20%; left: 40%; }
+.pos-8 { top: 55%; left: 20%; }
+.pos-9 { top: 35%; left: 60%; }
