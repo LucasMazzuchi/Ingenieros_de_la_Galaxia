@@ -6,16 +6,17 @@
   <title>Planeta</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
   <link rel="stylesheet" href="../css/planeta.css">
+  <link rel="stylesheet" href="css/pie.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet"> 
 </head>
 <body>
 
   <section class="interior-planeta">
+    
+    <img id="fondo-planeta" src="../assets/img/fondo-marte.png" class="fondo-planeta">
 
-    <img src="../assets/img/fondo-marte.png" class="fondo-planeta">
-
-    <h1 class="nombre-planeta-interior">Marte</h1>
+    <h1 id="nombre-planeta" class="nombre-planeta-interior">Marte</h1>
 
     <a href="galaxia.html" class="button is-primary volver">Volver</a>
 
@@ -36,16 +37,14 @@
       </ul>
     </aside>
 
-    
     <aside class="panel-punto" id="panelPunto">
       <h2 class="nombre-punto" id="puntoNombre"></h2>
       <p class="descripcion-punto" id="puntoDescripcion"></p>
       <button class="button is-primary cerrar-panel-punto" id="btnCerrarPanelPunto">Volver</button>
     </aside>
-    
 
     <svg class="camino-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-      <polyline points="12,15 78,50 20,85" />
+      <polyline id="camino-polyline" points="12,15 78,50 20,85" />
     </svg>
 
     <div class="punto-interes" id="punto-1" style="top:15%; left:12%;">
@@ -68,5 +67,10 @@
   </section>
 
   <script src="../js/planeta.js"></script>
+
+  <footer class="pie-pagina">
+    <p>&copy; 2026 Todos los derechos reservados — Ingenieros de Galaxia</p>
+  </footer>
+
 </body>
 </html>

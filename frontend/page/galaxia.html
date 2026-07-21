@@ -6,26 +6,25 @@
   <title>Galaxia</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
   <link rel="stylesheet" href="../css/estilos_galaxia.css">
+  <link rel="stylesheet" href="css/pie.css">
 </head>
 <body>
 
-  <nav class="navbar mapa-navbar" role="navigation">
-    <div class="navbar-menu is-active">
-      <div class="navbar-start">
-        <a class="navbar-item" href="galaxia.html">Mapa</a>
-        <a class="navbar-item" href="misiones.html">Misiones</a>
-        <a class="navbar-item" href="admin.html">Administrador</a>
-      </div>
-    </div>
-  </nav>
+  <section class="mapa-galaxia">
+    <video autoplay muted loop playsinline class="video-fondo">
+      <source src="../assets/img/audio/video/video-menu-galaxia.mp4" type="video/mp4">
+    </video>
 
- section class="mapa-galaxia">
-  <video autoplay muted loop playsinline class="video-fondo">
-    <source src="../assets/img/audio/video/video-menu-galaxia.mp4" type="video/mp4">
-  </video>
-  <div class="planetas-contenedor" id="planetas-contenedor"></div>
-</section>
+    <a href="../index.html" class="button is-primary volver-bienvenida">Volver</a>
+
+    <div class="planetas-contenedor" id="planetas-contenedor"></div>
+  </section>
 
   <script src="../js/galaxia.js"></script>
+
+  <footer class="pie-pagina">
+    <p>&copy; 2026 Todos los derechos reservados — Ingenieros de Galaxia</p>
+  </footer>
+
 </body>
 </html>
