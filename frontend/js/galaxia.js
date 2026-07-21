@@ -1,3 +1,4 @@
+
 const contenedor = document.getElementById("planetas-contenedor");
 
 // Datos de prueba (mientras el backend no está conectado)
