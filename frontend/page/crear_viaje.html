@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Viaje</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="../css/crear_viaje.css">
+  <link rel="stylesheet" href="../css/pie.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <section class="crear-viaje">
+    <video autoplay muted loop playsinline class="video-fondo">
+      <source src="../assets/img/audio/video/video-menu-galaxia.mp4" type="video/mp4">
+    </video>
+
+    <a href="../index.html" class="button is-primary volver-bienvenida">Volver</a>
+
+    <div class="panel-crear">
+
+      <h1 class="titulo-crear">Crea tu viaje</h1>
+
+      <div class="tabs-crear">
+        <button class="tab-btn activo" data-tab="planeta">Planeta</button>
+        <button class="tab-btn" data-tab="punto">Punto de interés</button>
+        <button class="tab-btn" data-tab="vehiculo">Vehículo</button>
+      </div>
+
+      <!-- SECCIÓN PLANETA -->
+      <form class="seccion-tab" id="tab-planeta" data-visible="true">
+
+        <label>Seleccionar planeta existente
+          <select id="selectPlaneta">
+            <option value="">-- Crear nuevo --</option>
+          </select>
+        </label>
+
+        <label>Nombre
+          <input type="text" id="inputNombre" maxlength="30" required>
+        </label>
+
+        <label>Descripción
+          <textarea id="inputDescripcion" required></textarea>
+        </label>
+
+        <label>Tipo
+          <select id="inputTipo" required>
+            <option value="1">Rocoso</option>
+            <option value="2">Gaseoso</option>
+            <option value="3">Helado</option>
+            <option value="4">Enano</option>
+          </select>
+        </label>
+
+        <label>Diámetro (km)
+          <input type="number" id="inputDiametro" required>
+        </label>
+
+        <label>Gravedad (m/s²)
+          <input type="number" step="0.01" id="inputGravedad" required>
+        </label>
+
+        <label>Temperatura (°C)
+          <input type="number" id="inputTemperatura" required>
+        </label>
+
+        <label>Terreno
+          <select id="inputTerreno" required>
+            <option value="1">Desértico</option>
+            <option value="2">Rocoso</option>
+            <option value="3">Helado</option>
+            <option value="4">Volcánico</option>
+            <option value="5">Oceánico</option>
+          </select>
+        </label>
+
+        <label>Habitable
+          <select id="inputHabitable" required>
+            <option value="true">Sí</option>
+            <option value="false">No</option>
+          </select>
+        </label>
+
+        <label>Posición en la galaxia (0-9)
+          <input type="number" id="inputPosicion" min="0" max="9" required>
+        </label>
+
+        <label>Imagen del planeta</label>
+        <div class="galeria-imagenes" id="galeriaPlanetas"></div>
+        <input type="hidden" id="inputImagen" required>
+
+        <label>Imagen de fondo</label>
+        <div class="galeria-imagenes" id="galeriaFondoPlaneta"></div>
+        <input type="hidden" id="inputImagenFondo" required>
+
+        <div class="botones-crud">
+          <button type="submit" class="button is-primary" id="btnGuardarPlaneta">Guardar</button>
+          <button type="button" class="button is-danger" id="btnBorrarPlaneta">Borrar</button>
+        </div>
+      </form>
+
+      <!-- SECCIÓN PUNTO DE INTERÉS (tabla misiones) -->
+      <form class="seccion-tab" id="tab-punto" data-visible="false" hidden>
+
+        <label>Planeta al que pertenece
+          <select id="selectPlanetaPunto"></select>
+        </label>
+
+        <label>Seleccionar punto existente
+          <select id="selectPunto">
+            <option value="">-- Crear nuevo --</option>
+          </select>
+        </label>
+
+        <label>Título
+          <input type="text" id="inputTituloPunto" maxlength="50" required>
+        </label>
+
+        <label>Párrafo / descripción
+          <textarea id="inputDescripcionPunto" required></textarea>
+        </label>
+
+        <label>Relevancia
+          <input type="number" id="inputRelevancia" required>
+        </label>
+
+        <label>Porcentaje / progreso
+          <input type="number" min="0" max="100" id="inputPorcentaje" required>
+        </label>
+
+        <label>Disponible
+          <select id="inputDisponible" required>
+            <option value="true">Sí</option>
+            <option value="false">No</option>
+          </select>
+        </label>
+
+        <div class="botones-crud">
+          <button type="submit" class="button is-primary" id="btnGuardarPunto">Guardar</button>
+          <button type="button" class="button is-danger" id="btnBorrarPunto">Borrar</button>
+        </div>
+      </form>
+
+      <!-- SECCIÓN VEHÍCULO -->
+      <form class="seccion-tab" id="tab-vehiculo" data-visible="false" hidden>
+
+        <label>Seleccionar vehículo existente
+          <select id="selectVehiculo">
+            <option value="">-- Crear nuevo --</option>
+          </select>
+        </label>
+
+        <label>Nombre
+          <input type="text" id="inputNombreVehiculo" maxlength="50" required>
+        </label>
+
+        <label>Tipo
+          <select id="inputTipoVehiculo" required>
+            <option value="1">Nave (viaja entre planetas)</option>
+            <option value="2">Auto (visita puntos de interés)</option>
+          </select>
+        </label>
+
+        <label>Motor
+          <input type="number" id="inputMotor" required>
+        </label>
+
+        <label>Estructura
+          <input type="number" id="inputEstructura" required>
+        </label>
+
+        <label>Combustible
+          <input type="number" id="inputCombustible" required>
+        </label>
+
+        <label>Ubicación (planeta actual)
+          <select id="selectUbicacionVehiculo"></select>
+        </label>
+
+        <label>Imagen del vehículo</label>
+        <div class="galeria-imagenes" id="galeriaVehiculo"></div>
+        <input type="hidden" id="inputImagenVehiculo" required>
+
+        <div class="botones-crud">
+          <button type="submit" class="button is-primary" id="btnGuardarVehiculo">Guardar</button>
+          <button type="button" class="button is-danger" id="btnBorrarVehiculo">Borrar</button>
+        </div>
+      </form>
+
+    </div>
+  </section>
+
+  <footer class="pie-pagina">
+    <p>&copy; 2026 Todos los derechos reservados — Ingenieros de Galaxia</p>
+  </footer>
+
+  <script src="../js/crear_viaje.js"></script>
+</body>
+</html>
