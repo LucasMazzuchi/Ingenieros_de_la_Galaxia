@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS cuerpos_celestes (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(30) NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
     descripcion TEXT NOT NULL,
     tipo INT NOT NULL,
     diametro INT NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS cuerpos_celestes (
 
 CREATE TABLE IF NOT EXISTS vehiculos (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(30) NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
     tipo INT NOT NULL,
     motor INT NOT NULL,
     estructura INT NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS vehiculos (
 
 CREATE TABLE IF NOT EXISTS misiones (
     id SERIAL PRIMARY KEY,
-    nombre VARCHAR(30) NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
     descripcion TEXT,
     relevancia INT NOT NULL,
     porcentaje INT NOT NULL,

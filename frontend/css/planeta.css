@@ -1,0 +1,213 @@
+.interior-planeta {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: var(--fondo-planeta, url("../assets/marte-fondo.jpg"));
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.nombre-planeta-interior {
+  position: absolute;
+  top: 1rem;
+  left: 80%;
+  transform: translateX(-50%);
+  color: #f7f5f4;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 5rem;
+  font-weight: 700;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px #ff6b35, 0 0 40px rgba(255, 107, 53, 0.6), 0 2px 8px rgba(0,0,0,0.9);
+  z-index: 2;
+}
+
+.camino-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.camino-svg polyline {
+  fill: none;
+  stroke: #e8e6ff;
+  stroke-width: 0.5;
+  stroke-dasharray: 2, 2;
+}
+
+.punto-interes {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  transition: transform 0.2s ease;
+}
+
+.punto-interes:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.punto-interes img {
+  width: 50px;
+  height: 50px;
+}
+
+.punto-interes p {
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+  margin-top: 4px;
+  font-size: 0.85rem;
+}
+
+.vehiculo {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  transition: top 1.5s linear, left 1.5s linear;
+}
+
+.punto-interes.bloqueado {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.boton-info {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  z-index: 4;
+  background-color: #7b2ff7;
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 60px;
+  border-radius: 0 6px 6px 0;
+  box-shadow: 0 0 15px #7b2ff7;
+  cursor: pointer;
+  font-size: 1.3rem;
+  transition: left 0.35s ease, box-shadow 0.2s ease;
+}
+
+.boton-info.abierto { left: 300px; }
+.boton-info:hover { box-shadow: 0 0 25px #a86bff; }
+
+.panel-planeta {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 300px;
+  background: rgba(15, 10, 5, 0.85);
+  backdrop-filter: blur(6px);
+  padding: 4rem 2rem 2rem;
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+  z-index: 3;
+  border-right: 2px solid rgba(255, 107, 53, 0.4);
+}
+
+.panel-planeta.abierto { transform: translateX(0); }
+
+.panel-titulo {
+  font-family: 'Orbitron', sans-serif;
+  color: #ff6b35;
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 10px rgba(255, 107, 53, 0.6);
+}
+
+.panel-datos { list-style: none; padding: 0; margin: 0; }
+
+.panel-datos li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e8e6ff;
+  font-size: 0.95rem;
+}
+
+.dato-nombre { opacity: 0.7; }
+.dato-valor { font-weight: 600; }
+
+.volver {
+  position: absolute;
+  bottom: 3rem;
+  left: 3rem;
+  z-index: 2;
+  background-color: #7b2ff7;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 0 20px #7b2ff7;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.volver:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px #a86bff;
+}
+
+.panel-punto {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 800px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 3rem 3rem 18rem; /* arriba, derecha, abajo, IZQUIERDA más grande */
+  background: linear-gradient(to left, #1a0d2e 60%, rgba(26,13,46,0) 100%);
+  transform: translateX(100%);
+  transition: transform 0.4s ease;
+}
+
+.panel-punto.visible {
+  transform: translateX(0);
+}
+
+.panel-punto .nombre-punto {
+  color: #ff6b35;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-shadow: 0 0 15px #ff6b35, 0 0 30px rgba(255,107,53,0.5);
+}
+
+.panel-punto .descripcion-punto {
+  color: #e8e6ff;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-top: 1.5rem;
+}
+
+.cerrar-panel-punto {
+  margin-top: 2rem;
+  background-color: #7b2ff7;
+  color: #fff;
+  border: none;
+  box-shadow: 0 0 20px #7b2ff7;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cerrar-panel-punto:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px #a86bff;
+}

@@ -2,7 +2,7 @@ import { Router } from "express";
 import * as cuerpos from "../bd/cuerpos_celestes.js";
 import { validarCuerpoCeleste, validarFiltrosCuerpoCeleste } from "./verificaciones_cuerpo_celeste.js";
 import * as constantes from "../constantes.js";
-import { validarId, manejarError, validarEntero } from "./validaciones_errores.js";
+import { validarId, manejarError } from "./validaciones_errores.js";
 import * as logica from "../logica/cuerpos_celestes.js";
 import { getVehiculo } from "../bd/vehiculos.js";
 export const endpointsCuerpoCeleste = Router();

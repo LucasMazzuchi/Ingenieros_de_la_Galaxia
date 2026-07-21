@@ -29,8 +29,8 @@ export async function removeCuerpoCeleste(id) {
 }
 
 export async function updateCuerpoCeleste(id, cuerpo){
-    const { consulta, valores } = armar_consulta(id, cuerpo)
-    const solicitud = `UPDATE cuerpos_celestes SET ${consulta} WHERE id=$1 AND borrado = FALSE`;
+    const { consulta, valores, numeroId } = armar_consulta(id, cuerpo)
+    const solicitud = `UPDATE cuerpos_celestes SET ${consulta} WHERE id=$${numeroId} AND borrado = FALSE`;
     const res = await db.query(solicitud, valores);
     return res.rowCount == 1;
 }

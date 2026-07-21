@@ -31,7 +31,7 @@ export const validarCuerpoCeleste = (req, res, next) => {
     [constantes.POSICION]: { campo: req.body.posicion, min: 1, max: constantes.POSICION_MAX, error: constantes.POSICION }
     };
     const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasCuerpoCeleste, req.method, Object.keys(req.body));
-        if (camposInvalidos.length !== 0) {
+    if (camposInvalidos.length !== 0) {
             return res.status(400).json({error: constantes.ERROR_CAMPOS, campos: camposInvalidos});
         }
         if (errores.length !== 0){
