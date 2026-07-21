@@ -1,0 +1,187 @@
+.crear-viaje {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.video-fondo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+.volver-bienvenida {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 5;
+  background-color: #7b2ff7;
+  color: #fff;
+  border: none;
+  box-shadow: 0 0 20px #7b2ff7;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.volver-bienvenida:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px #a86bff;
+}
+
+/* Panel central, oscuro semitransparente, con scroll propio */
+.panel-crear {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(700px, 90%);
+  max-height: 85vh;
+  overflow-y: auto;
+  background: rgba(15, 10, 25, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  border-radius: 16px;
+  padding: 2rem;
+  z-index: 2;
+}
+
+.titulo-crear {
+  font-family: 'Orbitron', sans-serif;
+  color: #ff6b35;
+  font-size: 1.8rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 10px rgba(255, 107, 53, 0.6);
+}
+
+/* Pestañas ARRIBA, siempre visibles */
+.tabs-crear {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  padding-bottom: 1rem;
+}
+
+.tab-btn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid rgba(232, 230, 255, 0.3);
+  color: #e8e6ff;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.tab-btn:hover {
+  border-color: #7b2ff7;
+}
+
+.tab-btn.activo {
+  background-color: #7b2ff7;
+  border-color: #7b2ff7;
+  box-shadow: 0 0 15px rgba(123, 47, 247, 0.5);
+}
+
+/* Formulario */
+.seccion-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.seccion-tab label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: #e8e6ff;
+  font-size: 0.9rem;
+}
+
+.seccion-tab input,
+.seccion-tab select,
+.seccion-tab textarea {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(232, 230, 255, 0.25);
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  color: #f7f5f4;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.seccion-tab input:focus,
+.seccion-tab select:focus,
+.seccion-tab textarea:focus {
+  outline: none;
+  border-color: #ff6b35;
+}
+
+.seccion-tab textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+/* Botones guardar / borrar, fijos abajo del panel */
+.botones-crud {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.botones-crud .button {
+  flex: 1;
+  border: none;
+}
+
+.botones-crud .is-primary {
+  background-color: #7b2ff7;
+  box-shadow: 0 0 15px #7b2ff7;
+}
+
+.botones-crud .is-primary:hover {
+  box-shadow: 0 0 25px #a86bff;
+}
+
+.botones-crud .is-danger {
+  background-color: #e63950;
+  box-shadow: 0 0 15px rgba(230, 57, 80, 0.6);
+}
+
+/* Galería de imágenes (la que ya tenías) */
+.galeria-imagenes {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.6rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.galeria-imagenes img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 3px solid transparent;
+  opacity: 0.6;
+  transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.galeria-imagenes img:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.galeria-imagenes img.seleccionada {
+  opacity: 1;
+  border-color: #7b2ff7;
+  box-shadow: 0 0 15px #7b2ff7;
+}
