@@ -61,8 +61,8 @@ export const NOMBRE = "nombre";
 export const DESCRIPCION = "descripcion";
 export const TIPO = "tipo";
 export const UBICACION = "ubicacion_id";
-export const IMAGEN = "imagen_url";
 export const POSICION = "posicion";
+export const VEHICULO = "vehiculo_id";
 
 /* La función arma la consulta con los filtros que se le pasen, para la entidad especificada,
 comenzando con el texto ingresado por parámetro.*/
@@ -132,7 +132,6 @@ export const CUERPO_CELESTE = "cuerpo_celeste_id";
 // Límites a parámetros genéricos.
 export const ID_MAX = 2147483647;
 export const NOMBRE_MAX = 50;
-export const IMAGEN_MAX = 250;
 export const DESCRIPCION_MAX = 1000;
 export const TIPO_MAX = 3;
 
