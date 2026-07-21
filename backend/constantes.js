@@ -131,7 +131,7 @@ export const CUERPO_CELESTE = "cuerpo_celeste_id";
 
 // Límites a parámetros genéricos.
 export const ID_MAX = 2147483647;
-export const NOMBRE_MAX = 30;
+export const NOMBRE_MAX = 50;
 export const IMAGEN_MAX = 250;
 export const DESCRIPCION_MAX = 1000;
 export const TIPO_MAX = 3;
