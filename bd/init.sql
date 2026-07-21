@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS cuerpos_celestes (
     habitable BOOLEAN NOT NULL,
     terreno INT NOT NULL,
     posicion INT NOT NULL,
-    imagen_url VARCHAR(255) NOT NULL,
     borrado BOOLEAN DEFAULT FALSE
 );
 
