@@ -64,9 +64,7 @@ endpointsCuerpoCeleste.post("/", validarCuerpoCeleste, async (req, res)=> {
 });
  
 endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req, res) => {
-    console.log("despues del try");
     try{
-        console.log("pasa el try");
         const cuerpoCeleste = await cuerpos.getCuerpoCeleste(req.params.id)
         if (!cuerpoCeleste) {
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});

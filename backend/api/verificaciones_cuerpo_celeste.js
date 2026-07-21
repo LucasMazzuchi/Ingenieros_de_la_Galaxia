@@ -42,9 +42,7 @@ export const validarCuerpoCeleste = (req, res, next) => {
             res.status(400).json({error:errores});
             return;
         }
-        console.log("antes de req.body");
         req.body = procesados;
-        console.log("despues req.body");
         next();
 };
 

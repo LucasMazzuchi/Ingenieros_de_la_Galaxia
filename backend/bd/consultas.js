@@ -13,9 +13,7 @@ export const armar_consulta = (id, entidad) => {
     }
     
     const consulta = partes.join(", ");
-    console.log(consulta);
     const valores = [...Object.values(entidad), id];
-    console.log(valores);
     const numeroId = campos.length + 1; // Posición exacta para el WHERE id = $X
 
     return { consulta, valores, numeroId };

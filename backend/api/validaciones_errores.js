@@ -1,4 +1,3 @@
-import { removeCuerpoCeleste } from "../bd/cuerpos_celestes.js";
 import * as constantes from "../constantes.js";
 export const validarEntrada = (parametros, validaciones, metodo, camposRecibidos) => {
     let errores = [];
@@ -7,7 +6,6 @@ export const validarEntrada = (parametros, validaciones, metodo, camposRecibidos
         if (metodo === "PATCH" && parametros[campo].campo === undefined) {
             continue;
         }
-        
         const error = validador(parametros[campo]);
         if (error.length !== 0){
             errores.push(error);
@@ -70,7 +68,6 @@ export const validarString = ({ campo,min, max, error }) => {
     return "";
 };
 export const validarEntero = ({ campo, min, max, error }) => {
-    
     if (typeof campo !== "number" || !Number.isInteger(campo) || campo<min || campo>max){
             return constantes.ERROR_INT(error, min, max);
         }
@@ -95,7 +92,6 @@ export const validarFloat = ({ campo, min, max, error }) => {
 // Si hay un error en la solicitud, envía un error 400 y devuelve. Sino, pasa a la función next pasada por parámetro.
 
 export const validarId = (req, res, next) => {
-    
     const id = Number(req.params.id);
     if (!/^[0-9]+$/.test(req.params.id) || !Number.isInteger(id) || id<1 || id>2147483647){
         res.status(400).json({error: constantes.ERROR_INT("id", 1, 2147483647)});

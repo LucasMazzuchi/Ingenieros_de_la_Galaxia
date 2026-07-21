@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planeta</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="../css/planeta.css">
+  <link rel="stylesheet" href="css/pie.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet"> 
+</head>
+<body>
+
+  <section class="interior-planeta">
+    
+    <img id="fondo-planeta" src="../assets/img/fondo-marte.png" class="fondo-planeta">
+
+    <h1 id="nombre-planeta" class="nombre-planeta-interior">Marte</h1>
+
+    <a href="galaxia.html" class="button is-primary volver">Volver</a>
+
+    <button class="boton-info" id="botonInfo" aria-label="Mostrar información del planeta">
+      <span class="flecha">‹</span>
+    </button>
+
+    <aside class="panel-planeta" id="panelPlaneta">
+      <h2 class="panel-titulo">Datos del planeta</h2>
+      <ul class="panel-datos">
+        <li><span class="dato-nombre">Tipo</span><span class="dato-valor" id="datoTipo">Rocoso</span></li>
+        <li><span class="dato-nombre">Diámetro</span><span class="dato-valor" id="datoDiametro">6.779 km</span></li>
+        <li><span class="dato-nombre">Gravedad</span><span class="dato-valor" id="datoGravedad">3,71 m/s²</span></li>
+        <li><span class="dato-nombre">Temperatura</span><span class="dato-valor" id="datoTemperatura">-63 °C</span></li>
+        <li><span class="dato-nombre">Terreno</span><span class="dato-valor" id="datoTerreno">Desértico</span></li>
+        <li><span class="dato-nombre">Habitable</span><span class="dato-valor" id="datoHabitable">No</span></li>
+        <li><span class="dato-nombre">Posición</span><span class="dato-valor" id="datoPosicion">4</span></li>
+      </ul>
+    </aside>
+
+    <aside class="panel-punto" id="panelPunto">
+      <h2 class="nombre-punto" id="puntoNombre"></h2>
+      <p class="descripcion-punto" id="puntoDescripcion"></p>
+      <button class="button is-primary cerrar-panel-punto" id="btnCerrarPanelPunto">Volver</button>
+    </aside>
+
+    <svg class="camino-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <polyline id="camino-polyline" points="12,15 78,50 20,85" />
+    </svg>
+
+    <div class="punto-interes" id="punto-1" style="top:15%; left:12%;">
+      <img src="../assets/img/marcador.png" alt="punto de interés">
+      <p>Cráter Rojo</p>
+    </div>
+
+    <div class="punto-interes bloqueado" id="punto-2" style="top:50%; left:78%;">
+      <img src="../assets/img/marcador.png" alt="punto de interés">
+      <p>Valle Seco</p>
+    </div>
+
+    <div class="punto-interes bloqueado" id="punto-3" style="top:85%; left:20%;">
+      <img src="../assets/img/marcador.png" alt="punto de interés">
+      <p>Base Antigua</p>
+    </div>
+
+    <img src="../assets/img/nave.png" class="vehiculo" id="vehiculo" style="top:15%; left:12%;">
+
+  </section>
+
+  <script src="../js/planeta.js"></script>
+
+  <footer class="pie-pagina">
+    <p>&copy; 2026 Todos los derechos reservados — Ingenieros de Galaxia</p>
+  </footer>
+
+</body>
+</html>

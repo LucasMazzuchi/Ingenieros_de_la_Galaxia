@@ -1,0 +1,47 @@
+/* Fondo general de la carátula */
+.hero.bienvenida {
+  background: radial-gradient(circle at 50% 30%, #1b1042, #0f111f 70%);
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Título */
+.hero.bienvenida .title {
+  color: #e8e6ff;
+  text-shadow: 0 0 15px #a86bff;
+  letter-spacing: 2px;
+}
+
+/* Subtítulo */
+.hero.bienvenida .subtitle {
+  color: #a500dc;
+  opacity: 0.9;
+  text-shadow: 0 1px 60px rgba(255, 255, 255, 0.8);
+}
+
+/* Botón */
+.hero.bienvenida .button.is-primary {
+  background-color: #7b2ff7;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 0 20px #7b2ff7;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero.bienvenida .button.is-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px #a86bff;
+}
+
+/* Video de fondo */
+.video-fondo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
