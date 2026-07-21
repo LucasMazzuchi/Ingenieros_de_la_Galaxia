@@ -1,5 +1,7 @@
-
+import { app } from "../../backend/index.js";
+import * as constantes from "./constantes.js";
 const contenedor = document.getElementById("planetas-contenedor");
+
 
 // Datos de prueba (mientras el backend no está conectado)
 const planetasPrueba = [
@@ -8,20 +10,50 @@ const planetasPrueba = [
   { id: 3, nombre: "Mercurio", imagen_url: "../assets/img/mercurio.png", posicion: 2 }
 ];
 
-function pintarPlanetas(planetas) {
+function obtenerPlanetas(vehiculoId){
+  const url = `${constantes.API_URL}/${constantes.CUERPOS_URL}?vehiculo_id=${vehiculo.id}`;
+  const cuerpos = fetch(url);
+}
+function obtenerImagen(imagenId){
+  imagenes_planeta = {
+    1 : "../assets/img/tierra.png",
+    2 : "../assets/img/marte.png",
+    3 : "../assets/img/mercurio.png",
+    4 : ,
+    5 : ,
+    6 : ,
+    7 : ,
+    8 : ,
+    9 : ,
+    10 : 
+  };
+  imagenes_fondo = {
+    1 : "",
+    2 : "",
+    3 : "",
+  };
+  if (imagenId.key === "cuerpo") {
+  return imagenes_planeta[Object.values(imagenId)];
+  }
+  return imagenes_fondo[Object.values(imagenId)];
+}
+
+function pintarPlanetas(cuerpos_celestes) {
+
+
   contenedor.innerHTML = ""; // limpia por las dudas
 
-  planetas.forEach(planeta => {
+  cuerpos_celestes.forEach(cuerpo => {
     const div = document.createElement("div");
-    div.className = `planeta pos-${planeta.posicion}`;
-
+    div.className = `planeta pos-${cuerpo.posicion}`;
+    const ruta = obtener_Imagen({["cuerpo"] : cuerpo.imagen_fondo});
     div.innerHTML = `
-      <img src="${planeta.imagen_url}" alt="${planeta.nombre}">
-      <p class="nombre-planeta">${planeta.nombre}</p>
+      <img src="${ruta}" alt="${cuerpo.nombre}">
+      <p class="nombre-planeta">${cuerpo.nombre}</p>
     `;
 
     div.addEventListener("click", () => {
-      window.location.href = `planeta.html?id=${planeta.id}`;
+      window.location.href = `planeta.html?id=${cuerpo.id}`;
     });
 
     contenedor.appendChild(div);
@@ -29,7 +61,7 @@ function pintarPlanetas(planetas) {
 }
 
 // AHORA (mientras probás sin backend):
-pintarPlanetas(planetasPrueba);
+pintarPlanetas(obtenerPlanetas(fetch(`${constantes.API_URL}/${constantes.VEHICULO_URL}?tipo=1`).id));
 
 // DESPUÉS (cuando el backend esté listo, comentás la línea de arriba y usás esta):
 /*
