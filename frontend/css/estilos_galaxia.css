@@ -82,15 +82,11 @@
 
 .imagen-contenedor {
     position: relative;
-<<<<<<< HEAD
     display: inline-block;
     width: 200px;       /* 👈 Cambia este valor para achicar o agrandar (ej. 80px, 90px, 100px) */
     height: 200px;      /* 👈 Debe medir exactamente lo mismo que el width para que sea un círculo */
     border-radius: 50%;
     overflow: hidden;
-=======
-    display: inline-flex;
->>>>>>> origin/frontend
 }
 
 .planeta.no-disponible {

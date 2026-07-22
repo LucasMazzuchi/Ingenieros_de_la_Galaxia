@@ -381,7 +381,6 @@ selectPunto.addEventListener("change", async () => {
     document.getElementById("selectPlanetaPunto").value = m.cuerpo_celeste_id;
     document.getElementById("inputTituloPunto").value = m.nombre;
     document.getElementById("inputDescripcionPunto").value = m.descripcion;
-    document.getElementById("inputRelevancia").value = m.relevancia;
     document.getElementById("inputPorcentaje").value = m.porcentaje;
     document.getElementById("inputDisponible").value = m.disponible.toString();
   }
@@ -396,7 +395,6 @@ formPunto.addEventListener("submit", async (e) => {
     cuerpo_celeste_id: parseInt(document.getElementById("selectPlanetaPunto").value),
     nombre: document.getElementById("inputTituloPunto").value,
     descripcion: document.getElementById("inputDescripcionPunto").value,
-    relevancia: parseInt(document.getElementById("inputRelevancia").value),
     porcentaje: parseInt(document.getElementById("inputPorcentaje").value),
     disponible: document.getElementById("inputDisponible").value === "true"
   };
