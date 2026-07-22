@@ -20,7 +20,7 @@ export const validarVehiculo = (req, res, next) => {
     [constantes.MOTOR]:{ campo : req.body.motor, min : 1, max : constantes.MOTOR_MAX, error : constantes.MOTOR },
     [constantes.ESTRUCTURA]:{ campo : req.body.estructura, min : 1, max : constantes.ESTRUCTURA_MAX, error : constantes.ESTRUCTURA },
     [constantes.COMBUSTIBLE]:{ campo : req.body.combustible, min : 0, max : constantes.COMBUSTIBLE_MAX, error : constantes.COMBUSTIBLE },
-    [constantes.UBICACION]:{ campo : req.body.ubicacion_id, min : 1, max : constantes.ID_MAX, error : constantes.UBICACION },
+    [constantes.UBICACION]:{ campo : req.body.ubicacion_id, min : 1, max : constantes.ID_MAX, error : constantes.UBICACION }
     };
     const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasVehiculo, req.method, Object.keys(req.body));
     if (camposInvalidos.length !== 0) {

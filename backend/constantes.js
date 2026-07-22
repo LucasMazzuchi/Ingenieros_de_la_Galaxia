@@ -122,6 +122,8 @@ export const DIAMETRO = "diametro";
 export const GRAVEDAD = "gravedad";
 export const TEMPERATURA = "temperatura";
 export const HABITABLE = "habitable";
+export const IMAGEN = "imagen";
+export const IMAGEN_FONDO = "imagen_fondo";
 
 // Claves de misiones.
 export const RELEVANCIA = "relevancia";
@@ -139,6 +141,8 @@ export const TIPO_MAX = 3;
 export const TEMPERATURA_MIN = -273;
 export const TEMPERATURA_MAX = 10000;
 export const CUERPOS_CELESTES_MAX = 10;
+export const IMAGEN_MAX = 10;
+export const IMAGEN_FONDO_MAX = 10;
 
 export const POSICION_MAX = 8; //Cambiar en base a la cantidad de planetas que se hagan en el front
 

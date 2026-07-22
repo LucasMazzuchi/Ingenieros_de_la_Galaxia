@@ -1,4 +1,3 @@
-// Importamos ÚNICAMENTE la clase Pool mediante destructuring directo
 import { Pool } from 'pg';
 
 export const db = new Pool({
