@@ -1,4 +1,3 @@
-import { app } from "../../backend/index.js";
 import * as constantes from "./constantes.js";
 const contenedor = document.getElementById("planetas-contenedor");
 
@@ -10,32 +9,30 @@ const planetasPrueba = [
   { id: 3, nombre: "Mercurio", imagen_url: "../assets/img/mercurio.png", posicion: 2 }
 ];
 
-function obtenerPlanetas(vehiculoId){
-  const url = `${constantes.API_URL}/${constantes.CUERPOS_URL}?vehiculo_id=${vehiculo.id}`;
-  const cuerpos = fetch(url);
+async function obtenerPlanetas(vehiculoId){
+  const url = `${constantes.API_URL}/${constantes.CUERPOS_URL}?vehiculo_id=${vehiculoId}`;
+  try{
+  const respuesta = await fetch(url);
+  const planetas = await respuesta.json();
+  return {error : "", cuerpos : planetas};
+  } catch (error){
+    return {error : "", cuerpos : []};
+  }
 }
 function obtenerImagen(imagenId){
-  imagenes_planeta = {
+  const imagenes_planeta = {
     1 : "../assets/img/tierra.png",
     2 : "../assets/img/marte.png",
     3 : "../assets/img/mercurio.png",
-    4 : ,
-    5 : ,
-    6 : ,
-    7 : ,
-    8 : ,
-    9 : ,
-    10 : 
+    4 : "",
+    5 : "",
+    6 : "",
+    7 : "",
+    8 : "",
+    9 : "",
+    10 : ""
   };
-  imagenes_fondo = {
-    1 : "",
-    2 : "",
-    3 : "",
-  };
-  if (imagenId.key === "cuerpo") {
-  return imagenes_planeta[Object.values(imagenId)];
-  }
-  return imagenes_fondo[Object.values(imagenId)];
+  return imagenes_planeta[imagenId];
 }
 
 function pintarPlanetas(cuerpos_celestes) {
@@ -46,14 +43,24 @@ function pintarPlanetas(cuerpos_celestes) {
   cuerpos_celestes.forEach(cuerpo => {
     const div = document.createElement("div");
     div.className = `planeta pos-${cuerpo.posicion}`;
-    const ruta = obtener_Imagen({["cuerpo"] : cuerpo.imagen_fondo});
+    const ruta = obtenerImagen(cuerpo.imagen);
+    let divNoDisponible = ``;
+    if (!cuerpo.disponible){
+      divNoDisponible = `<div class="capa-oscura">Inalcanzable, explore más planetas para desbloquearlo.</div>`;
+      div.classList.add("no-disponible");
+    }
     div.innerHTML = `
-      <img src="${ruta}" alt="${cuerpo.nombre}">
+      <div class="imagen-contenedor">
+        <img src="${ruta}" alt="${cuerpo.nombre}">
+        ${divNoDisponible}
+      </div>
       <p class="nombre-planeta">${cuerpo.nombre}</p>
     `;
 
     div.addEventListener("click", () => {
-      window.location.href = `planeta.html?id=${cuerpo.id}`;
+      if (cuerpo.disponible !== false) {
+        window.location.href = `planeta.html?id=${cuerpo.id}`;
+      }
     });
 
     contenedor.appendChild(div);
@@ -61,7 +68,17 @@ function pintarPlanetas(cuerpos_celestes) {
 }
 
 // AHORA (mientras probás sin backend):
-pintarPlanetas(obtenerPlanetas(fetch(`${constantes.API_URL}/${constantes.VEHICULO_URL}?tipo=1`).id));
+async function iniciar () {
+try {
+    const respuestaVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
+    const vehiculo = await respuestaVehiculo.json();
+    pintarPlanetas(await obtenerPlanetas(vehiculo.id).cuerpos);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", iniciar);
 
 // DESPUÉS (cuando el backend esté listo, comentás la línea de arriba y usás esta):
 /*
