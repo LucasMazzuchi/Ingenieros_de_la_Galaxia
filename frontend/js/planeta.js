@@ -66,7 +66,7 @@ function buscarImagen(imagenId) {
   return imagenes_fondo[imagenId];
 }
 
-function pintarPuntosDeInteres(misiones) {
+async function pintarPuntosDeInteres(misiones) {
     // 1. Agrupamos tus constantes sueltas en un molde para poder iterarlas
     const coordenadasVisuales = [
         { top: constantes.PUNTO1_TOP, left: constantes.PUNTO1_LEFT },
@@ -79,10 +79,16 @@ function pintarPuntosDeInteres(misiones) {
         
         //Si hay más de 3 msiones, se ignoran. 
         if (!coordenadas) return; 
-
+        if (indice === 0 && !mision.disponible){
+            const resDisponible = fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}/${mision.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ disponible: true })
+            });
+        }
         const divPunto = document.createElement("div");
         divPunto.className = "punto-interes";
-        if (indice > 0 && !misiones[indice - 1].completado) { // Si está bloqueada, la diferencia visualmente.
+        if (indice > 0 && !(misiones[indice].disponible)) { // Si está bloqueada, la diferencia visualmente.
             divPunto.classList.add("bloqueado");
         }
         divPunto.style.position = "absolute";
@@ -95,10 +101,10 @@ function pintarPuntosDeInteres(misiones) {
         `;
 
         divPunto.addEventListener("click", () => {
-            if (estaBloqueada){
-                break;
+            const completado = manejarClickPunto(mision, indice, coordenadas);
+            if (completado){
+                divPunto.classList.remove("bloqueado"); // Le saco la capa de bloqueado
             }
-            manejarClickPunto(mision, indice, coordenadas);
         });
 
         contenedorMapa.appendChild(divPunto);
@@ -127,25 +133,40 @@ function rellenarApartadoIzquierda(cuerpo_celeste){
     document.getElementById("datoHabitable").textContent = `${habitable}`;
 }
 
-function manejarClickPunto(mision, indiceActual, coordenadasDestino) {
+async function manejarClickPunto(mision, indiceProximo, coordenadasDestino) {
     const estamosAhi = ((vehiculo.style.top === coordenadasDestino.top) && (vehiculo.style.left === coordenadasDestino.left));
     if (estamosAhi) {
         // Si ya está parado ahí, abrimos la información
         document.getElementById("puntoNombre").textContent = mision.nombre;
         document.getElementById("puntoDescripcion").textContent = mision.descripcion;
         panelPunto.classList.add("visible");
+        if (mision.porcentaje !== 100){
+        const completarMision = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}/${mision.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ porcentaje: 100 })
+            });
+        }
     } else {
-        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
-        const datosVehiculo = await resVehiculo.json();
-        if (Math.abs(datosVehiculo[0].punto_interes-indiceActual) > 1){
+        const respuestaVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
+        const datosVehiculo = await respuestaVehiculo.json();
+        if (Math.abs(datosVehiculo[0].punto_interes-indiceProximo) > 1){
             console.error("Debe moverse primero a la misión más cercana.");
             return;
         }
-        const resMover = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}`, {
+        const resMover = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${datosVehiculo[0].id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ punto_interes: indiceDestino })
+            body: JSON.stringify({ punto_interes: indiceProximo })
         });
+        if (resMover.ok && !mision.disponible){
+            const completarMision = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}/${mision.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ disponible: true })
+            });
+
+        }
         if (resMover.ok){
             viajarHacia(coordenadasDestino);;
         }

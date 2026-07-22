@@ -18,6 +18,8 @@ export const ERROR_FLOAT = (campo, min, max) => {
 export const LIMITE = "limite";
 export const ORDEN = "orden";
 export const ORDENAR_POR = "ordenar_por";
+export const ORDER = "order";
+export const ORDER_BY = "order_by"
 
 // REGEX
 export const REGEX_STRING = /^[a-zA-Z_]+$/
@@ -114,6 +116,7 @@ export const CODIGO_FK = "23503";
 export const MOTOR = "motor";
 export const ESTRUCTURA = "estructura";
 export const COMBUSTIBLE = "combustible";
+export const PUNTO_INTERES = "punto_interes";
 
 
 // Claves de cuerpos celestes.
@@ -155,6 +158,7 @@ export const MOTOR_MAX = 4;
 export const ESTRUCTURA_MAX = 4;
 export const COMBUSTIBLE_MAX = 100;
 export const VEHICULOS_MAX = 3;
+export const PUNTO_INTERES_MAX = 2;
 
 // Límites a parámetros de misiones.
 export const RELEVANCIA_MAX = 3;
