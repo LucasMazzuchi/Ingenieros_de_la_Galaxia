@@ -4,16 +4,66 @@ document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
   const planetaId = params.get("id");
 
-  if (!planetaId) {
-    window.location.href = "galaxia.html";
-    return;
+//Chequea que pueda ingresar al planeta.
+async function iniciarPlaneta() {
+    // 1. Leemos a qué planeta intentó entrar desde la URL
+    const parametros = new URLSearchParams(window.location.search);
+    const planetaId = parametros.get("id");
+
+    if (!planetaId) {
+        window.location.href = "galaxia.html"; // si no hay ID, retorna
+        return;
+    }
+
+    try {
+        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
+        const vehiculoDatos = await resVehiculo.json();
+
+        const resPlaneta = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/?id=${planetaId}&vehiculo_id=${vehiculoDatos[0].id}`);
+        const planetas = await resPlaneta.json();
+
+        if (!planetas[0].disponible) {
+            window.location.href = "galaxia.html"; // Lo devolvemos al mapa
+            return;
+        }
+        dibujarDatosDelPlaneta(planetas[0]); // Esto arma la página
+    } catch (error) {
+        console.error("Error validando acceso:", error);
+    }
+}
+
+async function dibujarDatosDelPlaneta(planeta){
+  try{
+    document.getElementById("nombre-planeta").textContent = planeta.nombre; // Cambia el nombre
+    const ruta = buscarImagen(planeta.imagen_fondo);
+    contenedorMapa.style.backgroundImage = `url('${ruta}')`;
+    contenedorMapa.style.backgroundSize = "cover"; // acomoda el tamaño de la imagen al del fondo.
+    contenedorMapa.style.backgroundPosition = "center"; // centrado.
+    contenedorMapa.style.backgroundRepeat = "no-repeat"; // No se duplica el mosaico.
+    contenedorMapa.style.backgroundAttachment = "fixed"; // No scrollea el fondo. Ver si el mapa scrollea.
+    const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planeta.id}&order_by=id&order=ASC`);
+    const misiones = await resMisiones.json();
+    pintarPuntosDeInteres(misiones);
+    rellenarApartadoIzquierda(planeta);
+  } catch (error){
+    console.error("Error En la consulta de misiones: ", error);
   }
 
-  const vehiculo = document.getElementById("vehiculo");
-  const nombrePlanetaEl = document.getElementById("nombre-planeta");
-  const fondoPlanetaEl = document.getElementById("fondo-planeta");
-  const contenedorPuntos = document.getElementById("contenedor-puntos");
-  const caminoPolyline = document.getElementById("camino-polyline");
+function buscarImagen(imagenId) {
+    const imagenes_fondo = {
+    1 : "../assets/img/fondo-agujero_negro.jpg",
+    2 : "../assets/img/fondo-luna.jpg",
+    3 : "../assets/img/fondo-marte.jpg",
+    4 : "../assets/img/fondo-mercurio.jpg",
+    5 : "../assets/img/fondo-neptuno.jpg",
+    6 : "../assets/img/fondo-saturno.jpg",
+    7 : "../assets/img/fondo-sol.jpg",
+    8 : "../assets/img/fondo-tierra.jpg",
+    9 : "../assets/img/fondo-verde.jpg",
+    10 : "../assets/img/fondo-violeta.jpg"
+  };
+  return imagenes_fondo[imagenId];
+}
 
     async function pintarPuntosDeInteres(misiones) {
     // 1. Agrupamos tus constantes sueltas en un molde para poder iterarlas
@@ -196,4 +246,4 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (error) {
     console.error(" Error al cargar los datos dinámicos en el planeta:", error);
   }
-}});
+}}});

@@ -18,6 +18,7 @@ export const ERROR_FLOAT = (campo, min, max) => {
 export const LIMITE = "limite";
 export const ORDEN = "orden";
 export const ORDENAR_POR = "ordenar_por";
+export const LIMIT = "limit";
 export const ORDER = "order";
 export const ORDER_BY = "order_by"
 
@@ -72,7 +73,7 @@ export const consulta = (filtros, entidad, texto) => {
     let procesados = [];
     let indice = 1;
     for (let [campo, filtro] of Object.entries(filtros)) {
-        if (campo === LIMITE || campo === ORDENAR_POR || campo === ORDEN) {
+        if (campo === "limit" || campo === "order_by" || campo === "order") {
             continue; 
         }
         let operador = "=";
@@ -87,9 +88,9 @@ export const consulta = (filtros, entidad, texto) => {
         procesados.push(filtro);
         indice++;
     }
-    const filtro = filtros[ORDENAR_POR] || ID;
-    const orden = filtros[ORDEN] || "ASC";
-    const limite = filtros[LIMITE] || 100;
+    const filtro = filtros[ORDER_BY] || ID;
+    const orden = filtros[ORDER] || "ASC";
+    const limite = filtros[LIMIT] || 100;
     texto += ` ORDER BY ${entidad[0]}.${filtro} ${orden}`;
 
     texto += ` LIMIT $${indice}`;

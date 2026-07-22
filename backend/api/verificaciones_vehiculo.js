@@ -2,10 +2,7 @@ import * as constantes from "../constantes.js";
 import {validarEntrada, validarString, validarEntero,
     validarFiltros, validarValorFiltro, validarRango, orden} from "./validaciones_errores.js";
 export const validarVehiculo = (req, res, next) => {
-    console.log("Body recibido:", req.body);
-    console.log("ID en la URL:", req.params.id);
         if (!req.body || Object.keys(req.body).length === 0) {
-            console.log("Body vacío");
         return res.status(400).json({ error: constantes.ERROR_BODY_VACIO });
     }
     const reglasVehiculo = {
@@ -29,11 +26,9 @@ export const validarVehiculo = (req, res, next) => {
     };
     const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasVehiculo, req.method, Object.keys(req.body));
     if (camposInvalidos.length !== 0) {
-        console.log("Campos Invalidos");
         return res.status(400).json({error: constantes.ERROR_CAMPOS, campos: camposInvalidos});
     }
     if (errores.length !== 0){
-        console.log("Errores");
         res.status(400).json({error:errores});
         return;
     }
