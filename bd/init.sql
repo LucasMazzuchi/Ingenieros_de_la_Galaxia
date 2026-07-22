@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS vehiculos (
     estructura INT NOT NULL,
     combustible INT NOT NULL,
     ubicacion_id INT REFERENCES cuerpos_celestes(id) NOT NULL,
+    punto_interes INT NOT NULL,
     borrado BOOLEAN DEFAULT FALSE
 );
 
@@ -44,9 +45,9 @@ VALUES
 ('Mercurio', 'El planeta más pequeño y cercano al Sol. Debido a su cercanía a la estrella, experimenta las temperaturas más extremas del sistema solar, con variaciones de cientos de grados entre el día y la noche.', 1, 4879, 3.7, 167, FALSE, 2, 7, 4, 4);
 
 -- ==========================================
-INSERT INTO vehiculos (nombre, tipo, motor, estructura, combustible, ubicacion_id)
+INSERT INTO vehiculos (nombre, tipo, motor, estructura, combustible, ubicacion_id, punto_interes)
 VALUES 
-('Rover Explorador Alpha', 1, 1, 1, 100, 1);
+('Rover Explorador Alpha', 1, 1, 1, 100, 1, 1);
 
 INSERT INTO misiones (nombre, descripcion, porcentaje, cuerpo_celeste_id, disponible)
 VALUES 
