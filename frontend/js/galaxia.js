@@ -44,11 +44,13 @@ function pintarPlanetas(cuerpos_celestes) {
     const div = document.createElement("div");
     div.className = `planeta pos-${cuerpo.posicion}`;
     const ruta = obtenerImagen(cuerpo.imagen);
+
     let divNoDisponible = ``;
+    let claseNoDisponible = ``;
+
     if (!cuerpo.disponible){
       divNoDisponible = `<div class="capa-oscura">Inalcanzable, explore más planetas para desbloquearlo.</div>`;
-      div.classList.add("no-disponible");
-      div.classList
+      claseNoDisponible = `no-disponible`;
     }
     div.innerHTML = `
       <div class="imagen-contenedor">
@@ -59,7 +61,7 @@ function pintarPlanetas(cuerpos_celestes) {
     `;
 
     div.addEventListener("click", () => {
-      if (cuerpo.disponible) {
+      if (cuerpo.disponible !== false) {
         window.location.href = `planeta.html?id=${cuerpo.id}`;
       }
     });

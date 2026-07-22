@@ -23,7 +23,12 @@
 }
 
 .planeta img {
-  width: 160px; 
+
+  width: 100%;        /* Ocupa todo el contenedor */
+  height: 100%;       /* Ocupa todo el contenedor */
+  object-fit: cover;  /* Mantiene la proporción de la imagen circular */
+  border-radius: 50%;
+  display:block;
   transition: filter 0.3s ease, transform 0.3s ease;
 }
 
@@ -78,10 +83,14 @@
 .imagen-contenedor {
     position: relative;
     display: inline-block;
+    width: 200px;       /* 👈 Cambia este valor para achicar o agrandar (ej. 80px, 90px, 100px) */
+    height: 200px;      /* 👈 Debe medir exactamente lo mismo que el width para que sea un círculo */
+    border-radius: 50%;
+    overflow: hidden;
 }
 
 .planeta.no-disponible {
-    opacity: 0.6;
+    opacity: 1;
     cursor: not-allowed; /*Chequear como queda el prohibido*/
 }
 
@@ -98,4 +107,8 @@
     align-items: center;
     font-weight: bold;
     border-radius: 50%;
+    text-align: center;
+    padding: 10px;
+    box-sizing: border-box;
+    pointer-events: none; /* Para que no interfiera si hay eventos de hover */
 }

@@ -7,9 +7,7 @@ import {endpointsMisiones} from "./api/misiones.js";
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors({
-    origin: 'http://localhost:8080' // Hay que agregar la url del front
-}));
+app.use(cors());
 
 app.use(express.json());
 app.use("/api/vehiculos", endpointsVehiculos);
