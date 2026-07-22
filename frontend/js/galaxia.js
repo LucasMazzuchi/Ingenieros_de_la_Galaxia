@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 import { app } from "../../backend/index.js";
 import * as constantes from "./constantes.js";
-=======
->>>>>>> origin/frontend
 const contenedor = document.getElementById("planetas-contenedor");
 
 
