@@ -8,7 +8,9 @@ export const endpointsMisiones = Router();
 endpointsMisiones.get("/", validarFiltrosMision, async (req, res) => {
     try {
         const texto = `SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.relevancia, m.porcentaje, m.disponible FROM misiones as m, cuerpos_celestes as c WHERE c.id = m.cuerpo_celeste_id AND m.borrado = FALSE AND c.borrado = FALSE`;
-        const listaMisiones = await misiones.getAllMisiones(constantes.consulta(req.query, "mision", texto));
+        const parametros = {...req.query};
+
+        const listaMisiones = await misiones.getAllMisiones(constantes.consulta(parametros, "mision", texto));
         res.json(listaMisiones);
     } catch(error) {
         const {estado, msjError} = manejarError(error);

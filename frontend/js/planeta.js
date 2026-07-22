@@ -41,7 +41,7 @@ async function dibujarDatosDelPlaneta(planeta){
     contenedorMapa.style.backgroundPosition = "center"; // centrado.
     contenedorMapa.style.backgroundRepeat = "no-repeat"; // No se duplica el mosaico.
     contenedorMapa.style.backgroundAttachment = "fixed"; // No scrollea el fondo. Ver si el mapa scrollea.
-    const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planeta.id}`);
+    const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planeta.id}&order_by=id&order=ASC`);
     const misiones = await resMisiones.json();
     pintarPuntosDeInteres(misiones);
     rellenarApartadoIzquierda(planeta);

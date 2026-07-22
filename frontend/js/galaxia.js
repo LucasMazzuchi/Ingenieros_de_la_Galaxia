@@ -68,7 +68,6 @@ function pintarPlanetas(cuerpos_celestes) {
   });
 }
 
-// AHORA (mientras probás sin backend):
 async function iniciar () {
 try {
     const respuestaVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
