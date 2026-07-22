@@ -84,17 +84,17 @@
           </select>
         </label>
 
-        <label>Posición en la galaxia (0-9)
-          <input type="number" id="inputPosicion" min="0" max="9" required>
+        <label>Posición en la galaxia (2-10)
+          <input type="number" id="inputPosicion" min="2" max="10" required>
         </label>
 
         <label>Imagen del planeta</label>
         <div class="galeria-imagenes" id="galeriaPlanetas"></div>
-        <input type="hidden" id="inputImagen" required>
+        <input type="hidden" id="inputImagen" >
 
         <label>Imagen de fondo</label>
         <div class="galeria-imagenes" id="galeriaFondoPlaneta"></div>
-        <input type="hidden" id="inputImagenFondo" required>
+        <input type="hidden" id="inputImagenFondo" >
 
         <div class="botones-crud">
           <button type="submit" class="button is-primary" id="btnGuardarPlaneta">Guardar</button>

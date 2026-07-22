@@ -144,7 +144,7 @@ export const CUERPOS_CELESTES_MAX = 10;
 export const IMAGEN_MAX = 10;
 export const IMAGEN_FONDO_MAX = 10;
 
-export const POSICION_MAX = 8; //Cambiar en base a la cantidad de planetas que se hagan en el front
+export const POSICION_MAX = 10; //Cambiar en base a la cantidad de planetas que se hagan en el front
 
 export const TERRENO_MAX = 3;
 export const DIAMETRO_MAX = 10000000;

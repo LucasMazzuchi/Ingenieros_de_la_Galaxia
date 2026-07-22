@@ -1,6 +1,6 @@
 // Listas de imágenes reales (todas sueltas en assets/img, sin subcarpetas)
 const imagenesPlanetas = [
-  "../assets/img/aujero_negro.png",
+  "../assets/img/agujero_negro.png",
   "../assets/img/luna.png",
   "../assets/img/marte.png",
   "../assets/img/mercurio.png",
@@ -13,7 +13,7 @@ const imagenesPlanetas = [
 ];
 
 const imagenesFondos = [
-  "../assets/img/fondo-aujero_negro.jpg",
+  "../assets/img/fondo-agujero_negro.jpg",
   "../assets/img/fondo-luna.jpg",
   "../assets/img/fondo-marte.jpg",
   "../assets/img/fondo-mercurio.jpg",
@@ -45,21 +45,23 @@ function crearSelectorImagenes(contenedorId, imagenes, inputHiddenId) {
   const inputHidden = document.getElementById(inputHiddenId);
   contenedor.innerHTML = "";
 
-  imagenes.forEach(url => {
+  imagenes.forEach((url, index) => {
     const img = document.createElement("img");
     img.src = url;
     img.addEventListener("click", () => {
       contenedor.querySelectorAll("img").forEach(i => i.classList.remove("seleccionada"));
       img.classList.add("seleccionada");
-      inputHidden.value = url;
+      
+      inputHidden.value = index + 1; 
     });
     contenedor.appendChild(img);
   });
 }
 
-// Galería del planeta: imagen del planeta + imagen de fondo (ambas fijas)
 crearSelectorImagenes("galeriaPlanetas", imagenesPlanetas, "inputImagen");
 crearSelectorImagenes("galeriaFondoPlaneta", imagenesFondos, "inputImagenFondo");
+// Galería del planeta: imagen del planeta + imagen de fondo (ambas fijas)
+
 
 // Galería de vehículo: cambia entre naves/autos según el tipo elegido
 const selectTipoVehiculo = document.getElementById("inputTipoVehiculo");
@@ -117,7 +119,7 @@ async function crearRegistro(recurso, datos) {
     });
     return res.ok;
   } catch (error) {
-    console.error(error);
+    console.error("Error grave en el Fetch:", error);
     return false;
   }
 }
@@ -248,7 +250,9 @@ formPlaneta.addEventListener("submit", async (e) => {
     temperatura: parseInt(document.getElementById("inputTemperatura").value),
     terreno: parseInt(document.getElementById("inputTerreno").value),
     habitable: document.getElementById("inputHabitable").value === "true",
-    posicion: parseInt(document.getElementById("inputPosicion").value)
+    posicion: parseInt(document.getElementById("inputPosicion").value),
+    imagen: parseInt(document.getElementById("inputImagen").value),
+    imagen_fondo: parseInt(document.getElementById("inputImagenFondo").value)
   };
 
   let exito = false;
