@@ -44,6 +44,7 @@ async function dibujarDatosDelPlaneta(planeta){
     const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planeta.id}&order_by=id&order=ASC`);
     const misiones = await resMisiones.json();
     pintarPuntosDeInteres(misiones);
+    dibujarCamino(misiones);
     rellenarApartadoIzquierda(planeta);
   } catch (error){
     console.error("Error En la consulta de misiones: ", error);
@@ -76,7 +77,6 @@ async function pintarPuntosDeInteres(misiones) {
 
     misiones.forEach((mision, indice) => {
         const coordenadas = coordenadasVisuales[indice];
-
         //Si hay más de 3 msiones, se ignoran. 
         if (!coordenadas) return; 
         if (indice === 0 && !mision.disponible){
@@ -185,6 +185,17 @@ function viajarHacia(coordenadas) {
     setTimeout(() => {
         document.body.classList.remove("bloqueado-viajando");
     }, 1000); 
+}
+
+function dibujarCamino(puntosDeInteres){
+    const camino = document.getElementById("camino-polyline");
+    if (puntosDeInteres.length ===2) {
+        camino.setAttribute("points", constantes.COORDENADAS_SVG.slice(0,2).join(" "));
+    } else if (puntosDeInteres.length === 3){
+        camino.setAttribute("points", constantes.COORDENADAS_SVG.join(" "));
+    } else {
+        camino.setAttribute("points", " ");
+    }
 }
 
 
