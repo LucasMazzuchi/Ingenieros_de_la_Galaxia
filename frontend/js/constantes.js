@@ -9,5 +9,5 @@ export const PUNTO1_LEFT = "12%";
 export const PUNTO2_LEFT = "78%";
 export const PUNTO3_LEFT = "20%";
 
-export const TIPOS_PLANETA = { 1: "Planeta", 2: "Satélite", 3: "Estrella" };
-export const TIPOS_TERRENO = { 1: "Llano", 2: "Rocoso", 3: "Líquido" };
+export const TIPOS_PLANETA = { 1: "Rocoso", 2: "Gaseoso", 3: "Helado"};
+export const TIPOS_TERRENO = { 1: "Desértico", 2: "Rocoso", 3: "Helado"};

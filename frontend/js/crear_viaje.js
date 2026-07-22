@@ -127,7 +127,7 @@ async function crearRegistro(recurso, datos) {
 async function modificarRegistro(recurso, id, datos) {
   try {
     const res = await fetch(`${API_URL}/${recurso}/${id}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datos)
     });
