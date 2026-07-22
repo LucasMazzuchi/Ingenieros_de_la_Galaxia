@@ -76,7 +76,7 @@ async function pintarPuntosDeInteres(misiones) {
 
     misiones.forEach((mision, indice) => {
         const coordenadas = coordenadasVisuales[indice];
-        
+
         //Si hay más de 3 msiones, se ignoran. 
         if (!coordenadas) return; 
         if (indice === 0 && !mision.disponible){
@@ -116,7 +116,7 @@ async function pintarPuntosDeInteres(misiones) {
         vehiculo.style.top = coordenadasVisuales[0].top;
         vehiculo.style.left = coordenadasVisuales[0].left;
         vehiculo.dataset.indiceActual = 0;
-        
+
         setTimeout(() => {
             vehiculo.style.transition = "top 1s ease, left 1s ease"; 
         }, 50);
@@ -176,7 +176,7 @@ async function manejarClickPunto(mision, indiceProximo, coordenadasDestino) {
 function viajarHacia(coordenadas) {
     // Bloqueamos los clicks
     document.body.classList.add("bloqueado-viajando");
-    
+
 
     vehiculo.style.top = coordenadas.top;
     vehiculo.style.left = coordenadas.left;
@@ -200,5 +200,4 @@ botonInfo.addEventListener('click', () => {
     botonInfo.classList.toggle('abierto');
     botonInfo.querySelector('.flecha').textContent = panelPlaneta.classList.contains('abierto') ? '‹' : '›';
 });
-
 document.addEventListener("DOMContentLoaded", iniciarPlaneta);

@@ -130,7 +130,6 @@ export const IMAGEN = "imagen";
 export const IMAGEN_FONDO = "imagen_fondo";
 
 // Claves de misiones.
-export const RELEVANCIA = "relevancia";
 export const PORCENTAJE = "porcentaje";
 export const DISPONIBLE = "disponible";
 export const CUERPO_CELESTE = "cuerpo_celeste_id";
@@ -162,7 +161,6 @@ export const VEHICULOS_MAX = 3;
 export const PUNTO_INTERES_MAX = 2;
 
 // Límites a parámetros de misiones.
-export const RELEVANCIA_MAX = 3;
 export const PORCENTAJE_MAX = 100;
 export const LIMITE_MAX = 100;
 export const MISIONES_MAX = 4;
