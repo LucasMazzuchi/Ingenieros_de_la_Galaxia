@@ -16,7 +16,9 @@ export const validarCuerpoCeleste = (req, res, next) => {
     [constantes.TEMPERATURA]: validarEntero,
     [constantes.HABITABLE]: validarBool,
     [constantes.TERRENO]: validarEntero,
-    [constantes.POSICION]: validarEntero
+    [constantes.POSICION]: validarEntero,
+    [constantes.IMAGEN]:validarEntero,
+    [constantes.IMAGEN_FONDO]:validarEntero
     };
     const entrada = {
     [constantes.NOMBRE]: { campo: req.body.nombre, min: 1, max: constantes.NOMBRE_MAX, error: constantes.NOMBRE },
@@ -28,7 +30,9 @@ export const validarCuerpoCeleste = (req, res, next) => {
     [constantes.TEMPERATURA]: { campo: req.body.temperatura, min: constantes.TEMPERATURA_MIN, max: constantes.TEMPERATURA_MAX, error: constantes.TEMPERATURA },
     [constantes.HABITABLE]: { campo: req.body.habitable, error: constantes.HABITABLE },
     [constantes.TERRENO]: {campo:req.body.terreno, min: 1, max:constantes.TERRENO_MAX, error: constantes.TERRENO },
-    [constantes.POSICION]: { campo: req.body.posicion, min: 1, max: constantes.POSICION_MAX, error: constantes.POSICION }
+    [constantes.POSICION]: { campo: req.body.posicion, min: 1, max: constantes.POSICION_MAX, error: constantes.POSICION},
+    [constantes.IMAGEN]: {campo: req.body.imagen, min:1, max: constantes.IMAGEN_MAX, error: constantes.IMAGEN},
+    [constantes.IMAGEN_FONDO]: {campo: req.body.imagen_fondo, min:1, max: constantes.IMAGEN_FONDO_MAX, error: constantes.IMAGEN_FONDO.split("_").join(" ")}
     };
     const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasCuerpoCeleste, req.method, Object.keys(req.body));
     if (camposInvalidos.length !== 0) {
@@ -61,12 +65,14 @@ export const validarFiltrosCuerpoCeleste = (req, res, next) => {
         [constantes.LIMITE]: { regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min: 1, max: constantes.LIMITE_MAX },
         [constantes.ORDENAR_POR]: { regex: regexOrdenarPor, error: constantes.ERROR_FILTRO_ORDENAR, caster: String },
         [constantes.ORDEN]: { regex: constantes.REGEX_ORDEN, error: constantes.ERROR_ORDEN, caster: orden },
-        [constantes.VEHICULO] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min:1, max: constantes.ID_MAX}
+        [constantes.VEHICULO] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min:1, max: constantes.ID_MAX},
+        [constantes.IMAGEN] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min: 1, max: constantes.IMAGEN_MAX},
+        [constantes.IMAGEN_FONDO_MAX] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min: 1, max: constantes.IMAGEN_FONDO_MAX}
     };
 
     const permitidos = new Set([
         constantes.ID, constantes.ID + "_min", constantes.ID + "_max",
-        constantes.NOMBRE, constantes.HABITABLE, constantes.VEHICULO,
+        constantes.NOMBRE, constantes.HABITABLE, constantes.VEHICULO, constantes.IMAGEN_FONDO, constantes.IMAGEN,
         constantes.TIPO, constantes.TIPO + "_min", constantes.TIPO + "_max",
         constantes.DIAMETRO, constantes.DIAMETRO + "_min", constantes.DIAMETRO + "_max",
         constantes.GRAVEDAD, constantes.GRAVEDAD + "_min", constantes.GRAVEDAD + "_max",
@@ -74,7 +80,7 @@ export const validarFiltrosCuerpoCeleste = (req, res, next) => {
         constantes.TERRENO, constantes.TERRENO + "_min", constantes.TERRENO + "_max",
         constantes.LIMITE, constantes.ORDENAR_POR, constantes.ORDEN
     ]);
-    const filtroVehiculo = "vehiculo_id" in req.query;    
+    const filtroVehiculo = "vehiculo_id" in req.query;
     const erroresClaves = validarFiltros(Object.keys(req.query), permitidos);
     let erroresPermitidos = 0;
     if (erroresClaves.length > erroresPermitidos){
