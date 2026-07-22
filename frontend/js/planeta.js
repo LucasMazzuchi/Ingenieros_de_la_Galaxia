@@ -52,16 +52,16 @@ async function dibujarDatosDelPlaneta(planeta){
 
 function buscarImagen(imagenId) {
     const imagenes_fondo = {
-    1 : "../assets/img/fondo-tierra.jpg",
-    2 : "../assets/img/fondo-marte.jpg",
-    3 : "../assets/img/fondo-mercurio.jpg",
-    4 : "../assets/img/fondo-sol.jpg",
-    5 : "../assets/img/fondo-saturno.jpg",
-    6 : "../assets/img/fondo-violeta.jpg",
-    7 : "../assets/img/fondo-verde.jpg",
-    8 : "../assets/img/fondo-luna.jpg",
-    9 : "../assets/img/fondo-agujero_negro.jpg",
-    10 : "../assets/img/fondo-neptuno.jpg"
+    1 : "../assets/img/fondo-agujero_negro.jpg",
+    2 : "../assets/img/fondo-luna.jpg",
+    3 : "../assets/img/fondo-marte.jpg",
+    4 : "../assets/img/fondo-mercurio.jpg",
+    5 : "../assets/img/fondo-neptuno.jpg",
+    6 : "../assets/img/fondo-saturno.jpg",
+    7 : "../assets/img/fondo-sol.jpg",
+    8 : "../assets/img/fondo-tierra.jpg",
+    9 : "../assets/img/fondo-verde.jpg",
+    10 : "../assets/img/fondo-violeta.jpg"
   };
   return imagenes_fondo[imagenId];
 }

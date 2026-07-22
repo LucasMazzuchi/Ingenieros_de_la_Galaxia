@@ -21,16 +21,16 @@ async function obtenerPlanetas(vehiculoId){
 }
 function obtenerImagen(imagenId){
   const imagenes_planeta = {
-    1 : "../assets/img/tierra.png",
-    2 : "../assets/img/marte.png",
-    3 : "../assets/img/mercurio.png",
-    4 : "../assets/img/sol.png",
-    5 : "../assets/img/saturno.png",
-    6 : "../assets/img/planeta_violeta.png",
-    7 : "../assets/img/planeta_verde.png",
-    8 : "../assets/img/luna.png",
-    9 : "../assets/img/agujero_negro.png",
-    10 : "../assets/img/neptuno.png"
+    1 : "../assets/img/agujero_negro.png",
+    2 : "../assets/img/luna.png",
+    3 : "../assets/img/marte.png",
+    4 : "../assets/img/mercurio.png",
+    5 : "../assets/img/neptuno.png",
+    6 : "../assets/img/planeta_verde.png",
+    7 : "../assets/img/planeta_violata.png",
+    8 : "../assets/img/saturno.png",
+    9 : "../assets/img/sol.png",
+    10 : "../assets/img/tierra.png"
   };
   return imagenes_planeta[imagenId];
 }
@@ -68,7 +68,7 @@ function pintarPlanetas(cuerpos_celestes) {
   });
 }
 
-// AHORA (mientras probás sin backend):
+
 async function iniciar () {
 try {
     const respuestaVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
