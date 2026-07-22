@@ -9,10 +9,6 @@ export const db = new Pool({
   port: process.env.DB_PORT || 5432,
 });
 
-db.query('SELECT NOW()', (err, res) => {
-  if (err) {
-    console.error('❌ Error de conexión en Postgres:', err.stack);
-  } else {
-    console.log('🚀 Base de datos conectada con éxito. Hora:', res.rows[0].now);
-  }
+db.on('connect', () => {
+  console.log('Conexión establecida con la base de datos PostgreSQL.');
 });

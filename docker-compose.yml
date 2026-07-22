@@ -34,7 +34,6 @@ services:
       - DB_NAME=espacio_bd
       - PORT=5000
       - DB_PORT=5432
-      - MODO_ALMACENAMIENTO=local # Cambiar cuando se vaya a levantar en un servidor.
     depends_on:
       bd:
         condition: service_healthy

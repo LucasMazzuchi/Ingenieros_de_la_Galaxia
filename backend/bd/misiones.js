@@ -26,8 +26,8 @@ export async function removeMision(id){
 }
 
 export async function updateMision(id, mision){
-    const { consulta, valores } = armar_consulta(id, mision)
-    const solicitud = `UPDATE misiones SET ${consulta} WHERE id=$1 AND borrado = FALSE`;
+    const { consulta, valores, numeroId } = armar_consulta(id, mision)
+    const solicitud = `UPDATE misiones SET ${consulta} WHERE id=$${numeroId} AND borrado = FALSE`;
     const res = await db.query(solicitud, valores);
     return res.rowCount == 1;
 }

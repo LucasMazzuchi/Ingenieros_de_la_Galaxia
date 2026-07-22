@@ -24,8 +24,8 @@ export async function removeVehiculo(id){
     return {ok : res.rowCount == 1, vehiculo : res.rows[0]};
 }
 export async function updateVehiculo(id, vehiculo){
-    const { consulta, valores } = armar_consulta(id, vehiculo);
-    const solicitud = `UPDATE vehiculos SET ${consulta} WHERE id=$1 AND borrado = FALSE`;
+    const { consulta, valores, numeroId } = armar_consulta(id, vehiculo);
+    const solicitud = `UPDATE vehiculos SET ${consulta} WHERE id=$${numeroId} AND borrado = FALSE`;
     const res = await db.query(solicitud, valores);
     return res.rowCount == 1;
 }
