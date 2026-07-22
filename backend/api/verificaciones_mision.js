@@ -46,8 +46,8 @@ export const validarFiltrosMision = (req, res, next) => {
         [constantes.DISPONIBLE] : {regex: constantes.REGEX_BOOL, error: constantes.ERROR_FILTRO_BOOL, caster : (val) => String(val).toLowerCase() === 'true'},
         [constantes.CUERPO_CELESTE] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.ID_MAX},
         [constantes.LIMITE]: { regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min: 1, max: constantes.LIMITE_MAX },
-        [constantes.ORDENAR_POR]: { regex: regexOrdenarPor, error: constantes.ERROR_FILTRO_ORDENAR, caster: String },
-        [constantes.ORDEN]: { regex: constantes.REGEX_ORDEN, error: constantes.ERROR_ORDEN, caster: orden }
+        [constantes.ORDER_BY]: { regex: regexOrdenarPor, error: constantes.ERROR_FILTRO_ORDENAR, caster: String },
+        [constantes.ORDER]: { regex: constantes.REGEX_ORDEN, error: constantes.ERROR_ORDEN, caster: orden }
     };
 
     const permitidos = new Set([
@@ -55,7 +55,7 @@ export const validarFiltrosMision = (req, res, next) => {
         constantes.NOMBRE, constantes.DISPONIBLE, constantes.CUERPO_CELESTE,
         constantes.RELEVANCIA, constantes.RELEVANCIA + "_min", constantes.RELEVANCIA + "_max",
         constantes.PORCENTAJE, constantes.PORCENTAJE + "_min", constantes.PORCENTAJE + "_max",
-        constantes.LIMITE, constantes.ORDENAR_POR, constantes.ORDEN
+        constantes.LIMITE, constantes.ORDER_BY, constantes.ORDER
     ]);
 
     const erroresClaves = validarFiltros(Object.keys(req.query), permitidos);
