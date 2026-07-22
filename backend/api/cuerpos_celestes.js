@@ -9,7 +9,7 @@ export const endpointsCuerpoCeleste = Router();
  
 endpointsCuerpoCeleste.get("/", validarFiltrosCuerpoCeleste, async (req, res) => {
     try {
-        const texto = "SELECT c.id, c.nombre, c.tipo, c.diametro, c.gravedad, c.temperatura, c.habitable, c.terreno, c.posicion FROM cuerpos_celestes as c WHERE c.borrado = FALSE";
+        const texto = "SELECT c.id, c.nombre, c.tipo, c.diametro, c.gravedad, c.temperatura, c.habitable, c.terreno, c.posicion, c.imagen, c.imagen_fondo FROM cuerpos_celestes as c WHERE c.borrado = FALSE";
         
         const { vehiculo_id, ...sinVehiculo } = req.query;
         
