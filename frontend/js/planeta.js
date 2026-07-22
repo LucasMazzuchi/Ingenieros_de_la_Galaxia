@@ -1,4 +1,4 @@
-import * as constantes from "constantes.js";
+import * as constantes from "./constantes.js";
 
 const contenedorMapa = document.getElementById("mapa-planeta");
 const panelPunto = document.getElementById("panelPunto");
@@ -16,10 +16,10 @@ async function iniciarPlaneta() {
     }
 
     try {
-        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULO_URL}?tipo=1`);
+        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
         const vehiculoDatos = await resVehiculo.json();
 
-        const resPlaneta = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/?id=${planetaId}&vehiculo_id=${vehiculoDatos.id}`);
+        const resPlaneta = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/?id=${planetaId}&vehiculo_id=${vehiculoDatos[0].id}`);
         const planetas = await resPlaneta.json();
 
         if (!planetas[0].disponible) {
@@ -34,6 +34,7 @@ async function iniciarPlaneta() {
 
 async function dibujarDatosDelPlaneta(planeta){
   try{
+    document.getElementById("nombre-planeta").textContent = planeta.nombre; // Cambia el nombre
     const ruta = buscarImagen(planeta.imagen_fondo);
     contenedorMapa.style.backgroundImage = `url('${ruta}')`;
     contenedorMapa.style.backgroundSize = "cover"; // acomoda el tamaño de la imagen al del fondo.
@@ -43,6 +44,7 @@ async function dibujarDatosDelPlaneta(planeta){
     const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planeta.id}`);
     const misiones = await resMisiones.json();
     pintarPuntosDeInteres(misiones);
+    rellenarApartadoIzquierda(planeta);
   } catch (error){
     console.error("Error En la consulta de misiones: ", error);
   }
@@ -50,16 +52,16 @@ async function dibujarDatosDelPlaneta(planeta){
 
 function buscarImagen(imagenId) {
     const imagenes_fondo = {
-    1 : "../assets/img/fondo-tierra.png",
-    2 : "../assets/img/fondo-marte.png",
-    3 : "../assets/img/fondo-mercurio.png",
-    4 : "../assets/img/fondo-sol.png",
-    5 : "../assets/img/fondo-saturno.png",
-    6 : "../assets/img/fondo-violeta.png",
-    7 : "../assets/img/fondo-verde.png",
-    8 : "../assets/img/fondo-luna.png",
-    9 : "../assets/img/fondo-agujero_negro.png",
-    10 : "../assets/img/fondo-neptuno.png"
+    1 : "../assets/img/fondo-tierra.jpg",
+    2 : "../assets/img/fondo-marte.jpg",
+    3 : "../assets/img/fondo-mercurio.jpg",
+    4 : "../assets/img/fondo-sol.jpg",
+    5 : "../assets/img/fondo-saturno.jpg",
+    6 : "../assets/img/fondo-violeta.jpg",
+    7 : "../assets/img/fondo-verde.jpg",
+    8 : "../assets/img/fondo-luna.jpg",
+    9 : "../assets/img/fondo-agujero_negro.jpg",
+    10 : "../assets/img/fondo-neptuno.jpg"
   };
   return imagenes_fondo[imagenId];
 }
@@ -80,6 +82,9 @@ function pintarPuntosDeInteres(misiones) {
 
         const divPunto = document.createElement("div");
         divPunto.className = "punto-interes";
+        if (indice > 0 && !misiones[indice - 1].completado) { // Si está bloqueada, la diferencia visualmente.
+            divPunto.classList.add("bloqueado");
+        }
         divPunto.style.position = "absolute";
         divPunto.style.top = coordenadas.top;
         divPunto.style.left = coordenadas.left;
@@ -101,12 +106,24 @@ function pintarPuntosDeInteres(misiones) {
         vehiculo.style.transition = "none";
         vehiculo.style.top = coordenadasVisuales[0].top;
         vehiculo.style.left = coordenadasVisuales[0].left;
+        vehiculo.dataset.indiceActual = 0;
         
         setTimeout(() => {
             vehiculo.style.transition = "top 1s ease, left 1s ease"; 
         }, 50);
     }
 }
+
+function rellenarApartadoIzquierda(cuerpo_celeste){
+    document.getElementById("datoTipo").textContent = constantes.TIPOS_PLANETA[cuerpo_celeste.tipo];
+    document.getElementById("datoDiametro").textContent = `${cuerpo_celeste.diametro} km`;
+    document.getElementById("datoGravedad").textContent = `${cuerpo_celeste.gravedad} m/s²`;
+    document.getElementById("datoTemperatura").textContent = `${cuerpo_celeste.temperatura} °C`;
+    document.getElementById("datoTerreno").textContent = constantes.TIPOS_TERRENO[cuerpo_celeste.terreno];
+    const habitable = (cuerpo_celeste.habitable === true) ? "Si" : "No";
+    document.getElementById("datoHabitable").textContent = `${habitable}`;
+}
+
 function manejarClickPunto(mision, coordenadasDestino) {
     const estamosAhi = ((vehiculo.style.top === coordenadasDestino.top) && (vehiculo.style.left === coordenadasDestino.left));
 
