@@ -49,6 +49,9 @@ endpointsMisiones.post("/", validarMision, async (req, res)=> {
  
 endpointsMisiones.patch("/:id", validarId, validarMision, async (req, res) => {
     try{
+        if (req.body.cuerpo_celeste_id === 1) {
+            return res.status(403).json({error: "No se pueden modificar misiones asociadas a la Tierra."})
+        }
         if (!await misiones.updateMision(req.params.id, req.body)){
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         } else {
@@ -62,6 +65,9 @@ endpointsMisiones.patch("/:id", validarId, validarMision, async (req, res) => {
  
 endpointsMisiones.delete("/:id", validarId, async (req, res) => {
     try{
+        if (req.body.cuerpo_celeste_id === 1) {
+            return res.status(403).json({error: "No se pueden eliminar misiones asociadas a la Tierra."})
+        }
         const {ok, mision} = await misiones.removeMision(req.params.id);
         if (!ok){
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
