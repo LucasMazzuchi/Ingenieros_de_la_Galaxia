@@ -289,3 +289,149 @@ btnBorrarPlaneta.addEventListener("click", async () => {
     }
   }
 });
+// FORMULARIO VEHÍCULO 
+const formVehiculo = document.getElementById("tab-vehiculo");
+const selectVehiculo = document.getElementById("selectVehiculo");
+const btnBorrarVehiculo = document.getElementById("btnBorrarVehiculo");
+
+// Cargar datos en el form si selecciona un vehículo existente
+selectVehiculo.addEventListener("change", async () => {
+  const id = selectVehiculo.value;
+  if (!id) {
+    formVehiculo.reset();
+    actualizarGaleriaVehiculo();
+    return;
+  }
+  const vehiculos = await obtenerDatos("vehiculos");
+  const v = vehiculos.find(item => item.id == id);
+  if (v) {
+    document.getElementById("inputNombreVehiculo").value = v.nombre;
+    document.getElementById("inputTipoVehiculo").value = v.tipo;
+    actualizarGaleriaVehiculo(); // Actualiza las imágenes según el tipo
+    document.getElementById("inputMotor").value = v.motor;
+    document.getElementById("inputEstructura").value = v.estructura;
+    document.getElementById("inputCombustible").value = v.combustible;
+    document.getElementById("selectUbicacionVehiculo").value = v.ubicacion_id;
+  }
+});
+
+// Guardar (Alta o Modificación) Vehículo
+formVehiculo.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const id = selectVehiculo.value;
+
+  const datos = {
+    nombre: document.getElementById("inputNombreVehiculo").value,
+    tipo: parseInt(document.getElementById("inputTipoVehiculo").value),
+    motor: parseInt(document.getElementById("inputMotor").value),
+    estructura: parseInt(document.getElementById("inputEstructura").value),
+    combustible: parseInt(document.getElementById("inputCombustible").value),
+    ubicacion_id: parseInt(document.getElementById("selectUbicacionVehiculo").value)
+  };
+
+  let exito = false;
+  if (id) {
+    exito = await modificarRegistro("vehiculos", id, datos);
+  } else {
+    exito = await crearRegistro("vehiculos", datos);
+  }
+
+  if (exito) {
+    alert("¡Vehículo guardado con éxito!");
+    formVehiculo.reset();
+    inicializarSelects();
+  } else {
+    alert("Ocurrió un error al guardar el vehículo.");
+  }
+});
+
+// Borrar Vehículo
+btnBorrarVehiculo.addEventListener("click", async () => {
+  const id = selectVehiculo.value;
+  if (!id) {
+    alert("Selecciona un vehículo existente para borrar.");
+    return;
+  }
+  if (confirm("¿Estás seguro de borrar este vehículo?")) {
+    const exito = await eliminarRegistro("vehiculos", id);
+    if (exito) {
+      alert("Vehículo eliminado.");
+      formVehiculo.reset();
+      inicializarSelects();
+    } else {
+      alert("No se pudo eliminar el vehículo.");
+    }
+  }
+});
+// FORMULARIO PUNTO DE INTERÉS (Misiones)
+const formPunto = document.getElementById("tab-punto");
+const selectPunto = document.getElementById("selectPunto");
+const btnBorrarPunto = document.getElementById("btnBorrarPunto");
+
+// Cargar datos en el form si selecciona una misión existente
+selectPunto.addEventListener("change", async () => {
+  const id = selectPunto.value;
+  if (!id) {
+    formPunto.reset();
+    return;
+  }
+  const misiones = await obtenerDatos("misiones");
+  const m = misiones.find(item => item.id == id);
+  if (m) {
+    document.getElementById("selectPlanetaPunto").value = m.cuerpo_celeste_id;
+    document.getElementById("inputTituloPunto").value = m.nombre;
+    document.getElementById("inputDescripcionPunto").value = m.descripcion;
+    document.getElementById("inputRelevancia").value = m.relevancia;
+    document.getElementById("inputPorcentaje").value = m.porcentaje;
+    document.getElementById("inputDisponible").value = m.disponible.toString();
+  }
+});
+
+// Guardar (Alta o Modificación) Punto de Interés
+formPunto.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const id = selectPunto.value;
+
+  const datos = {
+    cuerpo_celeste_id: parseInt(document.getElementById("selectPlanetaPunto").value),
+    nombre: document.getElementById("inputTituloPunto").value,
+    descripcion: document.getElementById("inputDescripcionPunto").value,
+    relevancia: parseInt(document.getElementById("inputRelevancia").value),
+    porcentaje: parseInt(document.getElementById("inputPorcentaje").value),
+    disponible: document.getElementById("inputDisponible").value === "true"
+  };
+
+  let exito = false;
+  if (id) {
+    exito = await modificarRegistro("misiones", id, datos);
+  } else {
+    exito = await crearRegistro("misiones", datos);
+  }
+
+  if (exito) {
+    alert("¡Punto de interés guardado con éxito!");
+    formPunto.reset();
+    inicializarSelects();
+  } else {
+    alert("Ocurrió un error al guardar el punto de interés.");
+  }
+});
+
+// Borrar Punto de Interés
+btnBorrarPunto.addEventListener("click", async () => {
+  const id = selectPunto.value;
+  if (!id) {
+    alert("Selecciona un punto de interés existente para borrar.");
+    return;
+  }
+  if (confirm("¿Estás seguro de borrar este punto de interés?")) {
+    const exito = await eliminarRegistro("misiones", id);
+    if (exito) {
+      alert("Punto de interés eliminado.");
+      formPunto.reset();
+      inicializarSelects();
+    } else {
+      alert("No se pudo eliminar el punto de interés.");
+    }
+  }
+});
