@@ -95,7 +95,10 @@ function pintarPuntosDeInteres(misiones) {
         `;
 
         divPunto.addEventListener("click", () => {
-            manejarClickPunto(mision, coordenadas);
+            if (estaBloqueada){
+                break;
+            }
+            manejarClickPunto(mision, indice, coordenadas);
         });
 
         contenedorMapa.appendChild(divPunto);
@@ -124,22 +127,35 @@ function rellenarApartadoIzquierda(cuerpo_celeste){
     document.getElementById("datoHabitable").textContent = `${habitable}`;
 }
 
-function manejarClickPunto(mision, coordenadasDestino) {
+function manejarClickPunto(mision, indiceActual, coordenadasDestino) {
     const estamosAhi = ((vehiculo.style.top === coordenadasDestino.top) && (vehiculo.style.left === coordenadasDestino.left));
-
     if (estamosAhi) {
         // Si ya está parado ahí, abrimos la información
         document.getElementById("puntoNombre").textContent = mision.nombre;
         document.getElementById("puntoDescripcion").textContent = mision.descripcion;
         panelPunto.classList.add("visible");
     } else {
-        viajarHacia(coordenadasDestino);
+        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
+        const datosVehiculo = await resVehiculo.json();
+        if (Math.abs(datosVehiculo[0].punto_interes-indiceActual) > 1){
+            console.error("Debe moverse primero a la misión más cercana.");
+            return;
+        }
+        const resMover = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ punto_interes: indiceDestino })
+        });
+        if (resMover.ok){
+            viajarHacia(coordenadasDestino);;
+        }
     }
 }
 
 function viajarHacia(coordenadas) {
     // Bloqueamos los clicks
     document.body.classList.add("bloqueado-viajando");
+    
 
     vehiculo.style.top = coordenadas.top;
     vehiculo.style.left = coordenadas.left;
