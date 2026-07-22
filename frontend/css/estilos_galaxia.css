@@ -32,7 +32,7 @@
   transition: filter 0.3s ease, transform 0.3s ease;
 }
 
-.planeta:hover img {
+.planeta:not(.no-disponible):hover img {
   filter: drop-shadow(0 0 20px #7b2ff7) drop-shadow(0 0 35px rgba(123, 47, 247, 0.6));
   transform: scale(1.08);
 }
@@ -82,11 +82,15 @@
 
 .imagen-contenedor {
     position: relative;
+<<<<<<< HEAD
     display: inline-block;
     width: 200px;       /* 👈 Cambia este valor para achicar o agrandar (ej. 80px, 90px, 100px) */
     height: 200px;      /* 👈 Debe medir exactamente lo mismo que el width para que sea un círculo */
     border-radius: 50%;
     overflow: hidden;
+=======
+    display: inline-flex;
+>>>>>>> origin/frontend
 }
 
 .planeta.no-disponible {
@@ -106,6 +110,7 @@
     justify-content: center;
     align-items: center;
     font-weight: bold;
+    box-sizing: border-box;
     border-radius: 50%;
     text-align: center;
     padding: 10px;
