@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const contenedorPuntos = document.getElementById("contenedor-puntos");
   const caminoPolyline = document.getElementById("camino-polyline");
 
-async function pintarPuntosDeInteres(misiones) {
+    async function pintarPuntosDeInteres(misiones) {
     // 1. Agrupamos tus constantes sueltas en un molde para poder iterarlas
     const coordenadasVisuales = [
         { top: constantes.PUNTO1_TOP, left: constantes.PUNTO1_LEFT },
@@ -57,7 +57,7 @@ async function pintarPuntosDeInteres(misiones) {
         });
 
         contenedorMapa.appendChild(divPunto);
-    });
+    
 
     // 2. Ubicamos la nave en la Misión 0 al arrancar
     if (misiones.length > 0) {
@@ -70,7 +70,7 @@ async function pintarPuntosDeInteres(misiones) {
             vehiculo.style.transition = "top 1s ease, left 1s ease"; 
         }, 50);
     }
-  });
+    });
   
   try {
     // FETCH AL BACKEND: Datos del Cuerpo Celeste
@@ -84,9 +84,9 @@ async function pintarPuntosDeInteres(misiones) {
     //  fondoPlanetaEl.src = planeta.imagen_url;
    // }
 
-async function manejarClickPunto(mision, indiceProximo, coordenadasDestino) {
-    const estamosAhi = ((vehiculo.style.top === coordenadasDestino.top) && (vehiculo.style.left === coordenadasDestino.left));
-    if (estamosAhi) {
+    async function manejarClickPunto(mision, indiceProximo, coordenadasDestino) {
+        const estamosAhi = ((vehiculo.style.top === coordenadasDestino.top) && (vehiculo.style.left === coordenadasDestino.left));
+        if (estamosAhi) {
         // Si ya está parado ahí, abrimos la información
         document.getElementById("puntoNombre").textContent = mision.nombre;
         document.getElementById("puntoDescripcion").textContent = mision.descripcion;
@@ -97,8 +97,8 @@ async function manejarClickPunto(mision, indiceProximo, coordenadasDestino) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ porcentaje: 100 })
             });
-        }
-    } else {
+            }
+        } else {
         const respuestaVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
         const datosVehiculo = await respuestaVehiculo.json();
         if (Math.abs(datosVehiculo[0].punto_interes-indiceProximo) > 1){
@@ -196,4 +196,4 @@ async function manejarClickPunto(mision, indiceProximo, coordenadasDestino) {
   } catch (error) {
     console.error(" Error al cargar los datos dinámicos en el planeta:", error);
   }
-});
+}});
