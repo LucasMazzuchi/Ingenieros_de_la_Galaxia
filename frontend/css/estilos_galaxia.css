@@ -74,3 +74,28 @@
   padding: 1rem;
   font-size: 0.85rem;
 }
+
+.imagen-contenedor {
+    position: relative;
+    display: inline-block;
+}
+
+.planeta.no-disponible {
+    opacity: 0.6;
+    cursor: not-allowed; /*Chequear como queda el prohibido*/
+}
+
+.capa-oscura {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: red; /*Texto dentro del div.*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    border-radius: 50%;
+}
