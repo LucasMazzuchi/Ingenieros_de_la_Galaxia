@@ -26,7 +26,24 @@ async function iniciarPlaneta() {
             window.location.href = "galaxia.html"; // Lo devolvemos al mapa
             return;
         }
-        dibujarDatosDelPlaneta(planetas[0]); // Esto arma la página
+        if (vehiculoDatos[0].ubicacion_id !== planetas[0].id){
+            const actualizacionUbicacionVehiculo= await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoDatos[0].id}`, { // Actualizo ubicación de la nave.
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ubicacion_id: planetas[0].id})
+                });
+        }
+        const misionesEstadoInicial = await dibujarDatosDelPlaneta(planetas[0]); // Esto arma la página
+        if (misionesEstadoInicial.filter(function (mision){return mision.porcentaje===100}).length !== misionesEstadoInicial.length){
+            const actualizacionCombustibleVehiculo= await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoDatos[0].id}`, { // Actualizo ubicación de la nave.
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ combustible: 0})
+                });
+        }
+        document.getElementById("botonVolver").addEventListener("click", function () {
+        logicaVolver(planetas[0].id, vehiculoDatos[0],misionesEstadoInicial);
+        });
     } catch (error) {
         console.error("Error validando acceso:", error);
     }
@@ -46,11 +63,42 @@ async function dibujarDatosDelPlaneta(planeta){
     pintarPuntosDeInteres(misiones);
     dibujarCamino(misiones);
     rellenarApartadoIzquierda(planeta);
+    return misiones;
   } catch (error){
     console.error("Error En la consulta de misiones: ", error);
   }
 }
 
+async function logicaVolver(planetaId, vehiculoDatos, misionesEstadoInicial) {
+    try {
+        if (misionesEstadoInicial.filter(function (mision){return mision.porcentaje===100}).length === misionesEstadoInicial.length){
+        return;
+        }
+        const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planetaId}&order_by=id&order=ASC`);
+        const misiones = await resMisiones.json();
+        const misionesCompletadas = misiones.filter(function (mision){
+            return mision.porcentaje===100;
+            });
+        if ((misiones.length === 0) || (misionesCompletadas.length !== misiones.length)) {
+            return;
+        }
+        const campoMejora = vehiculoDatos.estructura > vehiculoDatos.motor ? "motor" : "estructura";
+        if (vehiculoDatos[campoMejora] < 3) {
+            await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoDatos.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    combustible: 100, 
+                    [campoMejora]: vehiculoDatos[campoMejora] + 1
+                })
+            });
+        }
+    } catch (error) {
+        console.error("Error al mejorar la nave:", error);
+    } finally { //redirige al usuario a la página con todos los planetas.
+        window.location.href = "galaxia.html";
+    }
+}
 function buscarImagen(imagenId) {
     const imagenes_fondo = {
     1 : "../assets/img/fondo-agujero_negro.jpg",
