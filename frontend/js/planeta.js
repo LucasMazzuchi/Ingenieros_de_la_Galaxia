@@ -22,7 +22,14 @@ async function iniciarPlaneta() {
         const resPlaneta = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/?id=${planetaId}&vehiculo_id=${vehiculoDatos[0].id}`);
         const planetas = await resPlaneta.json();
 
+        if (!planetas || planetas.length === 0) {
+            console.error("El backend no devolvió ningún planeta con ese ID.");
+            return;
+        }
+
         if (!planetas[0].disponible) {
+            console.warn(`El planeta ${planetas[0].nombre} NO está disponible.`);
+            console.warn(`Estado de tu nave: Motor=${vehiculoDatos[0].motor}, Estructura=${vehiculoDatos[0].estructura}, Combustible=${vehiculoDatos[0].combustible}`);
             window.location.href = "galaxia.html"; // Lo devolvemos al mapa
             return;
         }

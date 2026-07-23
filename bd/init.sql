@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS vehiculos (
     motor INT NOT NULL,
     estructura INT NOT NULL,
     combustible INT NOT NULL,
-    ubicacion_id INT REFERENCES cuerpos_celestes(id) NOT NULL,
+    resistencia INT NOT NULL,
     punto_interes INT NOT NULL,
     borrado BOOLEAN DEFAULT FALSE
 );
@@ -39,13 +39,12 @@ CREATE TABLE IF NOT EXISTS misiones (
 INSERT INTO cuerpos_celestes (nombre, descripcion, tipo, diametro, gravedad, temperatura, habitable, terreno, posicion, imagen, imagen_fondo)
 VALUES 
 ('Tierra', 'Planeta rocoso que soporta vida. Tercer planeta desde el Sol, con agua líquida y una atmósfera rica en oxígeno.', 1, 12742, 9.8, 15, TRUE, 1, 1, 10, 8),
-('Marte', 'El planeta rojo, desértico y frío. Su color se debe al óxido de hierro en su superficie, y alguna vez tuvo agua líquida.', 1, 6779, 3.7, -60, FALSE, 2, 4, 3, 3),
-('Luna', 'Único satélite natural de la Tierra. Su gravedad influye directamente en las mareas oceánicas y su superficie está marcada por innumerables cráteres de impacto.', 2, 3474, 1.6, -53, FALSE, 2, 3, 2, 2),
-('Júpiter', 'El gigante gaseoso, masivo y turbulento. Es el planeta más grande del sistema solar, compuesto principalmente por hidrógeno y helio. Su Gran Mancha Roja es una tormenta anticiclónica gigante que lleva activa durante siglos.', 3, 139820, 24.7, -110, FALSE, 3, 5, 8, 5),
-('Mercurio', 'El planeta más pequeño y cercano al Sol. Debido a su cercanía a la estrella, experimenta las temperaturas más extremas del sistema solar, con variaciones de cientos de grados entre el día y la noche.', 1, 4879, 3.7, 167, FALSE, 2, 7, 4, 4);
-
+('Luna', 'Único satélite natural de la Tierra. Requerimientos mínimos de motor y estructura. Ideal para el primer salto.', 1, 3474, 1.6, -53, FALSE, 1, 3, 2, 2),
+('Marte', 'El planeta rojo. Requiere un motor nivel 2 para escapar de su gravedad y estructura nivel 2 para el frío.', 1, 6779, 16.0, -110, FALSE, 1, 4, 3, 3),
+('Mercurio', 'Pequeño pero rocoso. Requiere resistencia nivel 3 para el terreno y estructura nivel 3 para el calor extremo.', 1, 4879, 3.7, 310, FALSE, 2, 7, 4, 4),
+('Júpiter', 'Gigante gaseoso. Requiere motor máximo (nivel 3), resistencia máxima y estructura máxima para sobrevivir.', 3, 139820, 24.7, -110, FALSE, 3, 5, 8, 5);
 -- ==========================================
-INSERT INTO vehiculos (nombre, tipo, motor, estructura, combustible, ubicacion_id, punto_interes)
+INSERT INTO vehiculos (nombre, tipo, motor, estructura, combustible, resistencia, punto_interes)
 VALUES 
 ('Rover Explorador Alpha', 1, 1, 1, 100, 1, 1);
 

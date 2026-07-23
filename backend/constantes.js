@@ -154,11 +154,11 @@ export const DIAMETRO_MAX = 10000000;
 export const GRAVEDAD_MAX = 1000;
 
 // Límites a parámetros de vehículos.
-export const MOTOR_MAX = 4;
-export const ESTRUCTURA_MAX = 4;
+export const MOTOR_MAX = 3;
+export const ESTRUCTURA_MAX = 3;
 export const COMBUSTIBLE_MAX = 100;
 export const VEHICULOS_MAX = 3;
-export const PUNTO_INTERES_MAX = 2;
+export const PUNTO_INTERES_MAX = 3;
 
 // Límites a parámetros de misiones.
 export const PORCENTAJE_MAX = 100;
