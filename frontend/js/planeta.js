@@ -14,7 +14,8 @@ async function iniciarPlaneta() {
         window.location.href = "galaxia.html"; // si no hay ID, retorna
         return;
     }
-
+    const tipoVehiculo = (planetaId === "1") ? 2 : 1;
+    vehiculo.src = (tipoVehiculo === 2) ? "../assets/img/auto1.png" : "../assets/img/nave1.png";
     try {
         const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
         const vehiculoDatos = await resVehiculo.json();
@@ -179,6 +180,7 @@ function rellenarApartadoIzquierda(cuerpo_celeste){
     document.getElementById("datoTerreno").textContent = constantes.TIPOS_TERRENO[cuerpo_celeste.terreno];
     const habitable = (cuerpo_celeste.habitable === true) ? "Si" : "No";
     document.getElementById("datoHabitable").textContent = `${habitable}`;
+    document.getElementById("datoDescripcion").textContent = cuerpo_celeste.descripcion;
 }
 
 async function manejarClickPunto(mision, indiceProximo, coordenadasDestino) {
