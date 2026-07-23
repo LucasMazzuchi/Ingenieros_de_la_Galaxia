@@ -36,3 +36,8 @@ Una vez que la terminal indique que los contenedores están corriendo, abrí tu 
 ```bash
     docker compose down
 ```
+![screenshot](imagenesReadme/bienvenida.png)
+![screenshot](imagenesReadme/planeta.png)
+![screenshot](imagenesReadme/mapa.png)
+![screenshot](imagenesReadme/crear.png)
+

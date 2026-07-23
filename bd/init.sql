@@ -52,32 +52,26 @@ VALUES
 
 INSERT INTO misiones (nombre, descripcion, porcentaje, cuerpo_celeste_id, disponible)
 VALUES 
--- Tierra (ID 1)
 ('Estructura Alpha', 'Instalaciones sumergidas de origen incierto. Los paneles emiten pulsos electromagnéticos siguiendo una secuencia numérica que nadie en la superficie programó.', 100, 1, FALSE),
 ('Eco Orbital', 'Restos de chatarra no documentada flotando en la exósfera. Su estructura refleja ondas de radio, formando un patrón que se asemeja a un lenguaje extinto.', 50, 1, FALSE),
 ('Abismo Insondable', 'Una anomalía térmica en la Fosa de las Marianas. El lecho marino en estas coordenadas parece haber sido cortado con una precisión geométrica imposible.', 0, 1, FALSE),
 
--- Luna (ID 2)
 ('Sombra del Mar', 'Un cráter perfectamente circular donde el polvo lunar está cristalizado por extremo calor. Los ecosísmicos detectan enormes cavidades huecas bajo la roca basáltica.', 100, 2, FALSE),
 ('El Ojo de Tycho', 'El pico central del cráter no está compuesto de regolito natural, sino de una densa aleación metálica que absorbe todas las frecuencias de luz.', 40, 2, FALSE),
 ('Agujas del Sur', 'En el interior oscuro del polo sur hay formaciones de hielo estriado que no encajan con la geología local. Emiten una leve luminiscencia azulada al quedar en sombra.', 5, 2, FALSE),
 
--- Marte (ID 3)
 ('Conducto de Olimpo', 'Cerca de la caldera del mega-volcán, los fuertes vientos han desenterrado algo que parece un respiradero subterráneo del tamaño de una metrópolis.', 0, 3, FALSE),
 ('Fisura Marineris', 'El cañón masivo oculta sedimentos magnéticos ordenados en patrones fractales. Quienquiera o lo que sea que haya estado aquí, dejó un registro en la propia roca.', 15, 3, FALSE),
 ('Fractura Polar', 'Bajo los casquetes de hielo seco, los radares de penetración detectan formas regulares gigantescas. Parecen naves fosilizadas, congeladas para siempre en la corteza.', 25, 3, FALSE),
 
--- Mercurio (ID 5)
 ('Corazón de Caloris', 'El impacto no formó esta enorme cuenca; expuso lo que había debajo. Una intrincada red de conductos oscuros se extiende más allá del alcance de nuestros sensores.', 0, 5, FALSE),
 ('La Línea del Ocaso', 'En el terminador, la frontera entre el día abrasador y la noche helada, proyecta sombras alargadas que se desplazan de forma independiente a la rotación del planeta.', 10, 5, FALSE),
 ('Esferas del Norte', 'En los oscuros cráteres polares, esferas de composición desconocida descansan sobre el hielo antiguo, latiendo con un débil pulso térmico residual.', 0, 5, FALSE),
 
--- Júpiter (ID 6)
 ('El Ojo Inmóvil', 'La Gran Mancha Roja no es solo un ciclón constante. En su centro absoluto de rotación hay un área de vacío perfecto donde un objeto masivo está deformando la gravedad.', 0, 6, FALSE),
 ('Resonancia Magnética', 'Entre los intensos cinturones de radiación ecuatorial navega una señal de banda estrecha ahogada por el ruido. Repite las mismas coordenadas en bucle desde hace siglos.', 0, 6, FALSE),
 ('Latido de Europa', 'La corteza de hielo cruje siguiendo un patrón rítmico, casi respiratorio. Las sondas detectan enormes fuentes de calor moviéndose ágilmente bajo el océano profundo.', 0, 6, FALSE);
 
--- Plutón (ID 4)
 INSERT INTO misiones (nombre, descripcion, porcentaje, cuerpo_celeste_id, disponible)
 VALUES 
 ('Sello de Nitrógeno', 'Bajo la inmensa llanura del glaciar con forma de corazón, los sismógrafos han detectado vibraciones rítmicas de muy baja frecuencia. Algo titánico parece latir bajo la corteza helada.', 0, 4, FALSE),
