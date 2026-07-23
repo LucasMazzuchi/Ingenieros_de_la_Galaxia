@@ -1,6 +1,6 @@
 export const puedeViajar = (vehiculo, planeta) => {
     // Si no hay vehículo o no tiene combustible, devuelve
-    if (!vehiculo || vehiculo.combustible <= 0) {
+    if (!vehiculo) {
         return false;
     }
 
