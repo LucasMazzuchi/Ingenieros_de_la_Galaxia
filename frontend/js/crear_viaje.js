@@ -52,7 +52,7 @@ function crearSelectorImagenes(contenedorId, imagenes, inputHiddenId) {
     img.addEventListener("click", () => {
       contenedor.querySelectorAll("img").forEach(i => i.classList.remove("seleccionada"));
       img.classList.add("seleccionada");
-      
+
       inputHidden.value = index + 1; 
     });
     contenedor.appendChild(img);
@@ -156,13 +156,11 @@ async function eliminarRegistro(recurso, id) {
 // LOGICA DE CONSULTA Y LLENADO DE SELECTS (Al cargar la página) 
 async function inicializarSelects() {
   const planetas = await obtenerDatos("cuerpos_celestes");
-  
+
   const selectPlaneta = document.getElementById("selectPlaneta");
   const selectPlanetaPunto = document.getElementById("selectPlanetaPunto");
-  const selectUbicacionVehiculo = document.getElementById("selectUbicacionVehiculo");
-
   // Limpiar y poblar selects de planetas
-  [selectPlaneta, selectPlanetaPunto, selectUbicacionVehiculo].forEach(sel => {
+  [selectPlaneta, selectPlanetaPunto].forEach(sel => {
     if (!sel) return;
     if (sel === selectPlaneta) {
       sel.innerHTML = '<option value="">-- Crear nuevo --</option>';
@@ -255,6 +253,7 @@ formPlaneta.addEventListener("submit", async (e) => {
     posicion: parseInt(document.getElementById("inputPosicion").value),
     imagen: parseInt(document.getElementById("inputImagen").value),
     imagen_fondo: parseInt(document.getElementById("inputImagenFondo").value)
+
   };
 
   let exito = false;
@@ -313,7 +312,7 @@ selectVehiculo.addEventListener("change", async () => {
     document.getElementById("inputMotor").value = v.motor;
     document.getElementById("inputEstructura").value = v.estructura;
     document.getElementById("inputCombustible").value = v.combustible;
-    document.getElementById("selectUbicacionVehiculo").value = v.ubicacion_id;
+    document.getElementById("inputResistencia").value = v.resistencia;
   }
 });
 
@@ -328,7 +327,8 @@ formVehiculo.addEventListener("submit", async (e) => {
     motor: parseInt(document.getElementById("inputMotor").value),
     estructura: parseInt(document.getElementById("inputEstructura").value),
     combustible: parseInt(document.getElementById("inputCombustible").value),
-    ubicacion_id: parseInt(document.getElementById("selectUbicacionVehiculo").value)
+    resistencia: parseInt(document.getElementById("inputResistencia").value),
+    punto_interes: 0
   };
 
   let exito = false;
