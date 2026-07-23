@@ -13,7 +13,7 @@ export async function getMision(id) {
 }
 
 export async function createMision(mision) {
-    const solicitud = "INSERT INTO misiones (nombre, descripcion, porcentaje, disponible, cuerpo_celeste_id, borrado) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
+    const solicitud = "INSERT INTO misiones (nombre, descripcion, porcentaje, disponible, cuerpo_celeste_id, borrado) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
     const valores = [mision.nombre, mision.descripcion, mision.porcentaje, mision.disponible, mision.cuerpo_celeste_id, false];
     const res = await db.query(solicitud, valores);
     return {mision : res.rowCount == 1, id : res.rows[0].id};

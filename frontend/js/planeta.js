@@ -1,8 +1,8 @@
-document.addEventListener("DOMContentLoaded", async () => {
+import * as constantes from "./constantes.js";
 
-  // Leer el ID del planeta desde la URL
-  const params = new URLSearchParams(window.location.search);
-  const planetaId = params.get("id");
+const contenedorMapa = document.getElementById("mapa-planeta");
+const panelPunto = document.getElementById("panelPunto");
+const vehiculo = document.getElementById("vehiculo");
 
 //Chequea que pueda ingresar al planeta.
 async function iniciarPlaneta() {
@@ -44,10 +44,12 @@ async function dibujarDatosDelPlaneta(planeta){
     const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planeta.id}&order_by=id&order=ASC`);
     const misiones = await resMisiones.json();
     pintarPuntosDeInteres(misiones);
+    dibujarCamino(misiones);
     rellenarApartadoIzquierda(planeta);
   } catch (error){
     console.error("Error En la consulta de misiones: ", error);
   }
+}
 
 function buscarImagen(imagenId) {
     const imagenes_fondo = {
@@ -75,7 +77,6 @@ function buscarImagen(imagenId) {
 
     misiones.forEach((mision, indice) => {
         const coordenadas = coordenadasVisuales[indice];
-        
         //Si hay más de 3 msiones, se ignoran. 
         if (!coordenadas) return; 
         if (indice === 0 && !mision.disponible){
@@ -108,31 +109,29 @@ function buscarImagen(imagenId) {
 
         contenedorMapa.appendChild(divPunto);
     
-
+    });
     // 2. Ubicamos la nave en la Misión 0 al arrancar
     if (misiones.length > 0) {
         vehiculo.style.transition = "none";
         vehiculo.style.top = coordenadasVisuales[0].top;
         vehiculo.style.left = coordenadasVisuales[0].left;
         vehiculo.dataset.indiceActual = 0;
-        
+
         setTimeout(() => {
             vehiculo.style.transition = "top 1s ease, left 1s ease"; 
         }, 50);
     }
-    });
-  
-  try {
-    // FETCH AL BACKEND: Datos del Cuerpo Celeste
-    const resPlaneta = await fetch(`http://localhost:5000/api/cuerpos_celestes`);
-    if (!resPlaneta.ok) throw new Error("Error al obtener planeta");
-    const planeta = await resPlaneta.json();
+}
 
-    // Actualizamos la UI con los datos reales del planeta
-   // nombrePlanetaEl.textContent = planeta.nombre;
-    //if (planeta.imagen_url) {
-    //  fondoPlanetaEl.src = planeta.imagen_url;
-   // }
+function rellenarApartadoIzquierda(cuerpo_celeste){
+    document.getElementById("datoTipo").textContent = constantes.TIPOS_PLANETA[cuerpo_celeste.tipo];
+    document.getElementById("datoDiametro").textContent = `${cuerpo_celeste.diametro} km`;
+    document.getElementById("datoGravedad").textContent = `${cuerpo_celeste.gravedad} m/s²`;
+    document.getElementById("datoTemperatura").textContent = `${cuerpo_celeste.temperatura} °C`;
+    document.getElementById("datoTerreno").textContent = constantes.TIPOS_TERRENO[cuerpo_celeste.terreno];
+    const habitable = (cuerpo_celeste.habitable === true) ? "Si" : "No";
+    document.getElementById("datoHabitable").textContent = `${habitable}`;
+}
 
     async function manejarClickPunto(mision, indiceProximo, coordenadasDestino) {
         const estamosAhi = ((vehiculo.style.top === coordenadasDestino.top) && (vehiculo.style.left === coordenadasDestino.left));
@@ -174,76 +173,42 @@ function buscarImagen(imagenId) {
     }
 }
 
-    // Limpiamos los puntos hardcodeados
-    contenedorPuntos.innerHTML = "";
-    
-    // Coordenadas base predefinidas para trazar el camino (Top%, Left%)
-    //const posicionesBase = [
-   //   { top: "15%", left: "12%", x: 12, y: 15 },
-   //   { top: "50%", left: "78%", x: 78, y: 50 },
-   //   { top: "85%", left: "20%", x: 20, y: 85 }
-   // ];
+function viajarHacia(coordenadas) {
+    // Bloqueamos los clicks
+    document.body.classList.add("bloqueado-viajando");
 
-    //let puntosSVG = [];
 
-    // Inyectar dinámicamente cada misión de la base de datos
-    //misiones.forEach((mision, index) => {
-      // Usar coordenadas fijas del mapa si existen, o calcular dinámicas
-     // const pos = posicionesBase[index] || {
-      //  top: `${20 + index * 25}%`,
-      //  left: `${20 + (index % 2) * 50}%`,
-      //  x: 20 + (index % 2) * 50,
-       // y: 20 + index * 25
-    //  };
+    vehiculo.style.top = coordenadas.top;
+    vehiculo.style.left = coordenadas.left;
 
-     // const divPunto = document.createElement("div");
-    //  divPunto.classList.add("punto-interes");
-     // if (index !== 0) divPunto.classList.add("bloqueado"); // El primero empieza desbloqueado
-     // divPunto.id = `punto-${mision.id}`;
-     // divPunto.style.top = pos.top;
-     // divPunto.style.left = pos.left;
+    // Desbloqueamos cuando termina de moverse
+    setTimeout(() => {
+        document.body.classList.remove("bloqueado-viajando");
+    }, 1000); 
+}
 
-     // divPunto.innerHTML = `
-     //   <img src="../assets/img/marcador.png" alt="punto de interés">
-     //   <p>${mision.nombre}</p>
-    //  `;
+function dibujarCamino(puntosDeInteres){
+    const camino = document.getElementById("camino-polyline");
+    if (puntosDeInteres.length ===2) {
+        camino.setAttribute("points", constantes.COORDENADAS_SVG.slice(0,2).join(" "));
+    } else if (puntosDeInteres.length === 3){
+        camino.setAttribute("points", constantes.COORDENADAS_SVG.join(" "));
+    } else {
+        camino.setAttribute("points", " ");
+    }
+}
 
-    //  contenedorPuntos.appendChild(divPunto);
 
-    //  puntos.push({
-    //    el: divPunto,
-    //    top: pos.top,
-    //    left: pos.left,
-     //   id: mision.id
-    //  });
+document.getElementById("btnCerrarPanelPunto").addEventListener("click", () => {
+    panelPunto.classList.remove("visible");
+});
 
-     // puntosSVG.push(`${pos.x},${pos.y}`);
-  //  });
+const botonInfo = document.getElementById('botonInfo');
+const panelPlaneta = document.getElementById('panelPlaneta');
 
-    // Dibujar el camino dinámico en el SVG
-   // caminoPolyline.setAttribute("points", puntosSVG.join(" "));
-
-    // Posicionar el vehículo en el primer punto
-   // if (puntos.length > 0) {
-   //   vehiculo.style.top = puntos[0].top;
-   //   vehiculo.style.left = puntos[0].left;
-   // }
-
-    // Mantenemos el listener original de clics para viajar entre puntos
-   // puntos.forEach((punto, indice) => {
-   //   punto.el.addEventListener("click", () => {
-    //    if (viajando) return;
-//
-    //    if (indice === actual) {
-          // Redirigir usando el ID real de la misión/punto de interés
-    //      window.location.href = `punto_interes.html?id=${punto.id}`;
-    //    } else if (indice === actual + 1 || indice === actual - 1) {
-   //       moverA(indice);
-    //    }
-    //  });
-   // });
-
-  } catch (error) {
-    console.error(" Error al cargar los datos dinámicos en el planeta:", error);
-  }
-}}});
+botonInfo.addEventListener('click', () => {
+    panelPlaneta.classList.toggle('abierto');
+    botonInfo.classList.toggle('abierto');
+    botonInfo.querySelector('.flecha').textContent = panelPlaneta.classList.contains('abierto') ? '‹' : '›';
+});
+document.addEventListener("DOMContentLoaded", iniciarPlaneta);
