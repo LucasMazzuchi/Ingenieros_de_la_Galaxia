@@ -1,17 +1,21 @@
 import { db } from "./pool.js";
 import { armar_consulta } from "./consultas.js";
 
+// Busca todas las misiones, se puede filtrar por sus campos. El parámetro texto es la consulta y procesados son los datos.
+// Devuelve todas las misiones que cumplan con los requisitos de filtrado. 
 export async function getAllMisiones({ texto, procesados }) {
     const res = await db.query(texto, procesados);
     return res.rows;
 }
 
+// Busca la misión por el id pasado por parámetro. Devuelve la misión encontrada.
 export async function getMision(id) {
     const solicitud = "SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.porcentaje, m.disponible FROM misiones as m, cuerpos_celestes as c WHERE m.id = $1 AND c.id = m.cuerpo_celeste_id AND m.borrado = FALSE AND c.borrado = FALSE";
     const res = await db.query(solicitud, [id]);
     return res.rows[0];
 }
-
+// Crea una misión con los datos pasados por parámetro mediante el diccionario mision.
+// Devuelve true en mision, si fue creada exitosamente, sino devuelve false. También devuelve su id.
 export async function createMision(mision) {
     const solicitud = "INSERT INTO misiones (nombre, descripcion, porcentaje, disponible, cuerpo_celeste_id, borrado) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
     const valores = [mision.nombre, mision.descripcion, mision.porcentaje, mision.disponible, mision.cuerpo_celeste_id, false];
@@ -19,12 +23,17 @@ export async function createMision(mision) {
     return {mision : res.rowCount == 1, id : res.rows[0].id};
 }
 
+
+// Borra una misión por el id pasado por parámetro marcando la casilla borrado como true. En caso de que no exista la misión devuelve false en ok,
+// sino devuelve true en ok junto con el vehiculo borrado.
 export async function removeMision(id){
     const solicitud = "UPDATE misiones SET borrado = TRUE WHERE id=$1 AND borrado = FALSE RETURNING *";
     const res = await db.query(solicitud, [id]);
     return {ok : res.rowCount == 1, mision : res.rows[0]};
 }
 
+// Actualiza la misión con los datos pasados por el objeto mision, para buscarla usa el id pasado por parámetro. Devuelve true si se actualizo la misión,
+// en caso contrario devuelve false.
 export async function updateMision(id, mision){
     const { consulta, valores, numeroId } = armar_consulta(id, mision)
     const solicitud = `UPDATE misiones SET ${consulta} WHERE id=$${numeroId} AND borrado = FALSE`;
@@ -32,6 +41,7 @@ export async function updateMision(id, mision){
     return res.rowCount == 1;
 }
 
+// Cuenta la cantidad de misiones que hay en la base de datos sin borrar.
 export async function cantidadMisiones(id){
     const res = await db.query("SELECT COUNT(*) FROM misiones WHERE borrado=FALSE AND cuerpo_celeste_id=$1", [id]);
     return Number(res.rows[0].count);

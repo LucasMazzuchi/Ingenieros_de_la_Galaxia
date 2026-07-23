@@ -1,3 +1,4 @@
+// Conexión con la base de datos.
 import { Pool } from 'pg';
 
 export const db = new Pool({
