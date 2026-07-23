@@ -1,3 +1,4 @@
+import * as constantes from "./constantes.js";
 // Listas de imágenes reales (todas sueltas en assets/img, sin subcarpetas)
 const imagenesPlanetas = [
   "../assets/img/agujero_negro.png",
@@ -97,11 +98,12 @@ botonesTab.forEach(boton => {
 
 
 // FUNCIONES DE LA API 
-const API_URL = "http://localhost:5000/api";
+
+
 
 async function obtenerDatos(recurso) {
   try {
-    const res = await fetch(`${API_URL}/${recurso}`);
+    const res = await fetch(`${constantes.API_URL}/${recurso}`);
     if (!res.ok) throw new Error(`Error al obtener ${recurso}`);
     return await res.json();
   } catch (error) {
@@ -112,7 +114,7 @@ async function obtenerDatos(recurso) {
 
 async function crearRegistro(recurso, datos) {
   try {
-    const res = await fetch(`${API_URL}/${recurso}`, {
+    const res = await fetch(`${constantes.API_URL}/${recurso}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datos)
@@ -126,7 +128,7 @@ async function crearRegistro(recurso, datos) {
 
 async function modificarRegistro(recurso, id, datos) {
   try {
-    const res = await fetch(`${API_URL}/${recurso}/${id}`, {
+    const res = await fetch(`${constantes.API_URL}/${recurso}/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datos)
@@ -140,7 +142,7 @@ async function modificarRegistro(recurso, id, datos) {
 
 async function eliminarRegistro(recurso, id) {
   try {
-    const res = await fetch(`${API_URL}/${recurso}/${id}`, {
+    const res = await fetch(`${constantes.API_URL}/${recurso}/${id}`, {
       method: "DELETE"
     });
     return res.ok;
