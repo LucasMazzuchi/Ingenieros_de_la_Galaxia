@@ -1,6 +1,5 @@
 import {API_URL, MISIONES_URL } from "./constantes.js";
-document.getElementById("btnIniciar").addEventListener("click", async (e) => {
-  e.preventDefault();
+document.getElementById("btnIniciar").addEventListener("click", async () => {
   try{
     const resMisionesTierra = await fetch(`${API_URL}/${MISIONES_URL}?cuerpo_celeste_id=1&porcentaje=100&order_by=id&order=ASC`);
     const misionesTierra = await resMisionesTierra.json();
