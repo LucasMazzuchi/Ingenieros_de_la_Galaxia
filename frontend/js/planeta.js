@@ -29,12 +29,15 @@ async function iniciarPlaneta() {
         }
 
         if (!planetas[0].disponible) {
-            console.warn(`El planeta ${planetas[0].nombre} NO está disponible.`);
-            console.warn(`Estado de tu nave: Motor=${vehiculoDatos[0].motor}, Estructura=${vehiculoDatos[0].estructura}, Combustible=${vehiculoDatos[0].combustible}`);
             window.location.href = "galaxia.html"; // Lo devolvemos al mapa
             return;
         }
-        const misionesEstadoInicial = await dibujarDatosDelPlaneta(planetas[0]); // Esto arma la página
+        const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planetas[0].id}&order_by=id&order=ASC`);
+        const misiones = await resMisiones.json();
+        if (vehiculoDatos[0].combustible<100 && misiones.filter(function (mision) {return mision.disponible}).length===0){
+            window.location.href = "galaxia.html";
+        }
+        const misionesEstadoInicial = await dibujarDatosDelPlaneta(planetas[0], misiones); // Esto arma la página
         if (misionesEstadoInicial.filter(function (mision){return mision.porcentaje===100}).length !== misionesEstadoInicial.length){
             const actualizacionCombustibleVehiculo= await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoDatos[0].id}`, { // Actualizo ubicación de la nave.
                 method: "PATCH",
@@ -50,7 +53,7 @@ async function iniciarPlaneta() {
     }
 }
 
-async function dibujarDatosDelPlaneta(planeta){
+async function dibujarDatosDelPlaneta(planeta, misiones){
   try{
     document.getElementById("nombre-planeta").textContent = planeta.nombre; // Cambia el nombre
     const ruta = buscarImagen(planeta.imagen_fondo);
@@ -59,8 +62,6 @@ async function dibujarDatosDelPlaneta(planeta){
     contenedorMapa.style.backgroundPosition = "center"; // centrado.
     contenedorMapa.style.backgroundRepeat = "no-repeat"; // No se duplica el mosaico.
     contenedorMapa.style.backgroundAttachment = "fixed"; // No scrollea el fondo. Ver si el mapa scrollea.
-    const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planeta.id}&order_by=id&order=ASC`);
-    const misiones = await resMisiones.json();
     pintarPuntosDeInteres(misiones);
     dibujarCamino(misiones);
     rellenarApartadoIzquierda(planeta);
@@ -83,13 +84,19 @@ async function logicaVolver(planetaId, vehiculoDatos, misionesEstadoInicial) {
         if ((misiones.length === 0) || (misionesCompletadas.length !== misiones.length)) {
             return;
         }
-        const campoMejora = vehiculoDatos.estructura > vehiculoDatos.motor ? "motor" : "estructura";
+        const campos = ["motor", "estructura", "resistencia"]
+        let campoMejora = campos[0];
+        campos.forEach(function (campo){
+            if (vehiculoDatos[campo]<vehiculoDatos[campoMejora]){
+                campoMejora = campo;
+            }
+        });
         if (vehiculoDatos[campoMejora] < 3) {
             await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoDatos.id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    combustible: 100, 
+                    combustible: 100,
                     [campoMejora]: vehiculoDatos[campoMejora] + 1
                 })
             });

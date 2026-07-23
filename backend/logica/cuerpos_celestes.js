@@ -1,5 +1,5 @@
 export const puedeViajar = (vehiculo, planeta) => {
-    // Si no hay vehículo o no tiene combustible, devuelve
+    // Si no hay vehículo, devuelve
     if (!vehiculo) {
         return false;
     }
@@ -16,7 +16,7 @@ export const puedeViajar = (vehiculo, planeta) => {
 
 
     if (!(planeta.terreno == 1 && (vehiculo.resistencia >= 1 )) &&// terreno llano
-        !(planeta.terreno == 2 && vehiculo.resistencia == 3) && // terreno rocoso
+        !(planeta.terreno == 2 && vehiculo.resistencia >= 2) && // terreno rocoso
         !(planeta.terreno == 3 && (vehiculo.resistencia == 3 && vehiculo.estructura == 3))){ // terreno líquido
             return false;
         }
