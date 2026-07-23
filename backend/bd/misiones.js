@@ -7,14 +7,14 @@ export async function getAllMisiones({ texto, procesados }) {
 }
 
 export async function getMision(id) {
-    const solicitud = "SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.relevancia, m.porcentaje, m.disponible FROM misiones as m, cuerpos_celestes as c WHERE m.id = $1 AND c.id = m.cuerpo_celeste_id AND m.borrado = FALSE AND c.borrado = FALSE";
+    const solicitud = "SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.porcentaje, m.disponible FROM misiones as m, cuerpos_celestes as c WHERE m.id = $1 AND c.id = m.cuerpo_celeste_id AND m.borrado = FALSE AND c.borrado = FALSE";
     const res = await db.query(solicitud, [id]);
     return res.rows[0];
 }
 
 export async function createMision(mision) {
-    const solicitud = "INSERT INTO misiones (nombre, descripcion, relevancia, porcentaje, disponible, cuerpo_celeste_id, borrado) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
-    const valores = [mision.nombre, mision.descripcion, mision.relevancia, mision.porcentaje, mision.disponible, mision.cuerpo_celeste_id, false];
+    const solicitud = "INSERT INTO misiones (nombre, descripcion, porcentaje, disponible, cuerpo_celeste_id, borrado) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
+    const valores = [mision.nombre, mision.descripcion, mision.porcentaje, mision.disponible, mision.cuerpo_celeste_id, false];
     const res = await db.query(solicitud, valores);
     return {mision : res.rowCount == 1, id : res.rows[0].id};
 }

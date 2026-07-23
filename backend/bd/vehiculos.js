@@ -6,14 +6,14 @@ export async function getAllVehiculos({ texto, procesados }) {
 }
 
 export async function getVehiculo(id) {
-    const solicitud = "SELECT v.id, v.nombre, c.nombre as ubicacion, v.tipo, v.motor, v.estructura, v.combustible FROM vehiculos as v, cuerpos_celestes as c WHERE v.id=$1 AND c.id=v.ubicacion_id AND v.borrado = FALSE AND c.borrado = FALSE";
+    const solicitud = "SELECT v.id, v.nombre, v.tipo, v.motor, v.estructura, v.resistencia, v.combustible, v.punto_interes FROM vehiculos as v WHERE v.id=$1 AND v.borrado = FALSE";
     const res = await db.query(solicitud, [id]);
     return res.rows[0];
 }
 
 export async function createVehiculo(vehiculo) {
-    const solicitud = "INSERT INTO vehiculos (nombre, tipo, motor, estructura, combustible, ubicacion_id, borrado) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
-    const valores = [vehiculo.nombre, vehiculo.tipo, vehiculo.motor, vehiculo.estructura, vehiculo.combustible, vehiculo.ubicacion_id, false];
+    const solicitud = "INSERT INTO vehiculos (nombre, tipo, motor, estructura, combustible, resistencia, punto_interes, borrado) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id";
+    const valores = [vehiculo.nombre, vehiculo.tipo, vehiculo.motor, vehiculo.estructura, vehiculo.combustible, vehiculo.punto_interes, vehiculo.resistencia, false];
     const res = await db.query(solicitud, valores);
     return {vehiculo : res.rowCount == 1, id : res.rows[0].id};
 }

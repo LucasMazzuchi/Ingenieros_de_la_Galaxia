@@ -8,7 +8,6 @@ export const validarMision = (req, res, next) => {
     const reglasMision = {
     [constantes.NOMBRE]: validarString,
     [constantes.DESCRIPCION]: validarString,
-    [constantes.RELEVANCIA]: validarEntero,
     [constantes.PORCENTAJE]: validarEntero,
     [constantes.DISPONIBLE]: validarBool,
     [constantes.CUERPO_CELESTE]: validarEntero,
@@ -16,7 +15,6 @@ export const validarMision = (req, res, next) => {
     const entrada = {
     [constantes.NOMBRE]: { campo: req.body.nombre, min: 1, max: constantes.NOMBRE_MAX, error: constantes.NOMBRE },
     [constantes.DESCRIPCION]: { campo: req.body.descripcion, min: 0, max: constantes.DESCRIPCION_MAX, error: constantes.DESCRIPCION },
-    [constantes.RELEVANCIA]: { campo: req.body.relevancia, min: 1, max: constantes.RELEVANCIA_MAX, error: constantes.RELEVANCIA },
     [constantes.PORCENTAJE]: { campo: req.body.porcentaje, min: 0, max: constantes.PORCENTAJE_MAX, error: constantes.PORCENTAJE },
     [constantes.DISPONIBLE]: { campo: req.body.disponible, error: constantes.DISPONIBLE },
     [constantes.CUERPO_CELESTE]: { campo: req.body.cuerpo_celeste_id, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE },
@@ -34,28 +32,26 @@ export const validarMision = (req, res, next) => {
 };
 
 export const validarFiltrosMision = (req, res, next) => {
-    const regex = [constantes.ID, constantes.NOMBRE, constantes.DISPONIBLE, constantes.RELEVANCIA, 
+    const regex = [constantes.ID, constantes.NOMBRE, constantes.DISPONIBLE,
     constantes.PORCENTAJE, constantes.CUERPO_CELESTE].join('|');
     const regexOrdenarPor = new RegExp( `^(${regex})$`, "i");
 
     const validadores = {
         [constantes.ID] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.ID_MAX},
         [constantes.NOMBRE] : {regex: constantes.REGEX_STRING, error: constantes.ERROR_FILTRO_STRING, caster : String},
-        [constantes.RELEVANCIA] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.RELEVANCIA_MAX},
         [constantes.PORCENTAJE] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 0, max: constantes.PORCENTAJE_MAX},
         [constantes.DISPONIBLE] : {regex: constantes.REGEX_BOOL, error: constantes.ERROR_FILTRO_BOOL, caster : (val) => String(val).toLowerCase() === 'true'},
         [constantes.CUERPO_CELESTE] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.ID_MAX},
         [constantes.LIMITE]: { regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min: 1, max: constantes.LIMITE_MAX },
-        [constantes.ORDENAR_POR]: { regex: regexOrdenarPor, error: constantes.ERROR_FILTRO_ORDENAR, caster: String },
-        [constantes.ORDEN]: { regex: constantes.REGEX_ORDEN, error: constantes.ERROR_ORDEN, caster: orden }
+        [constantes.ORDER_BY]: { regex: regexOrdenarPor, error: constantes.ERROR_FILTRO_ORDENAR, caster: String },
+        [constantes.ORDER]: { regex: constantes.REGEX_ORDEN, error: constantes.ERROR_ORDEN, caster: orden }
     };
 
     const permitidos = new Set([
         constantes.ID, constantes.ID + "_min", constantes.ID + "_max",
         constantes.NOMBRE, constantes.DISPONIBLE, constantes.CUERPO_CELESTE,
-        constantes.RELEVANCIA, constantes.RELEVANCIA + "_min", constantes.RELEVANCIA + "_max",
         constantes.PORCENTAJE, constantes.PORCENTAJE + "_min", constantes.PORCENTAJE + "_max",
-        constantes.LIMITE, constantes.ORDENAR_POR, constantes.ORDEN
+        constantes.LIMITE, constantes.ORDER_BY, constantes.ORDER
     ]);
 
     const erroresClaves = validarFiltros(Object.keys(req.query), permitidos);

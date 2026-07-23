@@ -51,7 +51,6 @@
             <option value="1">Rocoso</option>
             <option value="2">Gaseoso</option>
             <option value="3">Helado</option>
-            <option value="4">Enano</option>
           </select>
         </label>
 
@@ -72,8 +71,6 @@
             <option value="1">Desértico</option>
             <option value="2">Rocoso</option>
             <option value="3">Helado</option>
-            <option value="4">Volcánico</option>
-            <option value="5">Oceánico</option>
           </select>
         </label>
 
@@ -84,17 +81,17 @@
           </select>
         </label>
 
-        <label>Posición en la galaxia (0-9)
-          <input type="number" id="inputPosicion" min="0" max="9" required>
+        <label>Posición en la galaxia (2-10)
+          <input type="number" id="inputPosicion" min="2" max="10" required>
         </label>
 
         <label>Imagen del planeta</label>
         <div class="galeria-imagenes" id="galeriaPlanetas"></div>
-        <input type="hidden" id="inputImagen" required>
+        <input type="hidden" id="inputImagen" >
 
         <label>Imagen de fondo</label>
         <div class="galeria-imagenes" id="galeriaFondoPlaneta"></div>
-        <input type="hidden" id="inputImagenFondo" required>
+        <input type="hidden" id="inputImagenFondo" >
 
         <div class="botones-crud">
           <button type="submit" class="button is-primary" id="btnGuardarPlaneta">Guardar</button>
@@ -121,10 +118,6 @@
 
         <label>Párrafo / descripción
           <textarea id="inputDescripcionPunto" required></textarea>
-        </label>
-
-        <label>Relevancia
-          <input type="number" id="inputRelevancia" required>
         </label>
 
         <label>Porcentaje / progreso
@@ -176,13 +169,9 @@
           <input type="number" id="inputCombustible" required>
         </label>
 
-        <label>Ubicación (planeta actual)
-          <select id="selectUbicacionVehiculo"></select>
+        <label>Resistencia
+          <input type="number" id="inputResistencia" required>
         </label>
-
-        <label>Imagen del vehículo</label>
-        <div class="galeria-imagenes" id="galeriaVehiculo"></div>
-        <input type="hidden" id="inputImagenVehiculo" required>
 
         <div class="botones-crud">
           <button type="submit" class="button is-primary" id="btnGuardarVehiculo">Guardar</button>
@@ -197,6 +186,5 @@
     <p>&copy; 2026 Todos los derechos reservados — Ingenieros de Galaxia</p>
   </footer>
 
-  <script src="../js/crear_viaje.js"></script>
+  <script type="module" src="../js/crear_viaje.js"></script>
 </body>
-</html>

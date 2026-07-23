@@ -18,6 +18,9 @@ export const ERROR_FLOAT = (campo, min, max) => {
 export const LIMITE = "limite";
 export const ORDEN = "orden";
 export const ORDENAR_POR = "ordenar_por";
+export const LIMIT = "limit";
+export const ORDER = "order";
+export const ORDER_BY = "order_by"
 
 // REGEX
 export const REGEX_STRING = /^[a-zA-Z_]+$/
@@ -70,7 +73,7 @@ export const consulta = (filtros, entidad, texto) => {
     let procesados = [];
     let indice = 1;
     for (let [campo, filtro] of Object.entries(filtros)) {
-        if (campo === LIMITE || campo === ORDENAR_POR || campo === ORDEN) {
+        if (campo === "limit" || campo === "order_by" || campo === "order") {
             continue; 
         }
         let operador = "=";
@@ -85,9 +88,9 @@ export const consulta = (filtros, entidad, texto) => {
         procesados.push(filtro);
         indice++;
     }
-    const filtro = filtros[ORDENAR_POR] || ID;
-    const orden = filtros[ORDEN] || "ASC";
-    const limite = filtros[LIMITE] || 100;
+    const filtro = filtros[ORDER_BY] || ID;
+    const orden = filtros[ORDER] || "ASC";
+    const limite = filtros[LIMIT] || 100;
     texto += ` ORDER BY ${entidad[0]}.${filtro} ${orden}`;
 
     texto += ` LIMIT $${indice}`;
@@ -113,7 +116,10 @@ export const CODIGO_FK = "23503";
 // Claves de vehículos.
 export const MOTOR = "motor";
 export const ESTRUCTURA = "estructura";
+export const RESISTENCIA= "resistencia";
+
 export const COMBUSTIBLE = "combustible";
+export const PUNTO_INTERES = "punto_interes";
 
 
 // Claves de cuerpos celestes.
@@ -126,7 +132,6 @@ export const IMAGEN = "imagen";
 export const IMAGEN_FONDO = "imagen_fondo";
 
 // Claves de misiones.
-export const RELEVANCIA = "relevancia";
 export const PORCENTAJE = "porcentaje";
 export const DISPONIBLE = "disponible";
 export const CUERPO_CELESTE = "cuerpo_celeste_id";
@@ -144,20 +149,21 @@ export const CUERPOS_CELESTES_MAX = 10;
 export const IMAGEN_MAX = 10;
 export const IMAGEN_FONDO_MAX = 10;
 
-export const POSICION_MAX = 8; //Cambiar en base a la cantidad de planetas que se hagan en el front
+export const POSICION_MAX = 10; //Cambiar en base a la cantidad de planetas que se hagan en el front
 
 export const TERRENO_MAX = 3;
 export const DIAMETRO_MAX = 10000000;
 export const GRAVEDAD_MAX = 1000;
 
 // Límites a parámetros de vehículos.
-export const MOTOR_MAX = 4;
-export const ESTRUCTURA_MAX = 4;
+export const MOTOR_MAX = 3;
+export const RESISTENCIA_MAX = 3;
+export const ESTRUCTURA_MAX = 3;
 export const COMBUSTIBLE_MAX = 100;
-export const VEHICULOS_MAX = 3;
+export const VEHICULOS_MAX = 2;
+export const PUNTO_INTERES_MAX = 3;
 
 // Límites a parámetros de misiones.
-export const RELEVANCIA_MAX = 3;
 export const PORCENTAJE_MAX = 100;
 export const LIMITE_MAX = 100;
 export const MISIONES_MAX = 4;

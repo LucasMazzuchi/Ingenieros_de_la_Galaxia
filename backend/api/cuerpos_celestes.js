@@ -9,7 +9,7 @@ export const endpointsCuerpoCeleste = Router();
  
 endpointsCuerpoCeleste.get("/", validarFiltrosCuerpoCeleste, async (req, res) => {
     try {
-        const texto = "SELECT c.id, c.nombre, c.tipo, c.diametro, c.gravedad, c.temperatura, c.habitable, c.terreno, c.posicion, c.imagen, c.imagen_fondo FROM cuerpos_celestes as c WHERE c.borrado = FALSE";
+        const texto = "SELECT c.id, c.nombre, c.descripcion, c.tipo, c.diametro, c.gravedad, c.temperatura, c.habitable, c.terreno, c.posicion, c.imagen, c.imagen_fondo FROM cuerpos_celestes as c WHERE c.borrado = FALSE";
         
         const { vehiculo_id, ...sinVehiculo } = req.query;
         
@@ -65,6 +65,9 @@ endpointsCuerpoCeleste.post("/", validarCuerpoCeleste, async (req, res)=> {
  
 endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req, res) => {
     try{
+        if (req.params.id ===1){
+            return res.status(403).json({error: "No se puede modificar la Tierra."});
+        }
         const cuerpoCeleste = await cuerpos.getCuerpoCeleste(req.params.id)
         if (!cuerpoCeleste) {
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
@@ -81,6 +84,9 @@ endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req
  
 endpointsCuerpoCeleste.delete("/:id", validarId, async (req, res) => {
     try{
+        if (req.params.id ===1){
+            return res.status(403).json({error: "No se puede modificar la Tierra."});
+        }
         const {ok, cuerpoCeleste, tieneDependientes} = await cuerpos.removeCuerpoCeleste(req.params.id);
         if (!ok){
             if (tieneDependientes) {

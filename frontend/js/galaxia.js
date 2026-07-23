@@ -1,14 +1,6 @@
 import * as constantes from "./constantes.js";
 const contenedor = document.getElementById("planetas-contenedor");
 
-
-// Datos de prueba (mientras el backend no está conectado)
-const planetasPrueba = [
-  { id: 1, nombre: "La Tierra", imagen_url: "../assets/img/tierra.png", posicion: 0 },
-  { id: 2, nombre: "Marte", imagen_url: "../assets/img/marte.png", posicion: 1 },
-  { id: 3, nombre: "Mercurio", imagen_url: "../assets/img/mercurio.png", posicion: 2 }
-];
-
 async function obtenerPlanetas(vehiculoId){
   const url = `${constantes.API_URL}/${constantes.CUERPOS_URL}?vehiculo_id=${vehiculoId}`;
   try{
@@ -21,22 +13,22 @@ async function obtenerPlanetas(vehiculoId){
 }
 function obtenerImagen(imagenId){
   const imagenes_planeta = {
-    1 : "../assets/img/tierra.png",
-    2 : "../assets/img/marte.png",
-    3 : "../assets/img/mercurio.png",
-    4 : "",
-    5 : "",
-    6 : "",
-    7 : "",
-    8 : "",
-    9 : "",
-    10 : ""
+   1 : "../assets/img/agujero_negro.png",
+    2 : "../assets/img/luna.png",
+    3 : "../assets/img/marte.png",
+    4 : "../assets/img/mercurio.png",
+    5 : "../assets/img/neptuno.png",
+    6 : "../assets/img/planeta_verde.png",
+    7 : "../assets/img/planeta_violata.png",
+    8 : "../assets/img/saturno.png",
+    9 : "../assets/img/sol.png",
+    10 : "../assets/img/tierra.png"
   };
   return imagenes_planeta[imagenId];
 }
 
 function pintarPlanetas(cuerpos_celestes) {
-
+  console.log("Planetas recibidos del backend:", cuerpos_celestes);
 
   contenedor.innerHTML = ""; // limpia por las dudas
 
@@ -48,6 +40,7 @@ function pintarPlanetas(cuerpos_celestes) {
     if (!cuerpo.disponible){
       divNoDisponible = `<div class="capa-oscura">Inalcanzable, explore más planetas para desbloquearlo.</div>`;
       div.classList.add("no-disponible");
+      div.classList
     }
     div.innerHTML = `
       <div class="imagen-contenedor">
@@ -58,7 +51,7 @@ function pintarPlanetas(cuerpos_celestes) {
     `;
 
     div.addEventListener("click", () => {
-      if (cuerpo.disponible !== false) {
+      if (cuerpo.disponible) {
         window.location.href = `planeta.html?id=${cuerpo.id}`;
       }
     });
@@ -67,12 +60,12 @@ function pintarPlanetas(cuerpos_celestes) {
   });
 }
 
-// AHORA (mientras probás sin backend):
 async function iniciar () {
 try {
     const respuestaVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
-    const vehiculo = await respuestaVehiculo.json();
-    pintarPlanetas(await obtenerPlanetas(vehiculo.id).cuerpos);
+    const vehiculos = await respuestaVehiculo.json();
+    const planetas = await obtenerPlanetas(vehiculos[0].id);
+    pintarPlanetas(planetas.cuerpos);
   } catch (error) {
     console.log(error);
   }
