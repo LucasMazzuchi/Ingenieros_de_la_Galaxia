@@ -1,3 +1,4 @@
+import * as constantes from "./constantes.js";
 // Listas de imágenes reales (todas sueltas en assets/img, sin subcarpetas)
 const imagenesPlanetas = [
   "../assets/img/agujero_negro.png",
@@ -25,19 +26,7 @@ const imagenesFondos = [
   "../assets/img/fondo-violeta.jpg"
 ];
 
-const imagenesAutos = [
-  "../assets/img/auto1.png",
-  "../assets/img/auto2.png",
-  "../assets/img/auto3.png",
-  "../assets/img/auto4.png"
-];
 
-const imagenesNaves = [
-  "../assets/img/nave1.png",
-  "../assets/img/nave2.png",
-  "../assets/img/nave3.png",
-  "../assets/img/nave4.png"
-];
 
 // Crea una galería clickeable dentro de un contenedor, y guarda la elegida en un input hidden
 function crearSelectorImagenes(contenedorId, imagenes, inputHiddenId) {
@@ -66,13 +55,6 @@ crearSelectorImagenes("galeriaFondoPlaneta", imagenesFondos, "inputImagenFondo")
 // Galería de vehículo: cambia entre naves/autos según el tipo elegido
 const selectTipoVehiculo = document.getElementById("inputTipoVehiculo");
 
-function actualizarGaleriaVehiculo() {
-  const esNave = selectTipoVehiculo.value === "1";
-  crearSelectorImagenes("galeriaVehiculo", esNave ? imagenesNaves : imagenesAutos, "inputImagenVehiculo");
-}
-
-selectTipoVehiculo.addEventListener("change", actualizarGaleriaVehiculo);
-actualizarGaleriaVehiculo(); // se ejecuta apenas carga, para mostrar la galería inicial
 
 // Tabs: switching entre Planeta / Punto de interés / Vehículo
 const botonesTab = document.querySelectorAll(".tab-btn");
@@ -97,11 +79,12 @@ botonesTab.forEach(boton => {
 
 
 // FUNCIONES DE LA API 
-const API_URL = "http://localhost:5000/api";
+
+
 
 async function obtenerDatos(recurso) {
   try {
-    const res = await fetch(`${API_URL}/${recurso}`);
+    const res = await fetch(`${constantes.API_URL}/${recurso}`);
     if (!res.ok) throw new Error(`Error al obtener ${recurso}`);
     return await res.json();
   } catch (error) {
@@ -112,7 +95,7 @@ async function obtenerDatos(recurso) {
 
 async function crearRegistro(recurso, datos) {
   try {
-    const res = await fetch(`${API_URL}/${recurso}`, {
+    const res = await fetch(`${constantes.API_URL}/${recurso}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datos)
@@ -126,7 +109,7 @@ async function crearRegistro(recurso, datos) {
 
 async function modificarRegistro(recurso, id, datos) {
   try {
-    const res = await fetch(`${API_URL}/${recurso}/${id}`, {
+    const res = await fetch(`${constantes.API_URL}/${recurso}/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datos)
@@ -140,7 +123,7 @@ async function modificarRegistro(recurso, id, datos) {
 
 async function eliminarRegistro(recurso, id) {
   try {
-    const res = await fetch(`${API_URL}/${recurso}/${id}`, {
+    const res = await fetch(`${constantes.API_URL}/${recurso}/${id}`, {
       method: "DELETE"
     });
     return res.ok;
@@ -249,9 +232,7 @@ formPlaneta.addEventListener("submit", async (e) => {
     terreno: parseInt(document.getElementById("inputTerreno").value),
     habitable: document.getElementById("inputHabitable").value === "true",
     posicion: parseInt(document.getElementById("inputPosicion").value),
-    imagen: parseInt(document.getElementById("inputImagen").value),
-    imagen_fondo: parseInt(document.getElementById("inputImagenFondo").value)
-
+    
   };
 
   let exito = false;
@@ -306,7 +287,6 @@ selectVehiculo.addEventListener("change", async () => {
   if (v) {
     document.getElementById("inputNombreVehiculo").value = v.nombre;
     document.getElementById("inputTipoVehiculo").value = v.tipo;
-    actualizarGaleriaVehiculo(); // Actualiza las imágenes según el tipo
     document.getElementById("inputMotor").value = v.motor;
     document.getElementById("inputEstructura").value = v.estructura;
     document.getElementById("inputCombustible").value = v.combustible;
@@ -319,6 +299,9 @@ formVehiculo.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = selectVehiculo.value;
 
+  const vehiculosActuales = await obtenerDatos("vehiculos");
+
+    
   const datos = {
     nombre: document.getElementById("inputNombreVehiculo").value,
     tipo: parseInt(document.getElementById("inputTipoVehiculo").value),
@@ -326,10 +309,31 @@ formVehiculo.addEventListener("submit", async (e) => {
     estructura: parseInt(document.getElementById("inputEstructura").value),
     combustible: parseInt(document.getElementById("inputCombustible").value),
     resistencia: parseInt(document.getElementById("inputResistencia").value),
-    punto_interes: 0
+    punto_interes: 1
   };
+  
+  if (id) {
+        const existeOtroIgual = vehiculosActuales.find(v => v.tipo === datos.tipo && v.id != id);
+        if (existeOtroIgual) {
+            alert("Ya existe otro vehículo con este tipo. Solo puede haber uno de Tipo 1 y uno de Tipo 2.");
+            return; 
+        }
+    } else {
+        
+        if (vehiculosActuales.length >= 2) {
+            alert("El hangar está lleno. Ya existen 2 vehículos en total y no se pueden crear más.");
+            return;
+        }
+      
+        const existeTipo = vehiculosActuales.find(v => v.tipo === datos.tipo);
+        if (existeTipo) {
+            alert(`Ya existe un vehículo registrado para el tipo seleccionado. Debes elegir el otro.`);
+            return;
+        }
+      }
 
   let exito = false;
+   
   if (id) {
     exito = await modificarRegistro("vehiculos", id, datos);
   } else {
