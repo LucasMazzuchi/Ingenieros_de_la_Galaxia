@@ -116,6 +116,8 @@ export const CODIGO_FK = "23503";
 // Claves de vehículos.
 export const MOTOR = "motor";
 export const ESTRUCTURA = "estructura";
+export const RESISTENCIA= "resistencia";
+
 export const COMBUSTIBLE = "combustible";
 export const PUNTO_INTERES = "punto_interes";
 
@@ -155,9 +157,10 @@ export const GRAVEDAD_MAX = 1000;
 
 // Límites a parámetros de vehículos.
 export const MOTOR_MAX = 3;
+export const RESISTENCIA_MAX = 3;
 export const ESTRUCTURA_MAX = 3;
 export const COMBUSTIBLE_MAX = 100;
-export const VEHICULOS_MAX = 3;
+export const VEHICULOS_MAX = 2;
 export const PUNTO_INTERES_MAX = 3;
 
 // Límites a parámetros de misiones.

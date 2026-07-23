@@ -11,7 +11,7 @@ export const validarVehiculo = (req, res, next) => {
     [constantes.MOTOR]:validarEntero,
     [constantes.ESTRUCTURA]:validarEntero,
     [constantes.COMBUSTIBLE]:validarEntero,
-    [constantes.UBICACION]:validarEntero,
+    [constantes.RESISTENCIA]: validarEntero,
     [constantes.PUNTO_INTERES]:validarEntero
     };
     const body = req.body || {};
@@ -38,7 +38,7 @@ export const validarVehiculo = (req, res, next) => {
 
 export const validarFiltrosVehiculo = (req, res, next) => {
     const regex = [constantes.ID, constantes.NOMBRE, constantes.TIPO, constantes.MOTOR, 
-    constantes.ESTRUCTURA, constantes.COMBUSTIBLE, constantes.UBICACION].join('|');
+    constantes.ESTRUCTURA, constantes.COMBUSTIBLE, constantes.RESISTENCIA].join('|');
     const regexOrdenarPor = new RegExp( `^(${regex})$`, "i");
     const validadores = {
         [constantes.ID] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.ID_MAX},
@@ -59,9 +59,8 @@ export const validarFiltrosVehiculo = (req, res, next) => {
         constantes.TIPO, constantes.TIPO + "_min", constantes.TIPO + "_max" ,
         constantes.MOTOR, constantes.MOTOR + "_min", constantes.MOTOR + "_max",
         constantes.ESTRUCTURA, constantes.ESTRUCTURA + "_min", constantes.ESTRUCTURA +"_max",
-        constantes.RESISTENCIA, constantes.RESISTENCIA + "_min", constantes.ESTRUCTURA+"_max",
+        constantes.RESISTENCIA, constantes.RESISTENCIA + "_min", constantes.RESISTENCIA+"_max",
         constantes.COMBUSTIBLE, constantes.COMBUSTIBLE + "_min", constantes.COMBUSTIBLE + "_max",
-        constantes.UBICACION, constantes.UBICACION + "_min", constantes.UBICACION + "_max",
         constantes.LIMITE, constantes.ORDENAR_POR, constantes.ORDEN
     ]);
     const erroresClaves = validarFiltros(Object.keys(req.query), permitidos);

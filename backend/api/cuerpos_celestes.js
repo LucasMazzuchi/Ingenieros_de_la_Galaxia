@@ -16,21 +16,11 @@ endpointsCuerpoCeleste.get("/", validarFiltrosCuerpoCeleste, async (req, res) =>
         let listaCuerposCelestes = await cuerpos.getAllCuerposCelestes(constantes.consulta(sinVehiculo, "cuerpo_celeste", texto));
         
         if (vehiculo_id) { 
-            // Obtenemos el resultado de la base de datos
-            const resultadoVehiculo = await getVehiculo(vehiculo_id);
-            
-            // Sacamos el objeto de la nave de la posición 0 del arreglo
-            // (Le pongo una validación extra por si getVehiculo ya devolviera el objeto)
-            const vehiculoUsuario = Array.isArray(resultadoVehiculo) ? resultadoVehiculo[0] : resultadoVehiculo;
-
-            if (!vehiculoUsuario) {
-                return res.status(404).json({ error: "Vehículo no encontrado" });
-            }
-
+            const vehiculoUsuario = await getVehiculo(vehiculo_id);
             listaCuerposCelestes = listaCuerposCelestes.map(planeta => {
                 return {
-                    ...planeta, 
-                    disponible: logica.puedeViajar(vehiculoUsuario, planeta)
+                    ...planeta, // Desempaqueta todas las propiedades originales del planeta
+                    disponible: logica.puedeViajar(vehiculoUsuario, planeta) // Agrega la nueva
                 };
             });
         }
