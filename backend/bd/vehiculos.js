@@ -12,8 +12,8 @@ export async function getVehiculo(id) {
 }
 
 export async function createVehiculo(vehiculo) {
-    const solicitud = "INSERT INTO vehiculos (nombre, tipo, motor, estructura, combustible, ubicacion_id, punto_interes, borrado) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
-    const valores = [vehiculo.nombre, vehiculo.tipo, vehiculo.motor, vehiculo.estructura, vehiculo.combustible, vehiculo.ubicacion_id, false];
+    const solicitud = "INSERT INTO vehiculos (nombre, tipo, motor, estructura, combustible, ubicacion_id, punto_interes, borrado) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id";
+    const valores = [vehiculo.nombre, vehiculo.tipo, vehiculo.motor, vehiculo.estructura, vehiculo.combustible, vehiculo.punto_interes, vehiculo.ubicacion_id, false];
     const res = await db.query(solicitud, valores);
     return {vehiculo : res.rowCount == 1, id : res.rows[0].id};
 }
