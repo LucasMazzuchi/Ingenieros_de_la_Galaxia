@@ -23,7 +23,7 @@ services:
     build: ./backend
     container_name: backend
     ports:
-      - "5000:5000"
+      - "3000:5000"
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules # Para no pisar con los locales
