@@ -214,6 +214,8 @@ selectPlaneta.addEventListener("change", async () => {
     document.getElementById("inputHabitable").value = p.habitable.toString();
     document.getElementById("inputPosicion").value = p.posicion;
     // imágenes guardadas en base de datos, las asignas aca
+    document.getElementById("inputImagen").value = p.imagen;
+    document.getElementById("inputImagenFondo").value = p.imagen_fondo;
   }
 });
 
@@ -233,8 +235,10 @@ formPlaneta.addEventListener("submit", async (e) => {
     habitable: document.getElementById("inputHabitable").value === "true",
     posicion: parseInt(document.getElementById("inputPosicion").value),
     
+    imagen: parseInt(document.getElementById("inputImagen").value),
+    imagen_fondo: parseInt(document.getElementById("inputImagenFondo").value)
   };
-
+    
   let exito = false;
   if (id) {
     exito = await modificarRegistro("cuerpos_celestes", id, datos);
