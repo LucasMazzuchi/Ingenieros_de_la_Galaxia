@@ -33,7 +33,6 @@ services:
     name: frontend
     runtime: static
     rootDir: frontend
-    plan: free
     staticPublishPath: .
 
 databases:
