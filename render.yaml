@@ -30,7 +30,7 @@ services:
           property: port
 
   - type: web
-    name: frontend
+    name: galaxia
     runtime: static
     rootDir: frontend
     staticPublishPath: .
