@@ -13,7 +13,7 @@ export const db = new Pool({
 
 export const inicializarBD = async () => {
   try {
-    const rutaSql = resolve("../init.sql");
+    const rutaSql = resolve("./init.sql");
     
     if (existsSync(rutaSql)) {
       const sql = readFileSync(rutaSql);
