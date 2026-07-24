@@ -1,7 +1,7 @@
 services:
   - type: web
     name: backend
-    env: docker
+    runtime: docker
     rootDir: backend
     plan: free
     healthCheckPath: /health
@@ -31,10 +31,10 @@ services:
 
   - type: web
     name: frontend
-    env: static
+    runtime: static
     rootDir: frontend
     plan: free
-    publishPath: .
+    staticPublishPath: .
 
 databases:
   - name: bd-espacio
