@@ -32,15 +32,15 @@ Una vez que la terminal indique que los contenedores están corriendo, abrí tu 
 ```bash
 docker compose down
 ```
-## Pantalla Inicial.
+## Pantalla Inicial
 ![screenshot](imagenesReadme/bienvenida.png)
 
-## Mapa de los planetas.
+## Mapa de los planetas
 ![screenshot](imagenesReadme/mapa.png)
 
-## Mapa de un planeta.
+## Mapa de un planeta
 ![screenshot](imagenesReadme/planeta.png)
 
-## Interfaz de Creado.
+## Interfaz de Creado
 ![screenshot](imagenesReadme/crear.png)
 
