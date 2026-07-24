@@ -3,6 +3,7 @@ import cors from "cors";
 import {endpointsVehiculos} from "./api/vehiculos.js";
 import {endpointsCuerpoCeleste} from "./api/cuerpos_celestes.js";
 import {endpointsMisiones} from "./api/misiones.js";
+import { inicializarBD } from "./bd/pool.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
