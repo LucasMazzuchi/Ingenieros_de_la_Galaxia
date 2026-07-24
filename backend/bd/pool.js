@@ -17,7 +17,7 @@ export const inicializarBD = async () => {
     
     if (existsSync(rutaSql)) {
       const sql = readFileSync(rutaSql);
-      await pool.query(sql);
+      await db.query(sql);
     }
   } catch (error) {
     console.error("Error al levantar la base de datos: ", error);
