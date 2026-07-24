@@ -13,7 +13,10 @@ app.use(express.json());
 app.use("/api/vehiculos", endpointsVehiculos);
 app.use("/api/cuerpos_celestes", endpointsCuerpoCeleste);
 app.use("/api/misiones", endpointsMisiones);
-
+app.get('/health', (req, res) => {
+    res.status(200).send("OK");
+});
+await inicializarBD();
 app.get('/', (req, res) => {
   res.send('¡Servidor de Ingenieros de la Galaxia funcionando!');
 });

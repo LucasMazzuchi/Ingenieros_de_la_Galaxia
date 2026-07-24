@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: backend
+    env: docker
+    rootDir: backend
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: DB_HOST
+        fromDatabase:
+          name: bd-espacio
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: bd-espacio
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: bd-espacio
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: bd-espacio
+          property: database
+      - key: DB_PORT
+        fromDatabase:
+          name: bd-espacio
+          property: port
+
+  - type: web
+    name: frontend
+    env: static
+    rootDir: frontend
+    plan: free
+    publishPath: .
+
+databases:
+  - name: bd-espacio
+    databaseName: espacio_bd
+    user: admin
+    plan: free
