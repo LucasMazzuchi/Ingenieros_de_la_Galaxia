@@ -7,7 +7,7 @@ export const endpointsVehiculos = Router();
 
 endpointsVehiculos.get("/", validarFiltrosVehiculo, async (req, res) => {
     try {
-        const texto = "SELECT v.id, v.nombre, v.tipo, c.nombre as ubicacion, v.motor, v.estructura, v.combustible FROM vehiculos as v, cuerpos_celestes as c WHERE c.id=v.ubicacion_id AND v.borrado = FALSE AND c.borrado = FALSE";
+        const texto = "SELECT v.id, v.nombre, v.tipo, v.motor, v.estructura, v.resistencia, v.combustible, v.punto_interes FROM vehiculos as v WHERE v.borrado = FALSE";
         const listaVehiculos = await vehiculos.getAllVehiculos(constantes.consulta(req.query, "vehiculo", texto));
         res.json(listaVehiculos);
     } catch(error) {

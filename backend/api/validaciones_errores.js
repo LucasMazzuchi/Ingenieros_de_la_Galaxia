@@ -88,27 +88,6 @@ export const validarFloat = ({ campo, min, max, error }) => {
     return "";
 };
 
-export const validarImagen = ({ campo }) => {
-    const err = validarString({ campo: campo, min : 1, max : constantes.IMAGEN_MAX, error : "imagen" });
-    if (err !== ""){
-        return err;
-    }
-    // Mira que sea una URL o una dirección válida a la carpeta donde se guardan las imagenes.
-    // La carpeta puede tenerse que cambiar, depende de donde se guarden las imagenes.
-    if (campo.startsWith("/imagenes/") && campo.length > "/imagenes/".length){
-        return "";
-    }
-    try { // Chequea que sea una url válida
-        const url = new URL(campo);
-        if (url.protocol === "http:" || url.protocol === "https:") {
-            return "";
-        }
-    } catch {
-        return constantes.ERROR_URL("imagen");
-    }
-    return constantes.ERROR_URL("imagen");
-};
-
 // La función valida que hayan enviado un entero positivo dentro del rango 1-2.147.483.647.
 // Si hay un error en la solicitud, envía un error 400 y devuelve. Sino, pasa a la función next pasada por parámetro.
 

@@ -2,28 +2,33 @@ import { Router } from "express";
 import * as cuerpos from "../bd/cuerpos_celestes.js";
 import { validarCuerpoCeleste, validarFiltrosCuerpoCeleste } from "./verificaciones_cuerpo_celeste.js";
 import * as constantes from "../constantes.js";
-import { validarId, manejarError, validarEntero } from "./validaciones_errores.js";
-import { borrarImagen } from "./gestor_imagenes.js";
+import { validarId, manejarError } from "./validaciones_errores.js";
+import * as logica from "../logica/cuerpos_celestes.js";
+import { getVehiculo } from "../bd/vehiculos.js";
 export const endpointsCuerpoCeleste = Router();
  
 endpointsCuerpoCeleste.get("/", validarFiltrosCuerpoCeleste, async (req, res) => {
     try {
-        const texto = "SELECT c.id, c.nombre, c.tipo, c.diametro, c.gravedad, c.temperatura, c.habitable, c.terreno, c.imagen_url, c.posicion FROM cuerpos_celestes as c WHERE c.borrado = FALSE";
-        const listaCuerposCelestes = await cuerpos.getAllCuerposCelestes(constantes.consulta(req.query, "cuerpo_celeste", texto));        
-        if (req.query.vehiculo_id && validarEntero(req.query.vehiculo_id, 1, constantes.ID_MAX, ERROR_INT("vehiculo_id", 1, constantes.ID_MAX))) {
-            const vehiculoUsuario = await vehiculos.getVehiculoById(req.query.vehiculo_id);
+        const texto = "SELECT c.id, c.nombre, c.descripcion, c.tipo, c.diametro, c.gravedad, c.temperatura, c.habitable, c.terreno, c.posicion, c.imagen, c.imagen_fondo FROM cuerpos_celestes as c WHERE c.borrado = FALSE";
+        
+        const { vehiculo_id, ...sinVehiculo } = req.query;
+        
+        let listaCuerposCelestes = await cuerpos.getAllCuerposCelestes(constantes.consulta(sinVehiculo, "cuerpo_celeste", texto));
+        
+        if (vehiculo_id) { 
+            const vehiculoUsuario = await getVehiculo(vehiculo_id);
             listaCuerposCelestes = listaCuerposCelestes.map(planeta => {
                 return {
-                    ...planeta, // Desempaqueta los pares clave, valor del planeta
-                    disponible: logica.PuedeViajar(vehiculoUsuario, planeta)
+                    ...planeta, // Desempaqueta todas las propiedades originales del planeta
+                    disponible: logica.puedeViajar(vehiculoUsuario, planeta) // Agrega la nueva
                 };
             });
         }
+        
         res.status(200).json(listaCuerposCelestes);
     } catch(error) {
-        const {estado, msjError} = manejarError(error);
-        res.status(estado).json({error : msjError});
-        
+        const { estado, msjError } = manejarError(error);
+        res.status(estado).json({ error: msjError });
     }
 });
  
@@ -60,21 +65,17 @@ endpointsCuerpoCeleste.post("/", validarCuerpoCeleste, async (req, res)=> {
  
 endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req, res) => {
     try{
+        if (req.params.id ===1){
+            return res.status(403).json({error: "No se puede modificar la Tierra."});
+        }
         const cuerpoCeleste = await cuerpos.getCuerpoCeleste(req.params.id)
         if (!cuerpoCeleste) {
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         }
         if (!await cuerpos.updateCuerpoCeleste(req.params.id, req.body)){
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
-        } else {
-            if (req.body.imagen_url !== undefined && req.body.imagen_url !== cuerpoCeleste.imagen_url) { // Borra la imagen anterior.
-                const {msjError, error} = await borrarImagen(cuerpoCeleste.imagen_url);
-                if (msjError !== ""){
-                    return res.status(500).json({msjError: msjError, error: error});
-                }
-            }
         }
-            res.sendStatus(204);
+        res.sendStatus(204);
     } catch (error) {
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
@@ -83,21 +84,17 @@ endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req
  
 endpointsCuerpoCeleste.delete("/:id", validarId, async (req, res) => {
     try{
+        if (req.params.id ===1){
+            return res.status(403).json({error: "No se puede modificar la Tierra."});
+        }
         const {ok, cuerpoCeleste, tieneDependientes} = await cuerpos.removeCuerpoCeleste(req.params.id);
         if (!ok){
             if (tieneDependientes) {
                 return res.status(409).json({error: constantes.ERROR_DEPENDENCIAS, entidad : cuerpoCeleste, tieneDependientes : tieneDependientes});
             }
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
-        } else {
-            if (cuerpoCeleste && cuerpoCeleste.imagen_url) {
-                const {msjError, error} = await borrarImagen(cuerpoCeleste.imagen_url);
-                if (msjError !== ""){
-                    return res.status(500).json({msjError: msjError, error: error});
-                }
-            }
-            res.status(200).json({exito : constantes.EXITO_CONSULTA("cuerpo celeste", "eliminada"), entidad : cuerpoCeleste, tieneDependientes : tieneDependientes});
         }
+        res.status(200).json({exito : constantes.EXITO_CONSULTA("cuerpo celeste", "eliminada"), entidad : cuerpoCeleste, tieneDependientes : tieneDependientes});
     } catch (error) {
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});

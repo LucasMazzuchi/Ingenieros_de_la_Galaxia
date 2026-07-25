@@ -6,43 +6,23 @@
   <title>Galaxia</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
   <link rel="stylesheet" href="../css/estilos_galaxia.css">
+  <link rel="stylesheet" href="../css/pie.css">
 </head>
 <body>
-
-  <nav class="navbar mapa-navbar" role="navigation">
-    <div class="navbar-menu is-active">
-      <div class="navbar-start">
-        <a class="navbar-item" href="galaxia.html">Mapa</a>
-        <a class="navbar-item" href="misiones.html">Misiones</a>
-        <a class="navbar-item" href="admin.html">Administrador</a>
-      </div>
-    </div>
-  </nav>
 
   <section class="mapa-galaxia">
     <video autoplay muted loop playsinline class="video-fondo">
       <source src="../assets/img/audio/video/video-menu-galaxia.mp4" type="video/mp4">
     </video>
-    <div class="planetas-contenedor" id="planetas-contenedor">
 
-      <div class="planeta planeta-tierra" id="p-tierra">
-        <img src="../assets/tierra.png" alt="Tierra">
-        <p class="nombre-planeta">La Tierra</p>
-      </div>
+    <a href="../index.html" class="button is-primary volver-bienvenida">Volver</a>
 
-      <div class="planeta" id="p-marte">
-        <img src="../assets/marte.png" alt="Marte">
-        <p class="nombre-planeta">Marte</p>
-      </div>
-
-      <div class="planeta" id="p-mercurio">
-        <img src="../assets/mercurio.png" alt="Mercurio">
-        <p class="nombre-planeta">Mercurio</p>
-      </div>
-
-    </div>
+    <div class="planetas-contenedor" id="planetas-contenedor"></div>
   </section>
 
-  <script src="../js/galaxia.js"></script>
+  <footer class="pie-pagina">
+    <p>&copy; 2026 Todos los derechos reservados — Ingenieros de Galaxia</p>
+  </footer>
+    <script type="module" src="../js/galaxia.js"></script>
 </body>
 </html>
