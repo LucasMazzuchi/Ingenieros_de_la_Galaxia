@@ -61,7 +61,6 @@ async function dibujarDatosDelPlaneta(planeta, misiones){
     contenedorMapa.style.backgroundSize = "cover"; // acomoda el tamaño de la imagen al del fondo.
     contenedorMapa.style.backgroundPosition = "center"; // centrado.
     contenedorMapa.style.backgroundRepeat = "no-repeat"; // No se duplica el mosaico.
-    contenedorMapa.style.backgroundAttachment = "fixed"; // No scrollea el fondo. Ver si el mapa scrollea.
     pintarPuntosDeInteres(misiones);
     dibujarCamino(misiones);
     rellenarApartadoIzquierda(planeta);
