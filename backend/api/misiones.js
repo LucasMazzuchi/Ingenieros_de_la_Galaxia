@@ -73,7 +73,6 @@ endpointsMisiones.delete("/:id", validarId, async (req, res) => {
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         }
 
-        //AHORA SÍ revisamos si es de la Tierra (id === 1)
         if (misionGuardada.cuerpo_celeste_id === 1) {
             return res.status(403).json({error: "No se pueden eliminar misiones asociadas a la Tierra."});
         }
