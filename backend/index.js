@@ -17,7 +17,7 @@ app.use("/api/misiones", endpointsMisiones);
 app.get('/health', (req, res) => {
     res.status(200).send("OK");
 });
-await inicializarBD();
+//await inicializarBD();
 app.get('/', (req, res) => {
   res.send('¡Servidor de Ingenieros de la Galaxia funcionando!');
 });
