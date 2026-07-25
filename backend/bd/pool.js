@@ -1,7 +1,6 @@
 // Conexión con la base de datos.
 import { Pool } from "pg";
 import {existsSync, readFileSync} from "fs";
-import {resolve} from "path";
 
 export const db = new Pool({
   host: process.env.DB_HOST,
