@@ -1,10 +1,15 @@
 import * as progreso from "../bd/progreso.js"
-export const completarMision = (req, res) => {
-    await progreso.completarMision(req.params.vehiculo_id, req.body.mision_id);
-    const {totales, completadas} = await progreso.chequearProgresoPlaneta(req.params.vehiculo_id, req.body.cuerpo_celeste_id);
-    req.body.nafta = totales > 0 ? 100/totales : 0;
-    await progreso.sumarCombustible(req.params.vehiculo_id, req.body.mision_id, req.body.nafta);
-    if (completadas === totales) {
-        next();
+export const completarMision = (req, res, next) => {
+    try {
+        await progreso.completarMision(req.params.vehiculo_id, req.body.mision_id);
+        const {totales, completadas} = await progreso.chequearProgresoPlaneta(req.params.vehiculo_id, req.body.cuerpo_celeste_id);
+        req.body.nafta = totales > 0 ? 100/totales : 0;
+        await progreso.sumarCombustible(req.params.vehiculo_id, req.body.mision_id, req.body.nafta);
+        if (completadas === totales) {
+            next();
+        }
+        return res.status(200).json({mensaje : "Punto expolorado con éxito", combustible : req.body.nafta, cuerpoCompletado : false});
+    } catch (error){
+        res.status(500).json({ error: "Error al completar la misión." });
     }
 };

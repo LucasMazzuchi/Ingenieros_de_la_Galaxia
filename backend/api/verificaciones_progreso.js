@@ -37,8 +37,9 @@ export const validarIds = (req, res, next) => {
     next();
 };
 
-export const verificarEstadoMision = async (req, res) => {// Si hay 0 misiones, o no se puede desubrir el punto, retorna.
-        const mision = await progreso.getMision(req.params.vehiculo_id, req.body.mision_id);
+export const verificarEstadoMision = async (req, res, next) => {// Si hay 0 misiones, o no se puede desubrir el punto, retorna.
+    try {
+        const mision = await progreso.getMision(req.params.id, req.body.mision_id);
         if (!mision) {
             return res.status(403).json({ error: "Tenés que descubrir este punto primero." });
         }
@@ -46,4 +47,7 @@ export const verificarEstadoMision = async (req, res) => {// Si hay 0 misiones, 
             return res.status(400).json({ error: "Este punto ya fue explorado por la nave." });
         }
         next()
+    } catch (error){
+        res.status(500).json({ error: "Error al verificar el estado de la misión." });
+    }
 }

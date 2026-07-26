@@ -1,5 +1,5 @@
 import { getVehiculo, updateVehiculo } from "../bd/vehiculos";
-export const mejorarVehiculo = (req, res) => {
+export const mejorarVehiculo = (req, res, next) => {
     const vehiculoDatos = getVehiculo(req.params.id);
     const campos = ["motor", "estructura", "resistencia"]
     let campoMejora = campos[0];
@@ -10,7 +10,7 @@ export const mejorarVehiculo = (req, res) => {
     });
     const mejora = vehiculoDatos[campoMejora]+1;
     if (vehiculoDatos[campoMejora] < 3) {
-        await updateVehiculo(req.params.id, {campoMejora : 1})
-        next()
+        await updateVehiculo(req.params.id, {[campoMejora] : 1});
     }
+    next()
 };
