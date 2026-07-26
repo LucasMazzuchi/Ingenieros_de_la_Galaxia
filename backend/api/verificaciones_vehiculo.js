@@ -26,7 +26,7 @@ export const validarVehiculo = (req, res, next) => {
     [constantes.PUNTO_INTERES]:{campo: req.body.punto_interes, min:0, max: constantes.PUNTO_INTERES_MAX, error: constantes.PUNTO_INTERES},
     [constantes.UBICACION]:{campo:req.body.ubicacion_id, min: 1, max: constantes.ID_MAX, error: constantes.UBICACION}
     };
-    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasVehiculo, req.method, Object.keys(req.body));
+    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasVehiculo, req.method, Object.keys(req.body), false);
     if (camposInvalidos.length !== 0) {
         return res.status(400).json({error: constantes.ERROR_CAMPOS, campos: camposInvalidos});
     }

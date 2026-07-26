@@ -33,10 +33,10 @@ endpointsMisiones.get("/:id", validarId, async (req, res) => {
  
 endpointsMisiones.post("/", validarMision, async (req, res)=> {
     try{
-        if (await misiones.cantidadMisiones(req.body.cuerpo_celeste_id) >= constantes.MISIONES_MAX){
+        const {mision, id, max} = await misiones.createMision(req.body);
+        if (max){
             return res.status(403).json({error: constantes.ERROR_ENTIDAD_LLENA("mision", constantes.MISIONES_MAX, "por planeta.")});
         }
-        const {mision, id} = await misiones.createMision(req.body);
         if (!mision){
             res.status(500).json({error: constantes.ERROR_CONSULTA("mision", "creada")});
         } else {

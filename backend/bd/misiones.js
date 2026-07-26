@@ -17,10 +17,14 @@ export async function getMision(id) {
 // Crea una misión con los datos pasados por parámetro mediante el diccionario mision.
 // Devuelve true en mision, si fue creada exitosamente, sino devuelve false. También devuelve su id.
 export async function createMision(mision) {
+    if (await cantidadMisiones(req.body.cuerpo_celeste_id) >= constantes.MISIONES_MAX){
+        return { mision: false, id: undefined, max: true};
+    }
     const solicitud = "INSERT INTO misiones (nombre, descripcion, porcentaje, disponible, cuerpo_celeste_id, borrado) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
     const valores = [mision.nombre, mision.descripcion, mision.porcentaje, mision.disponible, mision.cuerpo_celeste_id, false];
     const res = await db.query(solicitud, valores);
-    return {mision : res.rowCount == 1, id : res.rows[0].id};
+    const ok = res.rowCount == 1
+    return {mision : ok, id : ok ? res.rows[0].id : undefined, max: false};
 }
 
 

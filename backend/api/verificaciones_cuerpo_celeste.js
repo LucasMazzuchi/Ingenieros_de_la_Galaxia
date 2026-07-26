@@ -33,7 +33,7 @@ export const validarCuerpoCeleste = (req, res, next) => {
     [constantes.IMAGEN]: {campo: req.body.imagen, min:1, max: constantes.IMAGEN_MAX, error: constantes.IMAGEN},
     [constantes.IMAGEN_FONDO]: {campo: req.body.imagen_fondo, min:1, max: constantes.IMAGEN_FONDO_MAX, error: constantes.IMAGEN_FONDO.split("_").join(" ")}
     };
-    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasCuerpoCeleste, req.method, Object.keys(req.body));
+    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasCuerpoCeleste, req.method, Object.keys(req.body), false);
     if (camposInvalidos.length !== 0) {
             return res.status(400).json({error: constantes.ERROR_CAMPOS, campos: camposInvalidos});
         }

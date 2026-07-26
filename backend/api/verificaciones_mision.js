@@ -19,7 +19,7 @@ export const validarMision = (req, res, next) => {
     [constantes.DISPONIBLE]: { campo: req.body.disponible, error: constantes.DISPONIBLE },
     [constantes.CUERPO_CELESTE]: { campo: req.body.cuerpo_celeste_id, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE },
     };
-    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasMision, req.method, Object.keys(req.body));
+    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasMision, req.method, Object.keys(req.body), false);
         if (camposInvalidos.length !== 0) {
             return res.status(400).json({error: constantes.ERROR_CAMPOS, campos: camposInvalidos});
         }

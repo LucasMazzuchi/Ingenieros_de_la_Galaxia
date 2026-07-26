@@ -17,7 +17,6 @@ CREATE TABLE IF NOT EXISTS cuerpos_celestes (
 CREATE TABLE IF NOT EXISTS vehiculos (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
-    tipo INT NOT NULL,
     motor INT NOT NULL,
     estructura INT NOT NULL,
     combustible INT NOT NULL,
@@ -31,10 +30,25 @@ CREATE TABLE IF NOT EXISTS misiones (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
     descripcion TEXT,
-    porcentaje INT NOT NULL,
     cuerpo_celeste_id INT REFERENCES cuerpos_celestes(id) NOT NULL,
-    disponible BOOLEAN NOT NULL,
     borrado BOOLEAN DEFAULT FALSE
+);
+
+
+
+CREATE TABLE IF NOT EXISTS cuerpos_celestes_vehiculos (
+    cuerpo_celeste_id INT REFERENCES cuerpos_celestes(id),
+    vehiculo_id INT REFERENCES vehiculos(id),
+    completado BOOLEAN DEFAULT TRUE,
+    PRIMARY KEY (cuerpo_celeste_id, vehiculo_id)
+);
+
+CREATE TABLE IF NOT EXISTS misiones_vehiculos (
+    mision_id INT REFERENCES misiones(id),
+    vehiculo_id INT REFERENCES vehiculos(id),
+    cuerpo_celeste_id INT REFERENCES cuerpos_celestes(id)
+    completado BOOLEAN DEFAULT FALSE,
+    PRIMARY KEY (mision_id, vehiculo_id)
 );
 
 INSERT INTO cuerpos_celestes (nombre, descripcion, tipo, diametro, gravedad, temperatura, habitable, terreno, posicion, imagen, imagen_fondo)

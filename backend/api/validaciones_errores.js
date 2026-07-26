@@ -1,9 +1,9 @@
 import * as constantes from "../constantes.js";
-export const validarEntrada = (parametros, validaciones, metodo, camposRecibidos) => {
+export const validarEntrada = (parametros, validaciones, metodo, camposRecibidos, progreso) => {
     let errores = [];
     let procesados = {};
     for (const [campo, validador] of Object.entries(validaciones)) {
-        if (metodo === "PATCH" && parametros[campo].campo === undefined) {
+        if (metodo === "PATCH" && parametros[campo].campo === undefined && !progreso) {
             continue;
         }
         const error = validador(parametros[campo]);
@@ -92,15 +92,21 @@ export const validarFloat = ({ campo, min, max, error }) => {
 // Si hay un error en la solicitud, envía un error 400 y devuelve. Sino, pasa a la función next pasada por parámetro.
 
 export const validarId = (req, res, next) => {
-    const id = Number(req.params.id);
-    if (!/^[0-9]+$/.test(req.params.id) || !Number.isInteger(id) || id<1 || id>2147483647){
-        res.status(400).json({error: constantes.ERROR_INT("id", 1, 2147483647)});
-        return;
+    const {ok, nId} = _validarId(req.params.id);
+    if (!ok){
+        return res.status(400).json({error: constantes.ERROR_INT("id", 1, 2147483647)});
     }
-    req.params.id = id;
+    req.params.id = nId;
     next();
 };
 
+export const _validarId = (entrada) => {
+    const id = Number(entrada);
+    if (!/^[0-9]+$/.test(entrada) || !Number.isInteger(id) || id<1 || id>2147483647){
+        return {ok : false, nId : id};
+    }
+    return {ok : true, nId : id};
+}
 
 export const manejarError = (error) => {
     switch (error.code) {
