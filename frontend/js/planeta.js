@@ -37,6 +37,13 @@ async function iniciarPlaneta() {
         if (vehiculoDatos[0].combustible<100 && misiones.filter(function (mision) {return mision.disponible}).length===0){
             window.location.href = "galaxia.html";
         }
+        const vehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoDatos[0].id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    ubicacion_id : planetas[0].id
+                })
+            });
         const misionesEstadoInicial = await dibujarDatosDelPlaneta(planetas[0], misiones); // Esto arma la página
         if (misionesEstadoInicial.filter(function (mision){return mision.porcentaje===100}).length !== misionesEstadoInicial.length){
             const actualizacionCombustibleVehiculo= await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoDatos[0].id}`, { // Actualizo ubicación de la nave.

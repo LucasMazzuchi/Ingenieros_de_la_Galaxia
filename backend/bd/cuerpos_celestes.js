@@ -41,7 +41,7 @@ export async function removeCuerpoCeleste(id) {
         await removeMision(mision.id);
     }
     for (const vehiculo of vehiculos){
-        await updateVehiculo(vehiculo.id, {ubicacion_id : 1, punto_interes: 1});
+        await updateVehiculo(vehiculo.id, {ubicacion_id : 1, punto_interes: 0});
     }
     const consultaUpdate = "UPDATE cuerpos_celestes SET borrado = TRUE WHERE id = $1 AND borrado = FALSE RETURNING *";
     const resBorrado = await db.query(consultaUpdate, [id]);
