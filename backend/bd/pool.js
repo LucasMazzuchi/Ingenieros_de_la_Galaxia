@@ -1,4 +1,6 @@
-import { Pool } from 'pg';
+// Conexión con la base de datos.
+import { Pool } from "pg";
+import {existsSync, readFileSync} from "fs";
 
 export const db = new Pool({
   host: process.env.DB_HOST,
@@ -8,6 +10,17 @@ export const db = new Pool({
   port: process.env.DB_PORT || 5432,
 });
 
+export const inicializarBD = async () => {
+  try {
+    if (existsSync("./bd/init.sql")) {
+      const sql = readFileSync("./bd/init.sql", "utf-8");
+      await db.query(sql);
+    }
+  } catch (error) {
+    console.error("Error al levantar la base de datos: ", error);
+  }
+};
+
 db.on('connect', () => {
-  console.log('Conexión establecida con la base de datos PostgreSQL.');
+  console.log("Conexión establecida con la base de datos PostgreSQL.");
 });

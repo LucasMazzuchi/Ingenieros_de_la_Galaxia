@@ -1,9 +1,8 @@
 import { db } from "./pool.js";
 
-/**
- * Arma dinámicamente la sección SET de un UPDATE de forma segura contra inyección SQL.
- * Los campos toman marcadores desde $1 hasta $N, y el ID toma la posición $N+1 al final.
- */
+// Arma dinámicamente la sección SET de un UPDATE de forma segura contra inyección SQL.
+// Los campos toman marcadores desde $1 hasta $N, y el ID toma la posición $N+1 al final.
+
 export const armar_consulta = (id, entidad) => {
     const campos = Object.keys(entidad);
     let partes = [];
@@ -19,12 +18,13 @@ export const armar_consulta = (id, entidad) => {
     return { consulta, valores, numeroId };
 };
 
-/**
- * Verifica si un cuerpo celeste está siendo usado activamente por vehículos o misiones
- * antes de permitir un borrado lógico.
- */
+// Verifica si un cuerpo celeste está siendo usado activamente por vehículos o misiones
+// antes de permitir un borrado lógico.
 export const verificarDependencia = async (id) => {
-    const consultaMisiones = "SELECT 1 FROM misiones WHERE cuerpo_celeste_id = $1 AND borrado = FALSE LIMIT 1";
+    const consultaMisiones = "SELECT * FROM misiones WHERE cuerpo_celeste_id = $1 AND borrado = FALSE";
+    const consultaVehiculos = "SELECT * FROM vehiculos WHERE ubicacion_id = $1 AND borrado = FALSE";
     const resMisiones = await db.query(consultaMisiones, [id]);
-    return (resMisiones.rowCount > 0)
+    const resVehiculos = await db.query(consultaVehiculos, [id]);
+    return {misiones : resMisiones.rows, vehiculos : resVehiculos.rows};
+
 };
