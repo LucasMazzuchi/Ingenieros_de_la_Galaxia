@@ -15,7 +15,6 @@ export const validarCuerpoCeleste = (req, res, next) => {
     [constantes.GRAVEDAD]: validarFloat,
     [constantes.TEMPERATURA]: validarEntero,
     [constantes.HABITABLE]: validarBool,
-    [constantes.TERRENO]: validarEntero,
     [constantes.POSICION]: validarEntero,
     [constantes.IMAGEN]:validarEntero,
     [constantes.IMAGEN_FONDO]:validarEntero
@@ -67,7 +66,7 @@ export const validarFiltrosCuerpoCeleste = (req, res, next) => {
         [constantes.ORDEN]: { regex: constantes.REGEX_ORDEN, error: constantes.ERROR_ORDEN, caster: orden },
         [constantes.VEHICULO] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min:1, max: constantes.ID_MAX},
         [constantes.IMAGEN] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min: 1, max: constantes.IMAGEN_MAX},
-        [constantes.IMAGEN_FONDO_MAX] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min: 1, max: constantes.IMAGEN_FONDO_MAX}
+        [constantes.IMAGEN_FONDO] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min: 1, max: constantes.IMAGEN_FONDO_MAX}
     };
 
     const permitidos = new Set([

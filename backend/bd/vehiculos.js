@@ -1,25 +1,31 @@
 import { db } from "./pool.js";
 import { armar_consulta } from "./consultas.js";
+import {consulta, VEHICULOS_MAX} from "../constantes.js"
 
 // Busca todos los vehículos, se puede filtrar por sus campos. El parámetro texto es la consulta y procesados son los datos.
 // Devuelve todos los vehículos que cumplan con los requisitos de filtrado. 
-export async function getAllVehiculos({ texto, procesados }) {
+export async function getAllVehiculos(vehiculo, entidad ) {
+    const sinFiltro = "SELECT v.id, v.nombre, v.tipo, v.motor, v.estructura, v.resistencia, v.combustible, v.punto_interes, v.ubicacion_id FROM vehiculos as v WHERE v.borrado = FALSE";
+    const {texto, procesados} = consulta(vehiculo, entidad, sinFiltro)
     const res = await db.query(texto, procesados);
     return res.rows;
 }
 // Busca el vehiculo por el id pasado por parámetro y lo devuelve. Si no existe, devuelve undefined.
 export async function getVehiculo(id) {
-    const solicitud = "SELECT v.id, v.nombre, v.tipo, v.motor, v.estructura, v.resistencia, v.combustible, v.punto_interes FROM vehiculos as v WHERE v.id=$1 AND v.borrado = FALSE";
+    const solicitud = "SELECT v.id, v.nombre, v.tipo, v.motor, v.estructura, v.resistencia, v.combustible, v.punto_interes, v.ubicacion_id FROM vehiculos as v WHERE v.id=$1 AND v.borrado = FALSE";
     const res = await db.query(solicitud, [id]);
     return res.rows[0];
 }
 
 // Crea un vehículo con los datos pasados por parámetro mediante el diccionario vehiculo. 
 export async function createVehiculo(vehiculo) {
-    const solicitud = "INSERT INTO vehiculos (nombre, tipo, motor, estructura, combustible, resistencia, punto_interes, borrado) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id";
-    const valores = [vehiculo.nombre, vehiculo.tipo, vehiculo.motor, vehiculo.estructura, vehiculo.combustible, vehiculo.punto_interes, vehiculo.resistencia, false];
+    if (await cantidadVehiculos() >= VEHICULOS_MAX){
+        return {vehiculo : false, id : undefined, max : true}
+        }
+    const solicitud = "INSERT INTO vehiculos (nombre, tipo, motor, estructura, combustible, resistencia, punto_interes, ubicacion_id, borrado) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id";
+    const valores = [vehiculo.nombre, vehiculo.tipo, vehiculo.motor, vehiculo.estructura, vehiculo.combustible, vehiculo.punto_interes, vehiculo.resistencia, vehiculo.ubicacion_id, false];
     const res = await db.query(solicitud, valores);
-    return {vehiculo : res.rowCount == 1, id : res.rows[0].id};
+    return {vehiculo : res.rowCount == 1, id : res.rows[0].id, max: false};
 }
 
 // Borra un vehículo por el id pasado por parámetro marcando la casilla borrado como true. En caso de que no exista el cuerpo celeste devuelve false en ok,
