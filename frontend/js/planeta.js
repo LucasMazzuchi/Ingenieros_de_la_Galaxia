@@ -1,3 +1,4 @@
+import { completarMision } from "../../backend/bd/progreso.js";
 import * as constantes from "./constantes.js";
 
 const contenedorMapa = document.getElementById("mapa-planeta");
@@ -17,7 +18,7 @@ async function iniciarPlaneta() {
     const tipoVehiculo = (planetaId === "1") ? 2 : 1;
     vehiculo.src = (tipoVehiculo === 2) ? "../assets/img/auto1.png" : "../assets/img/nave1.png";
     try {
-        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
+        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}`); //Acá hay que traerse al id del vehículo.
         const vehiculoDatos = await resVehiculo.json();
 
         const resPlaneta = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/?id=${planetaId}&vehiculo_id=${vehiculoDatos[0].id}`);
@@ -29,12 +30,14 @@ async function iniciarPlaneta() {
         }
 
         if (!planetas[0].disponible) {
+            alert("Planeta no dsiponible, recorre los demás planetas disponibles para desbloquearlo.");
             window.location.href = "galaxia.html"; // Lo devolvemos al mapa
             return;
         }
         const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planetas[0].id}&order_by=id&order=ASC`);
         const misiones = await resMisiones.json();
         if (vehiculoDatos[0].combustible<100 && misiones.filter(function (mision) {return mision.disponible}).length===0){
+            alert("Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave para poder viajar a otro.")
             window.location.href = "galaxia.html";
         }
         const vehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoDatos[0].id}`, {
@@ -44,7 +47,7 @@ async function iniciarPlaneta() {
                     ubicacion_id : planetas[0].id
                 })
             });
-        const misionesEstadoInicial = await dibujarDatosDelPlaneta(planetas[0], misiones); // Esto arma la página
+        const misionesEstadoInicial = await dibujarDatosDelPlaneta(planetas[0], misiones, vehiculoDatos); // Esto arma la página
         if (misionesEstadoInicial.filter(function (mision){return mision.porcentaje===100}).length !== misionesEstadoInicial.length){
             const actualizacionCombustibleVehiculo= await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoDatos[0].id}`, { // Actualizo ubicación de la nave.
                 method: "PATCH",
@@ -60,7 +63,7 @@ async function iniciarPlaneta() {
     }
 }
 
-async function dibujarDatosDelPlaneta(planeta, misiones){
+async function dibujarDatosDelPlaneta(planeta, misiones, vehiculo){
   try{
     document.getElementById("nombre-planeta").textContent = planeta.nombre; // Cambia el nombre
     const ruta = buscarImagen(planeta.imagen_fondo);
@@ -68,7 +71,7 @@ async function dibujarDatosDelPlaneta(planeta, misiones){
     contenedorMapa.style.backgroundSize = "cover"; // acomoda el tamaño de la imagen al del fondo.
     contenedorMapa.style.backgroundPosition = "center"; // centrado.
     contenedorMapa.style.backgroundRepeat = "no-repeat"; // No se duplica el mosaico.
-    pintarPuntosDeInteres(misiones);
+    pintarPuntosDeInteres(planeta, misiones, vehiculo);
     dibujarCamino(misiones);
     rellenarApartadoIzquierda(planeta);
     return misiones;
@@ -129,19 +132,20 @@ function buscarImagen(imagenId) {
   return imagenes_fondo[imagenId];
 }
 
-async function pintarPuntosDeInteres(misiones) {
+async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculo) {
     // 1. Agrupamos tus constantes sueltas en un molde para poder iterarlas
     const coordenadasVisuales = [
         { top: constantes.PUNTO1_TOP, left: constantes.PUNTO1_LEFT },
         { top: constantes.PUNTO2_TOP, left: constantes.PUNTO2_LEFT },
         { top: constantes.PUNTO3_TOP, left: constantes.PUNTO3_LEFT }
     ];
-
+    const resEstadoMisiones = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculo.id}/${cuerpoCeleste.id}`);
+    const estadoMisiones = await resEstadoMisiones.json();
     misiones.forEach((mision, indice) => {
         const coordenadas = coordenadasVisuales[indice];
-        //Si hay más de 3 msiones, se ignoran. 
+        //Si hay más de 3 msiones, se ignoran.
         if (!coordenadas) return; 
-        if (indice === 0 && !mision.disponible){
+        if (indice === 0 && !estadoMisiones[indice].disponible){
             const resDisponible = fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}/${mision.id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
@@ -150,7 +154,7 @@ async function pintarPuntosDeInteres(misiones) {
         }
         const divPunto = document.createElement("div");
         divPunto.className = "punto-interes";
-        if (indice > 0 && !(misiones[indice].disponible)) { // Si está bloqueada, la diferencia visualmente.
+        if (indice > 0 && !(estadoMisiones[indice].disponible)) { // Si está bloqueada, la diferencia visualmente.
             divPunto.classList.add("bloqueado");
         }
         divPunto.style.position = "absolute";
@@ -163,7 +167,7 @@ async function pintarPuntosDeInteres(misiones) {
         `;
 
         divPunto.addEventListener("click", () => {
-            const completado = manejarClickPunto(mision, indice, coordenadas);
+            const completado = manejarClickPunto(estadoMisiones[indice],mision, vehiculo.id, indice, coordenadas);
             if (completado){
                 divPunto.classList.remove("bloqueado"); // Le saco la capa de bloqueado
             }
@@ -196,18 +200,19 @@ function rellenarApartadoIzquierda(cuerpo_celeste){
     document.getElementById("datoDescripcion").textContent = cuerpo_celeste.descripcion;
 }
 
-    async function manejarClickPunto(mision, indiceProximo, coordenadasDestino) {
+    async function manejarClickPunto(estadoMision, mision, vehiculoId, indiceProximo, coordenadasDestino) {
         const estamosAhi = ((vehiculo.style.top === coordenadasDestino.top) && (vehiculo.style.left === coordenadasDestino.left));
         if (estamosAhi) {
         // Si ya está parado ahí, abrimos la información
         document.getElementById("puntoNombre").textContent = mision.nombre;
         document.getElementById("puntoDescripcion").textContent = mision.descripcion;
         panelPunto.classList.add("visible");
-        if (mision.porcentaje !== 100){
+        completarMision = fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoId}/${constantes.EXPLORAR_URL}`)
+/*        if (!estadoMision.completado){
         const completarMision = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}/${mision.id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ porcentaje: 100 })
+            body: JSON.stringify({ completado: true })
             });
             if (completarMision.ok) {
                 // Actualizamos el objeto local para evitar falsos negativos
@@ -246,7 +251,7 @@ function rellenarApartadoIzquierda(cuerpo_celeste){
         }
     }
 }
-
+*/
 function viajarHacia(coordenadas) {
     // Bloqueamos los clicks
     document.body.classList.add("bloqueado-viajando");

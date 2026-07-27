@@ -62,7 +62,7 @@ function pintarPlanetas(cuerpos_celestes) {
 
 async function iniciar () {
 try {
-    const respuestaVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
+    const respuestaVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}`);
     const vehiculos = await respuestaVehiculo.json();
     const planetas = await obtenerPlanetas(vehiculos[0].id);
     pintarPlanetas(planetas.cuerpos);

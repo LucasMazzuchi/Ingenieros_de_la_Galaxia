@@ -2,6 +2,7 @@ export const API_URL = "http://localhost:5000/api";
 export const CUERPOS_URL = "cuerpos_celestes";
 export const VEHICULOS_URL = "vehiculos";
 export const MISIONES_URL = "misiones";
+export const PROGRESO_URL = "progreso";
 export const PUNTO1_TOP = "15%";
 export const PUNTO2_TOP = "50%";
 export const PUNTO3_TOP = "85%";
