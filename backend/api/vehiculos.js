@@ -32,6 +32,9 @@ endpointsVehiculos.get("/:id", validarId, async (req, res) => {
 
 endpointsVehiculos.post("/", validarVehiculo, async (req, res)=> {
     try{
+        if (await vehiculos.cantidadVehiculos() >= constantes.VEHICULOS_MAX){
+            return res.status(403).json({error: constantes.ERROR_ENTIDAD_LLENA("vehiculo", constantes.VEHICULOS_MAX)});
+        }
         const { vehiculo, id } = await vehiculos.createVehiculo(req.body);
         if (!vehiculo){
             res.status(500).json({error: constantes.ERROR_CONSULTA("vehiculo", "creada")});
