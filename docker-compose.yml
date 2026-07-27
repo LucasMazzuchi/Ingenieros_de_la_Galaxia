@@ -26,7 +26,7 @@ services:
       - "${BACKEND_PORT}:5000"
     volumes:
       - ./backend:/usr/src/app
-      - /usr/src/app/node_modules # Para no pisar con los locales
+      - /usr/src/app/node_modules
     environment:
       - DB_HOST=bd
       - DB_USER=$DB_USER

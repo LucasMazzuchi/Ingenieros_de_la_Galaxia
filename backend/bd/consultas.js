@@ -21,7 +21,10 @@ export const armar_consulta = (id, entidad) => {
 // Verifica si un cuerpo celeste está siendo usado activamente por vehículos o misiones
 // antes de permitir un borrado lógico.
 export const verificarDependencia = async (id) => {
-    const consultaMisiones = "SELECT 1 FROM misiones WHERE cuerpo_celeste_id = $1 AND borrado = FALSE LIMIT 1";
+    const consultaMisiones = "SELECT * FROM misiones WHERE cuerpo_celeste_id = $1 AND borrado = FALSE";
+    const consultaVehiculos = "SELECT * FROM vehiculos WHERE ubicacion_id = $1 AND borrado = FALSE";
     const resMisiones = await db.query(consultaMisiones, [id]);
-    return (resMisiones.rowCount > 0)
+    const resVehiculos = await db.query(consultaVehiculos, [id]);
+    return {misiones : resMisiones.rows, vehiculos : resVehiculos.rows};
+
 };

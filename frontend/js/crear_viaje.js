@@ -78,10 +78,6 @@ botonesTab.forEach(boton => {
 });
 
 
-// FUNCIONES DE LA API 
-
-
-
 async function obtenerDatos(recurso) {
   try {
     const res = await fetch(`${constantes.API_URL}/${recurso}`);
@@ -150,6 +146,10 @@ async function inicializarSelects() {
     }
 
     planetas.forEach(p => {
+      if (p.nombre.toLowerCase().includes("tierra")) {
+        return; 
+      }
+
       const opt = document.createElement("option");
       opt.value = p.id;
       opt.textContent = p.nombre;
@@ -223,7 +223,18 @@ selectPlaneta.addEventListener("change", async () => {
 formPlaneta.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = selectPlaneta.value;
+  const posicionIngresada = parseInt(document.getElementById("inputPosicion").value);
 
+  // Traemos los planetas actuales para validar si la posición está ocupada
+  const planetasActuales = await obtenerDatos("cuerpos_celestes");
+  
+  // Buscamos si existe otro planeta (que no sea el que estamos editando) con esa misma posición
+  const posicionOcupada = planetasActuales.find(p => p.posicion === posicionIngresada && p.id != id);
+
+  if (posicionOcupada) {
+    alert(`La posición ${posicionIngresada} ya está ocupada por el planeta "${posicionOcupada.nombre}". Por favor, elige otra.`);
+    return; // Cortamos la ejecución para que no se guarde nada
+  }
   const datos = {
     nombre: document.getElementById("inputNombre").value,
     descripcion: document.getElementById("inputDescripcion").value,

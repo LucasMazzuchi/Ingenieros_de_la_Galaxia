@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS vehiculos (
     combustible INT NOT NULL,
     resistencia INT NOT NULL,
     punto_interes INT NOT NULL,
+    ubicacion_id INT REFERENCES cuerpos_celestes(id) NOT NULL,
     borrado BOOLEAN DEFAULT FALSE
 );
 
@@ -45,10 +46,10 @@ VALUES
 ('Mercurio', 'Una esfera de hierro asada por la radiación. De día es un infierno fundido; de noche, un páramo gélido. Su superficie agrietada revela que el planeta entero se está encogiendo.', 1, 4879, 3.7, 170, FALSE, 2, 7, 4, 4),
 ('Júpiter', 'Un coloso de nubes arremolinadas y tormentas perpetuas. Bajo su densa atmósfera de amoníaco y violentas bandas de colores, se esconde un océano de hidrógeno metálico.', 2, 139820, 24.7, -110, FALSE, 2, 5, 8, 5);
 
-INSERT INTO vehiculos (nombre, tipo, motor, estructura, combustible, resistencia, punto_interes)
+INSERT INTO vehiculos (nombre, tipo, motor, estructura, combustible, resistencia, punto_interes, ubicacion_id)
 VALUES 
-('Nave Exploradora intergaláctica', 1, 1, 1, 100, 1, 1),
-('Auto', 2,1,1,100,1,1);
+('Nave Exploradora intergaláctica', 1, 1, 1, 100, 1, 1, 1),
+('Auto', 2,1,1,100,1,1, 1);
 
 INSERT INTO misiones (nombre, descripcion, porcentaje, cuerpo_celeste_id, disponible)
 VALUES 
