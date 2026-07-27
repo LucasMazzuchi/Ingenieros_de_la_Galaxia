@@ -14,11 +14,16 @@ async function iniciarPlaneta() {
         window.location.href = "galaxia.html"; // si no hay ID, retorna
         return;
     }
-    const tipoVehiculo = (planetaId === "1") ? 2 : 1;
-    vehiculo.src = (tipoVehiculo === 2) ? "../assets/img/auto1.png" : "../assets/img/nave1.png";
+    const naveId = localStorage.getItem("vehiculoSeleccionadoId");
+    if (!naveId) {
+        window.location.href = "usuario.html";
+        return;
+    }
+
     try {
-        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
-        const vehiculoDatos = await resVehiculo.json();
+        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
+        const vehiculoDatos = [await resVehiculo.json()];
+        vehiculo.src = "../assets/img/nave1.png";
 
         const resPlaneta = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/?id=${planetaId}&vehiculo_id=${vehiculoDatos[0].id}`);
         const planetas = await resPlaneta.json();
@@ -222,8 +227,9 @@ function rellenarApartadoIzquierda(cuerpo_celeste){
             }
             }
         } else {
-        const respuestaVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
-        const datosVehiculo = await respuestaVehiculo.json();
+        const naveId = localStorage.getItem("vehiculoSeleccionadoId");
+        const respuestaVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
+        const datosVehiculo = [await respuestaVehiculo.json()];
         if (Math.abs(datosVehiculo[0].punto_interes-indiceProximo) > 1){
             mostrarNotificacion("Ruta Inválida", "Debe moverse primero a la misión más cercana.");
             return;
