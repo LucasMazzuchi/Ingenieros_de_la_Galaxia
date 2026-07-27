@@ -1,31 +1,36 @@
-import { REGEX_ENTERO } from "../constantes";
-import { _validarId } from "./validaciones_errores";
+import * as constantes from "../constantes.js";
+import { _validarId, validarEntrada, validarEntero } from "./validaciones_errores.js";
+import * as progreso from "../bd/progreso.js";
 
 export const validarIds = (req, res, next) => {
     if (!req.params || Object.keys(req.params).length === 0 || Object.keys(req.params).length > 2) {
         return res.status(400).json({ error: constantes.ERROR_CAMPOS });
     }
     let entrada = {}
-    let reglasIds = {
-    [constantes.CUERPO_CELESTE]: _validarId,
-    };
+    let datos;
+    let reglasIds = {};
     if (req.method === "GET"){
-    let entrada = {
+    entrada = {
         [constantes.ID]: { campo: req.params.id, min: 1, max: constantes.ID_MAX, error: constantes.ID },
         [constantes.CUERPO_CELESTE]: { campo: req.params.cuerpo_celeste_id, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE }
     };
+    datos = req.params;
     reglasIds[constantes.ID]= _validarId;
+    reglasIds[constantes.CUERPO_CELESTE]= _validarId;
 
     } else if (req.method === "PATCH"){
 
-        let entrada = {
+        entrada = {
             [constantes.CUERPO_CELESTE]: { campo: req.body.cuerpo_celeste_id, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE },
-            [constantes.VEHICULO]: { campo: req.body.vehiculo_id, min: 1, max: constantes.ID_MAX, error: constantes.VEHICULO }
+            [constantes.MISION]: { campo: req.body.mision_id, min: 1, max: constantes.ID_MAX, error: constantes.MISION }
         };
-        reglasIds[constantes.VEHICULO] = _validarId;
+        datos = req.body;
+        reglasIds[constantes.MISION] = validarEntero;
+        reglasIds    [constantes.CUERPO_CELESTE]=validarEntero;
     }
-
-    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasIds, req.method, req.method === "GET" ? Object.keys(req.body) : Object.keys(req.body), true);
+    console.log(req.params);
+    console.log(req.body.mision_id);
+    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasIds, req.method, Object.keys(datos), true);
     if (camposInvalidos.length !== 0) {
         return res.status(400).json({error: constantes.ERROR_CAMPOS, campos: camposInvalidos});
     }
@@ -43,6 +48,7 @@ export const verificarEstadoMision = async (req, res, next) => {// Si hay 0 misi
         if (!mision) {
             return res.status(403).json({ error: "Tenés que descubrir este punto primero." });
         }
+        console.log(mision);
         if (mision.completado) {
             return res.status(400).json({ error: "Este punto ya fue explorado por la nave." });
         }

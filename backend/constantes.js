@@ -66,6 +66,7 @@ export const TIPO = "tipo";
 export const UBICACION = "ubicacion_id";
 export const POSICION = "posicion";
 export const VEHICULO = "vehiculo_id";
+export const MISION = "mision_id";
 
 /* La función arma la consulta con los filtros que se le pasen, para la entidad especificada,
 comenzando con el texto ingresado por parámetro.*/

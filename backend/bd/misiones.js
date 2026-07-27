@@ -1,11 +1,12 @@
 import { db } from "./pool.js";
 import { armar_consulta } from "./consultas.js";
+import { consulta, MISIONES_MAX } from "../constantes.js"; 
 
 // Busca todas las misiones, se puede filtrar por sus campos. El parámetro texto es la consulta y procesados son los datos.
 // Devuelve todas las misiones que cumplan con los requisitos de filtrado. 
 export async function getAllMisiones(filtros) {
     const sinFiltro = `SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion FROM misiones as m, cuerpos_celestes as c WHERE c.id = m.cuerpo_celeste_id AND m.borrado = FALSE AND c.borrado = FALSE`;
-    const texto, procesados = constantes.consulta(filtros, "vehiculo", texto);
+    const {texto, procesados} = consulta(filtros, "vehiculo", texto);
     const res = await db.query(texto, procesados);
     return res.rows;
 }
@@ -19,14 +20,15 @@ export async function getMision(id) {
 // Crea una misión con los datos pasados por parámetro mediante el diccionario mision.
 // Devuelve true en mision, si fue creada exitosamente, sino devuelve false. También devuelve su id.
 export async function createMision(mision) {
-    if (await cantidadMisiones(req.body.cuerpo_celeste_id) >= constantes.MISIONES_MAX){
+    if (await cantidadMisiones(mision.cuerpo_celeste_id) >= MISIONES_MAX){
         return { mision: false, id: undefined, max: true};
     }
     const solicitud = "INSERT INTO misiones (nombre, descripcion, cuerpo_celeste_id, borrado) VALUES ($1, $2, $3, $4) RETURNING id";
     const valores = [mision.nombre, mision.descripcion, mision.cuerpo_celeste_id, false];
     const res = await db.query(solicitud, valores);
-    const ok = res.rowCount == 1
-    return {mision : ok, id : ok ? res.rows[0].id : undefined, max: false};
+    const ok = res.rowCount === 1;
+    const resId = ok ? res.rows[0].id : undefined;
+    return {mision : ok, id : resId, max: false};
 }
 
 

@@ -35,10 +35,11 @@ endpointsMisiones.post("/", validarMision, async (req, res)=> {
         if (max){
             return res.status(403).json({error: constantes.ERROR_ENTIDAD_LLENA("mision", constantes.MISIONES_MAX, "por planeta.")});
         }
+        const resId = id;
         if (!mision){
             res.status(500).json({error: constantes.ERROR_CONSULTA("mision", "creada")});
         } else {
-            res.status(201).json({exito : constantes.EXITO_CONSULTA("mision", "creada"), id : id});
+            res.status(201).json({exito : constantes.EXITO_CONSULTA("mision", "creada"), id : resId});
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
@@ -84,7 +85,6 @@ endpointsMisiones.delete("/:id", validarId, async (req, res) => {
             res.status(200).json({exito : constantes.EXITO_CONSULTA("mision", "eliminada"), entidad : mision});
         }
     } catch (error) {
-        console.error("ERROR REAL AL BORRAR:", error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }

@@ -92,20 +92,20 @@ export const validarFloat = ({ campo, min, max, error }) => {
 // Si hay un error en la solicitud, envía un error 400 y devuelve. Sino, pasa a la función next pasada por parámetro.
 
 export const validarId = (req, res, next) => {
-    const {ok, nId} = _validarId(req.params.id);
-    if (!ok){
-        return res.status(400).json({error: constantes.ERROR_INT("id", 1, 2147483647)});
+    const ok = _validarId(req.params.id);
+    if (ok.length !== 0){
+        return res.status(400).json({error: constantes.ERROR_INT("id", 1, constantes.ID_MAX)});
     }
-    req.params.id = nId;
+    req.params.id = Number(req.params.id);
     next();
 };
 
 export const _validarId = (entrada) => {
     const id = Number(entrada);
-    if (!/^[0-9]+$/.test(entrada) || !Number.isInteger(id) || id<1 || id>2147483647){
-        return {ok : false, nId : id};
+    if (!/^[0-9]+$/.test(entrada) || !Number.isInteger(id) || id<1 || id>constantes.ID_MAX){
+        return `El campo debe ser un entero entre 1 y ${constantes.ID_MAX}`;
     }
-    return {ok : true, nId : id};
+    return "";
 }
 
 export const manejarError = (error) => {
