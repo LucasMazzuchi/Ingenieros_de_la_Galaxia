@@ -11,7 +11,7 @@ services:
       - "${DB_PORT}:5432"
     volumes:
       - bd_espacio:/var/lib/postgresql
-      - ./bd/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./backend/bd/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}"]
       interval: 5s

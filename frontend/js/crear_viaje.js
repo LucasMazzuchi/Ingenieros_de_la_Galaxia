@@ -315,26 +315,6 @@ formVehiculo.addEventListener("submit", async (e) => {
     resistencia: parseInt(document.getElementById("inputResistencia").value),
     punto_interes: 1
   };
-  
-  if (id) {
-        const existeOtroIgual = vehiculosActuales.find(v => v.tipo === datos.tipo && v.id != id);
-        if (existeOtroIgual) {
-            alert("Ya existe otro vehículo con este tipo. Solo puede haber uno de Tipo 1 y uno de Tipo 2.");
-            return; 
-        }
-    } else {
-        
-        if (vehiculosActuales.length >= 2) {
-            alert("El hangar está lleno. Ya existen 2 vehículos en total y no se pueden crear más.");
-            return;
-        }
-      
-        const existeTipo = vehiculosActuales.find(v => v.tipo === datos.tipo);
-        if (existeTipo) {
-            alert(`Ya existe un vehículo registrado para el tipo seleccionado. Debes elegir el otro.`);
-            return;
-        }
-      }
 
   let exito = false;
    
