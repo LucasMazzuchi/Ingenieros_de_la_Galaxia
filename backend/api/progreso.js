@@ -2,6 +2,7 @@ import { Router } from "express";
 import {validarIds, verificarEstadoMision} from "./verificaciones_progreso.js";
 import { validarId } from "./validaciones_errores.js";
 import * as progreso from "../bd/progreso.js";
+import { getVehiculo } from "../bd/vehiculos.js";
 import { completarMision } from "../logica/misiones.js";
 import {mejorarVehiculo} from "../logica/vehiculos.js";
 
@@ -28,6 +29,10 @@ endpointsProgreso.patch("/:id/desbloquear", validarId, validarIds, async (req, r
             if (!estaDesbloqueada) {
                 return res.status(403).json({ error: "No podés desbloquear este punto porque el anterior está bloqueado." });
             }
+            const vehiculo = await getVehiculo(req.params.id);
+            if (Math.abs(vehiculo.puntoInteres-misionAnterior.posicion)>1){
+                return res.status(409).json(); // Falta agregar la pos al pto de interés
+            } 
         }
         const resMision = await progreso.desbloquearMision(req.params.id, req.body.mision_id, req.cuerpo_celeste_id);
         res.status(200).json({ mensaje: "¡Nuevo punto de interés descubierto!" });
