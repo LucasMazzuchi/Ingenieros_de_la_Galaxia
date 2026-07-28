@@ -11,7 +11,7 @@ endpointsProgreso.get("/:id/:cuerpo_celeste_id", validarIds, async (req, res) =>
     try {
         const resPuntosInteres = await progreso.getAllMisiones(req.params.id, req.params.cuerpo_celeste_id); // Busca misiones
         const puntosVisitados = resPuntosInteres.filter(punto => punto.completado === true);
-        const resPlaneta = await getPlaneta(req.params.id, planetaId);
+        const resPlaneta = await progreso.getPlaneta(req.params.id, req.params.cuerpo_celeste_id);
         const planetaCompletado = resPlaneta ? resPlaneta.completado : false;
         res.status(200).json({puntosVisitados, planetaCompletado});
     } catch (error) {

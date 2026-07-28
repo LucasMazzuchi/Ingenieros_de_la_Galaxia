@@ -26,10 +26,8 @@ export const validarIds = (req, res, next) => {
         };
         datos = req.body;
         reglasIds[constantes.MISION] = validarEntero;
-        reglasIds    [constantes.CUERPO_CELESTE]=validarEntero;
+        reglasIds[constantes.CUERPO_CELESTE]=validarEntero;
     }
-    console.log(req.params);
-    console.log(req.body.mision_id);
     const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasIds, req.method, Object.keys(datos), true);
     if (camposInvalidos.length !== 0) {
         return res.status(400).json({error: constantes.ERROR_CAMPOS, campos: camposInvalidos});
