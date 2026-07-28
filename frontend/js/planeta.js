@@ -33,17 +33,25 @@ async function iniciarPlaneta() {
             window.location.href = "galaxia.html"; // Lo devolvemos al mapa
             return;
         }
-        const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planetas[0].id}&order_by=id&order=ASC`);
+        const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planetas[0].id}&order_by=posicion&order=ASC`);
         const misiones = await resMisiones.json();
         if (vehiculoDatos[0].combustible<100 && vehiculoDatos[0].ubicacion_id !== planetas[0].id){
             alert("Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave para poder viajar a otro.")
             window.location.href = "galaxia.html";
         }
+        console.log(vehiculoDatos[0].id);
+        if (vehiculoDatos[0].ubicacion_id !== planetas[0].id){
+            const primerMision = fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoDatos[0].id}/desbloquear`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ cuerpo_celeste_id: planetas[0].id, mision_id: misiones[0].id})
+                });
+        }
         const actualizarVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoDatos[0].id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    ubicacion_id : planetas[0].id
+                    ubicacion_id : planetas[0].id,
                 })
             });
         const misionesEstadoInicial = await dibujarDatosDelPlaneta(planetas[0], misiones, vehiculoDatos[0]); // Esto arma la página
