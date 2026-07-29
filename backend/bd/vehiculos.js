@@ -22,7 +22,7 @@ export async function createVehiculo(vehiculo) {
     const solicitud = "INSERT INTO vehiculos (nombre, motor, estructura, combustible, resistencia, punto_interes, ubicacion_id, borrado) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id";
     const valores = [vehiculo.nombre, vehiculo.motor, vehiculo.estructura, vehiculo.combustible, vehiculo.resistencia, vehiculo.punto_interes, vehiculo.ubicacion_id, false];
     const res = await db.query(solicitud, valores);
-    return {vehiculo : res.rowCount == 1, id : res.rows[0].id, max: false};
+    return {vehiculo : res.rowCount == 1, id : res.rows[0].id};
 }
 
 // Borra un vehículo por el id pasado por parámetro marcando la casilla borrado como true. En caso de que no exista el cuerpo celeste devuelve false en ok,

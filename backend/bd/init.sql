@@ -62,11 +62,6 @@ VALUES
 ('Mercurio', 'Una esfera de hierro asada por la radiación...', 1, 4879, 3.7, 170, FALSE, 2, 7, 4, 4),
 ('Júpiter', 'Un coloso de nubes arremolinadas y tormentas...', 2, 139820, 24.7, -110, FALSE, 2, 5, 8, 5);
 
--- 2. Insertar Vehículos (Corregido el final con ;)
-INSERT INTO vehiculos (nombre, motor, estructura, combustible, resistencia, punto_interes, ubicacion_id)
-VALUES 
-('Nave Exploradora intergaláctica', 1, 1, 100, 1, 1, 1);
-
 -- 3. Insertar Misiones (Corregida la sintaxis y asignados los IDs de planetas)
 INSERT INTO misiones (nombre, descripcion, posicion, cuerpo_celeste_id)
 VALUES 

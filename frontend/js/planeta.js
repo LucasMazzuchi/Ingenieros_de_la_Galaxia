@@ -9,18 +9,24 @@ async function iniciarPlaneta() {
     // 1. Leemos a qué planeta intentó entrar desde la URL
     const parametros = new URLSearchParams(window.location.search);
     const planetaId = parseInt(parametros.get("id"));
+    const naveId = localStorage.getItem("vehiculoSeleccionadoId");
+    if (!naveId) {
+        window.location.href = "usuario.html";
+        return;
+    }
+
 
     if (!planetaId) {
         window.location.href = "galaxia.html"; // si no hay ID, retorna
         return;
     }
+
     const tipoVehiculo = (planetaId === 1) ? 2 : 1;
     vehiculo.src = (tipoVehiculo === 2) ? "../assets/img/auto1.png" : "../assets/img/nave1.png";
     try {
-        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}`); //Acá hay que traerse al id del vehículo.
+        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`); //Acá hay que traerse al id del vehículo.
         const vehiculoDatos = await resVehiculo.json();
-
-        const resPlaneta = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/?id=${planetaId}&vehiculo_id=${vehiculoDatos[0].id}`);
+        const resPlaneta = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/?id=${planetaId}&vehiculo_id=${naveId}`);
         const planetas = await resPlaneta.json();
 
         if (!planetas || planetas.length === 0) {
@@ -35,10 +41,10 @@ async function iniciarPlaneta() {
         }
         const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planetaId}&order_by=posicion&order=ASC`);
         const misiones = await resMisiones.json();
-        const resEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoDatos[0].id}/${planetaId}`);
+        const resEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${planetaId}`);
         const estado = await resEstado.json();
         console.log("Ver si esta en Progreso",estado);
-        if (!estado.planetaCompletado && vehiculoDatos[0].combustible<100 && !estado.enProgreso){
+        if (!estado.planetaCompletado && vehiculoDatos.combustible<100 && !estado.enProgreso){
             alert("Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave para poder viajar a otro.")
             return window.location.href = "galaxia.html";
         }
@@ -46,15 +52,15 @@ async function iniciarPlaneta() {
 
         console.log("Estado actual: ",estado);
         console.log("Está vacío", estado.puntosVisitados.length === 0);
-        console.log("punto_interes viejo", vehiculoDatos[0].punto_interes);
-        console.log("if: ", vehiculoDatos[0].ubicacion_id !== planetaId);
-        let puntoActual = vehiculoDatos[0].punto_interes;
-        if (vehiculoDatos[0].ubicacion_id !== planetaId){
+        console.log("punto_interes viejo", vehiculoDatos.punto_interes);
+        console.log("if: ", vehiculoDatos.ubicacion_id !== planetaId);
+        let puntoActual = vehiculoDatos.punto_interes;
+        if (vehiculoDatos.ubicacion_id !== planetaId){
             puntoActual = 1;
-            vehiculoDatos[0].punto_interes = puntoActual;
+            vehiculoDatos.punto_interes = puntoActual;
         }
-        console.log("Pos nueva:",vehiculoDatos[0].punto_interes);
-        const actualizarVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoDatos[0].id}`, {
+        console.log("Pos nueva:",vehiculoDatos.punto_interes);
+        const actualizarVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -64,7 +70,7 @@ async function iniciarPlaneta() {
         });
         
         if (estado.puntosVisitados.length === 0){
-            const primerMision = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoDatos[0].id}/desbloquear`, {
+            const primerMision = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/desbloquear`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ cuerpo_celeste_id: planetaId, mision_id: misiones[0].id})
@@ -72,10 +78,10 @@ async function iniciarPlaneta() {
             console.log("estado Actulización misión 1", primerMision);
         }
 
-        const resDibujado = await dibujarDatosDelPlaneta(planetas[0], misiones, vehiculoDatos[0]); // Esto arma la página
+        const resDibujado = await dibujarDatosDelPlaneta(planetas[0], misiones, vehiculoDatos); // Esto arma la página
         console.log("Puntos Visitados",estado.puntosVisitados.length);
         if (estado.puntosVisitados.length === 0){ // Gasta combustible si es la primera vez que visita el planeta
-            const actualizacionCombustibleVehiculo= await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoDatos[0].id}`, {
+            const actualizacionCombustibleVehiculo= await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ combustible: 0})
@@ -188,7 +194,6 @@ function rellenarApartadoIzquierda(cuerpo_celeste){
 
 async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenadasDestino, vehiculoDOM) {
     const estamosAhi = ((vehiculoDOM.style.top === coordenadasDestino.top) && (vehiculoDOM.style.left === coordenadasDestino.left));
-
     if (estamosAhi) {
         try {
             const resExplorar = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoId}/explorar`, {
