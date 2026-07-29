@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS misiones_vehiculos (
     vehiculo_id INT REFERENCES vehiculos(id),
     cuerpo_celeste_id INT REFERENCES cuerpos_celestes(id),
     completado BOOLEAN DEFAULT FALSE,
-    PRIMARY KEY (mision_id, vehiculo_id)
+    PRIMARY KEY (mision_id, vehiculo_id, cuerpo_celeste_id)
 );
 
 -- 1. Insertar Cuerpos Celestes
@@ -91,16 +91,3 @@ VALUES
 ('Resonancia Magnética', 'Entre los intensos cinturones de radiación ecuatorial navega una señal...', 2, 6),
 ('Latido de Europa', 'La corteza de hielo cruje siguiendo un patrón rítmico, casi respiratorio...', 3, 6);
 
--- ==========================================
--- 4. INSERTS DE TABLAS INTERMEDIAS (PROGRESO)
--- ==========================================
-
--- Registramos qué cuerpos celestes visitó el vehículo 1
-INSERT INTO cuerpos_celestes_vehiculos (cuerpo_celeste_id, vehiculo_id, completado)
-VALUES 
-(1, 1, FALSE);
-
--- Registramos el progreso de las misiones para el vehículo 1
-INSERT INTO misiones_vehiculos (mision_id, vehiculo_id, cuerpo_celeste_id, completado)
-VALUES 
-(1, 1, 1, FALSE);

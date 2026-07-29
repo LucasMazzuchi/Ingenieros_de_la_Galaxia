@@ -8,17 +8,17 @@ export const completarMision = async (req, res, next) => {
         if (totales < 1){
             return res.status(403).json({error: "No hay puntos de interés en el cuerpo celeste."})
         }
-        const recompensa = parseInt(100/totales) === 33 ? 34 : 100/totales;
-        const vehiculo = getVehiculo(req.params.id);
+        let recompensa = parseInt(100/totales) === 33 ? 34 : 100/totales;
+        const vehiculo = await getVehiculo(req.params.id);
         if (vehiculo.combustible+recompensa > 100) {
             recompensa = 100-vehiculo.combustible;
         }
         req.body.nafta = parseInt(vehiculo.combustible + recompensa);
-        const resCombustible = await progreso.sumarCombustible(req.params.id, req.body.mision_id, req.body.nafta);
+        const resCombustible = await progreso.sumarCombustible(req.params.id, req.body.nafta);
         if (completadas === totales) {
             next();
         }
-        return res.status(200).json({mensaje : "Punto expolorado con éxito", combustible : req.body.nafta, cuerpoCompletado : false});
+        return res.status(200).json({mensaje : "Punto expolorado con éxito", combustible : recompensa, cuerpoCompletado : false});
     } catch (error){
         res.status(500).json({ error: "Error al completar la misión." });
     }
