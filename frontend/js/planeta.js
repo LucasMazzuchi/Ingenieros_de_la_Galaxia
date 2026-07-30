@@ -156,8 +156,13 @@ async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
     let posNave = vehiculoObjetos.punto_interes-1;
     const resMisionesEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoObjetos.id}/${cuerpoCeleste.id}`);
     const misionesEstado = await resMisionesEstado.json();
+<<<<<<< HEAD
     misiones.forEach((mision) => {
         const coordenadas = coordenadasVisuales[mision.posicion-1];
+=======
+    misiones.forEach((mision, indice) => {
+        const coordenadas = coordenadasVisuales[indice];
+>>>>>>> d6288b9 (Agrego feature para los vehículos que no están en uso, ahora se ven)
         if (!coordenadas) return; 
         const divPunto = document.createElement("div");
         divPunto.className = "punto-interes";
