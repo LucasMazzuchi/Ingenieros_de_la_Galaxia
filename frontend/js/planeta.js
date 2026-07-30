@@ -151,8 +151,8 @@ async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
     let posNave = vehiculoObjetos.punto_interes-1;
     const resMisionesEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoObjetos.id}/${cuerpoCeleste.id}`);
     const misionesEstado = await resMisionesEstado.json();
-    misiones.forEach((mision, indice) => {
-        const coordenadas = coordenadasVisuales[indice];
+    misiones.forEach((mision) => {
+        const coordenadas = coordenadasVisuales[mision.posicion-1];
         if (!coordenadas) return; 
         const divPunto = document.createElement("div");
         divPunto.className = "punto-interes";
@@ -228,7 +228,6 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
             console.error("Error de red al explorar:", error);
             return false;
         }
-// Falta debuggear endpoint resDesbloquear
     } else {
         try {
             const resDesbloquear = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoId}/desbloquear`, {
@@ -274,13 +273,11 @@ function viajarHacia(coordenadas) {
 
 function dibujarCamino(puntosDeInteres){
     const camino = document.getElementById("camino-polyline");
-    if (puntosDeInteres.length ===2) {
-        camino.setAttribute("points", constantes.COORDENADAS_SVG.slice(0,2).join(" "));
-    } else if (puntosDeInteres.length === 3){
-        camino.setAttribute("points", constantes.COORDENADAS_SVG.join(" "));
-    } else {
-        camino.setAttribute("points", " ");
-    }
+    const puntos = [];
+    puntosDeInteres.forEach(function (punto){
+        puntos.push(constantes.COORDENADAS_SVG[punto.posicion-1]);
+    })
+    camino.setAttribute("points", puntos.join(" "));
 }
 
 

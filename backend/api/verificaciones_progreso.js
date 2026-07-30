@@ -49,7 +49,7 @@ export const verificarEstadoMision = async (req, res, next) => {// Si hay 0 misi
         if (mision.completado) {
             return res.status(400).json({ error: "Este punto ya fue explorado por la nave." });
         }
-        next()
+        return next();
     } catch (error){
         res.status(500).json({ error: "Error al verificar el estado de la misión." });
     }
