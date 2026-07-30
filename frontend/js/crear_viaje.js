@@ -26,6 +26,12 @@ const imagenesFondos = [
   "../assets/img/fondo-violeta.jpg"
 ];
 
+const imagenesPuntos = [
+  "../assets/img/marcador1.png",
+  "../assets/img/marcador2.png",
+  "../assets/img/marcador3.png",
+  "../assets/img/marcador4.png"
+]
 
 
 // Crea una galería clickeable dentro de un contenedor, y guarda la elegida en un input hidden
@@ -49,6 +55,8 @@ function crearSelectorImagenes(contenedorId, imagenes, inputHiddenId) {
 
 crearSelectorImagenes("galeriaPlanetas", imagenesPlanetas, "inputImagen");
 crearSelectorImagenes("galeriaFondoPlaneta", imagenesFondos, "inputImagenFondo");
+crearSelectorImagenes("galeriaPuntos", imagenesPuntos, "inputImagenPunto");
+
 // Galería del planeta: imagen del planeta + imagen de fondo (ambas fijas)
 
 
@@ -315,7 +323,7 @@ formVehiculo.addEventListener("submit", async (e) => {
 
   const vehiculosActuales = await obtenerDatos("vehiculos");
 
-    
+        
   const datos = {
     nombre: document.getElementById("inputNombreVehiculo").value,
     motor: parseInt(document.getElementById("inputMotor").value),
@@ -380,6 +388,7 @@ selectPunto.addEventListener("change", async () => {
     document.getElementById("inputTituloPunto").value = m.nombre;
     document.getElementById("inputDescripcionPunto").value = m.descripcion;
     document.getElementById("inputPosicionPunto").value = m.posicion;
+    document.getElementById("inputImagenPunto").value = m.imagen;
   }
 });
 
@@ -387,14 +396,20 @@ selectPunto.addEventListener("change", async () => {
 formPunto.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = selectPunto.value;
-
+  const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${cuerpoCeleste.id}`);
+  const misiones = await resMisionesEstado.json();
+  if (misiones.find(function (mision){ return mision.posicion === document.getElementById("inputPosicionPunto")})){
+    alert("Ocurrió un error al guardar el punto de interés, ya existe un punto de interés en esta posición.");
+    return; // Hay que cambiar a un desplegable que solo te muestre los que no están.
+  }
   const datos = {
     cuerpo_celeste_id: parseInt(document.getElementById("selectPlanetaPunto").value),
     nombre: document.getElementById("inputTituloPunto").value,
     descripcion: document.getElementById("inputDescripcionPunto").value,
-    posicion: document.getElementById("imputPosicionPunto").value
+    posicion: parseInt(document.getElementById("inputPosicionPunto").value),
+    imagen: parseInt(document.getElementById("inputImagenPunto").value)
   };
-
+    console.log("Datos a enviar:", datos);
   let exito = false;
   if (id) {
     exito = await modificarRegistro("misiones", id, datos);

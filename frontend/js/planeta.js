@@ -100,7 +100,7 @@ async function iniciarPlaneta() {
 async function dibujarDatosDelPlaneta(planeta, misiones, vehiculoObjeto, vehiculos){
   try{
     document.getElementById("nombre-planeta").textContent = planeta.nombre; // Cambia el nombre
-    const ruta = buscarImagen(planeta.imagen_fondo);
+    const ruta = buscarImagenFondo(planeta.imagen_fondo);
     contenedorMapa.style.backgroundImage = `url('${ruta}')`;
     contenedorMapa.style.backgroundSize = "cover"; // acomoda el tamaño de la imagen al del fondo.
     contenedorMapa.style.backgroundPosition = "center"; // centrado.
@@ -114,7 +114,7 @@ async function dibujarDatosDelPlaneta(planeta, misiones, vehiculoObjeto, vehicul
   }
 }
 
-function buscarImagen(imagenId) {
+function buscarImagenFondo(imagenId) {
     const imagenes_fondo = {
     1 : "../assets/img/fondo-agujero_negro.jpg",
     2 : "../assets/img/fondo-luna.jpg",
@@ -128,6 +128,16 @@ function buscarImagen(imagenId) {
     10 : "../assets/img/fondo-violeta.jpg"
   };
   return imagenes_fondo[imagenId];
+}
+
+function buscarImagenPunto(imagenId){
+    const imagenes_punto = {
+        1: "../assets/img/marcador1.png",
+        2: "../assets/img/marcador2.png",
+        3: "../assets/img/marcador3.png",
+        4: "../assets/img/marcador4.png"
+    }
+    return imagenes_punto[imagenId];
 }
 
 async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
@@ -152,9 +162,9 @@ async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
         divPunto.style.position = "absolute";
         divPunto.style.top = coordenadas.top;
         divPunto.style.left = coordenadas.left;
-
+        const imagenPunto = buscarImagenPunto(mision.imagen);
         divPunto.innerHTML = `
-            <img src="../assets/img/marcador.png" alt="punto de interés">
+            <img src="${imagenPunto}" alt="punto de interés">
             <p>${mision.nombre}</p>
         `;
 

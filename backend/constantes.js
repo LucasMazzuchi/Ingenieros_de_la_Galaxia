@@ -167,4 +167,5 @@ export const PUNTO_INTERES_MAX = 3;
 // Límites a parámetros de misiones.
 export const PORCENTAJE_MAX = 100;
 export const LIMITE_MAX = 100;
-export const MISIONES_MAX = 4;
+export const MISIONES_MAX = 3;
+export const IMAGEN_PUNTO_MAX = 4;
