@@ -5,7 +5,7 @@ import { consulta, MISIONES_MAX } from "../constantes.js";
 // Busca todas las misiones, se puede filtrar por sus campos. El parámetro texto es la consulta y procesados son los datos.
 // Devuelve todas las misiones que cumplan con los requisitos de filtrado. 
 export async function getAllMisiones(filtros) {
-    const sinFiltro = `SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.posicion, m.imagen FROM misiones as m, cuerpos_celestes as c WHERE c.id = m.cuerpo_celeste_id AND m.borrado = FALSE AND c.borrado = FALSE`;
+    const sinFiltro = `SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.posicion, m.imagen, m.cuerpo_celeste_id FROM misiones as m, cuerpos_celestes as c WHERE c.id = m.cuerpo_celeste_id AND m.borrado = FALSE AND c.borrado = FALSE`;
     const {texto, procesados} = consulta(filtros, "misiones", sinFiltro);
     const res = await db.query(texto, procesados);
     return res.rows;

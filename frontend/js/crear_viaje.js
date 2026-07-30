@@ -181,17 +181,29 @@ async function inicializarSelects() {
   // Cargar misiones (puntos de interés) existentes en su select
   const misiones = await obtenerDatos("misiones");
   const selectPunto = document.getElementById("selectPunto");
-  if (selectPunto) {
-    selectPunto.innerHTML = '<option value="">-- Crear nuevo --</option>';
-    misiones.forEach(m => {
-      const opt = document.createElement("option");
-      opt.value = m.id;
-      opt.textContent = m.nombre;
-      selectPunto.appendChild(opt);
-    });
+  
+  if (selectPunto && selectPlanetaPunto) {
+    
+    function actualizarMisiones () {
+      selectPunto.innerHTML = '<option value="">-- Crear nuevo --</option>';
+      const planetaId = parseInt(selectPlanetaPunto.value);
+      console.log("Planeta seleccionado (ID):", planetaId);
+      console.log("Misiones recibidas del backend:", misiones);
+      const misionesFiltradas = !planetaId ? misiones : misiones.filter(function (mision) {
+        return mision.cuerpo_celeste_id == planetaId;
+      });
+      console.log("Misiones filtradas a mostrar:", misionesFiltradas);
+      misionesFiltradas.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = m.nombre;
+        selectPunto.appendChild(opt);
+      });
+    };
+    actualizarMisiones();
+    selectPlanetaPunto.addEventListener("change", actualizarMisiones);
   }
 }
-
 document.addEventListener("DOMContentLoaded", inicializarSelects);
 
 
@@ -396,10 +408,15 @@ selectPunto.addEventListener("change", async () => {
 formPunto.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = selectPunto.value;
-  const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${cuerpoCeleste.id}`);
-  const misiones = await resMisionesEstado.json();
-  if (misiones.find(function (mision){ return mision.posicion === document.getElementById("inputPosicionPunto")})){
-    alert("Ocurrió un error al guardar el punto de interés, ya existe un punto de interés en esta posición.");
+  const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${parseInt(document.getElementById("selectPlanetaPunto").value)}`);
+  const misiones = await resMisiones.json();
+  console.log(misiones);
+  const punto = parseInt(document.getElementById("inputPosicionPunto").value);
+  const condicion = misiones.find(function (mision){ return mision.posicion === punto});
+  console.log(punto);
+  console.log(condicion);
+  if (condicion){
+      alert("Ocurrió un error al guardar el punto de interés, ya existe un punto de interés en esta posición.");
     return; // Hay que cambiar a un desplegable que solo te muestre los que no están.
   }
   const datos = {
