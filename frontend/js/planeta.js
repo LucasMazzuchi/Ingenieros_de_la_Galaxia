@@ -135,7 +135,8 @@ function buscarImagenPunto(imagenId){
         1: "../assets/img/marcador1.png",
         2: "../assets/img/marcador2.png",
         3: "../assets/img/marcador3.png",
-        4: "../assets/img/marcador4.png"
+        4: "../assets/img/marcador4.png",
+        5: "../assets/img/marcador5.webp"
     }
     return imagenes_punto[imagenId];
 }

@@ -30,7 +30,8 @@ const imagenesPuntos = [
   "../assets/img/marcador1.png",
   "../assets/img/marcador2.png",
   "../assets/img/marcador3.png",
-  "../assets/img/marcador4.png"
+  "../assets/img/marcador4.png",
+  "../assets/img/marcador5.webp"
 ]
 
 
@@ -187,12 +188,9 @@ async function inicializarSelects() {
     function actualizarMisiones () {
       selectPunto.innerHTML = '<option value="">-- Crear nuevo --</option>';
       const planetaId = parseInt(selectPlanetaPunto.value);
-      console.log("Planeta seleccionado (ID):", planetaId);
-      console.log("Misiones recibidas del backend:", misiones);
       const misionesFiltradas = !planetaId ? misiones : misiones.filter(function (mision) {
         return mision.cuerpo_celeste_id == planetaId;
       });
-      console.log("Misiones filtradas a mostrar:", misionesFiltradas);
       misionesFiltradas.forEach(m => {
         const opt = document.createElement("option");
         opt.value = m.id;
@@ -410,15 +408,7 @@ formPunto.addEventListener("submit", async (e) => {
   const id = selectPunto.value;
   const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${parseInt(document.getElementById("selectPlanetaPunto").value)}`);
   const misiones = await resMisiones.json();
-  console.log(misiones);
   const punto = parseInt(document.getElementById("inputPosicionPunto").value);
-  const condicion = misiones.find(function (mision){ return mision.posicion === punto});
-  console.log(punto);
-  console.log(condicion);
-  if (condicion){
-      alert("Ocurrió un error al guardar el punto de interés, ya existe un punto de interés en esta posición.");
-    return; // Hay que cambiar a un desplegable que solo te muestre los que no están.
-  }
   const datos = {
     cuerpo_celeste_id: parseInt(document.getElementById("selectPlanetaPunto").value),
     nombre: document.getElementById("inputTituloPunto").value,
@@ -431,6 +421,11 @@ formPunto.addEventListener("submit", async (e) => {
   if (id) {
     exito = await modificarRegistro("misiones", id, datos);
   } else {
+    const puntoOcupado = misiones.find(function (mision){ return mision.posicion === punto});
+    if (puntoOcupado){
+      alert("Ocurrió un error al guardar el punto de interés, ya existe un punto de interés en esta posición.");
+    return; // Hay que cambiar a un desplegable que solo te muestre los que no están.
+  }
     exito = await crearRegistro("misiones", datos);
   }
 
