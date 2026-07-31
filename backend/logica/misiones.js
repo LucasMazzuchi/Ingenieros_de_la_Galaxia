@@ -3,7 +3,6 @@ import { getVehiculo } from "../bd/vehiculos.js";
 export const completarMision = async (req, res, next) => {
     try {
         const resCompletar = await progreso.completarMision(req.params.id, req.body.mision_id);
-        console.log(resCompletar);
         const {totales, completadas} = await progreso.chequearProgresoPlaneta(req.params.id, req.body.cuerpo_celeste_id);
         if (totales < 1){
             return res.status(403).json({error: "No hay puntos de interés en el cuerpo celeste."})

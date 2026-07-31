@@ -47,6 +47,7 @@ async function iniciarPlaneta() {
         const misiones = await resMisiones.json();
         const resEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${planetaId}`);
         const estado = await resEstado.json();
+        console.log("misiones: ",misiones);
         if (!estado.planetaCompletado && vehiculoDatos.combustible<100 && !estado.enProgreso){
             mostrarNotificacion("No puede entrar al planeta","Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave para poder viajar a otro.", false)
             return window.location.href = "galaxia.html";
@@ -59,13 +60,17 @@ async function iniciarPlaneta() {
                 cuerpo_celeste_id : planetaId
                 })
             });
+            const resActualizarVehiculo =  await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}/mejorar`);
             const auxCompletarPlaneta = completarPlaneta.json();
-            console.log("completar planeta: ", auxCompletarPlaneta);
+            mostrarNotificacion("¡Planeta Explorado!", 
+                "Has recolectado todos los datos de este sector. Ya puedes volver a la galaxia para continuar tu viaje o mejorar tu nave.",
+                false)
+            console.log("completar planeta: ", auxCompletarPlaneta.ok);
         }
 
         let puntoActual = vehiculoDatos.punto_interes;
         if (vehiculoDatos.ubicacion_id !== planetaId){
-            puntoActual = misiones[0].posicion;
+            puntoActual = misiones.length !== 0 ? misiones[0].posicion : 1;
             vehiculoDatos.punto_interes = puntoActual;
         }
         console.log("Pos nueva:",vehiculoDatos.punto_interes);
@@ -77,7 +82,7 @@ async function iniciarPlaneta() {
                 punto_interes: puntoActual
             })
         });
-        if (estado.puntosVisitados.length === 0){
+        if ( misiones.length !== 0 && estado.puntosVisitados.length === 0){
             const primerMision = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/desbloquear`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
@@ -86,7 +91,7 @@ async function iniciarPlaneta() {
         }
 
         const resDibujado = await dibujarDatosDelPlaneta(planetas[0], misiones, vehiculoDatos, vehiculos); // Esto arma la página
-        if (estado.puntosVisitados.length === 0){ // Gasta combustible si es la primera vez que visita el planeta
+        if (misiones.length !==0 && estado.puntosVisitados.length === 0){ // Gasta combustible si es la primera vez que visita el planeta
             const actualizacionCombustibleVehiculo= await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
@@ -109,10 +114,12 @@ async function dibujarDatosDelPlaneta(planeta, misiones, vehiculoObjeto, vehicul
     contenedorMapa.style.backgroundSize = "cover"; // acomoda el tamaño de la imagen al del fondo.
     contenedorMapa.style.backgroundPosition = "center"; // centrado.
     contenedorMapa.style.backgroundRepeat = "no-repeat"; // No se duplica el mosaico.
-    pintarPuntosDeInteres(planeta, misiones, vehiculoObjeto);
-    dibujarCamino(misiones);
     rellenarApartadoIzquierda(planeta);
-    pintarVehiculos(vehiculos, vehiculoObjeto);
+    if (misiones.length !== 0){
+        dibujarCamino(misiones);
+        pintarPuntosDeInteres(planeta, misiones, vehiculoObjeto);
+        pintarVehiculos(vehiculos, vehiculoObjeto);
+    }
   } catch (error){
     console.error("Error En la consulta de misiones: ", error);
   }
@@ -221,7 +228,9 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
             document.getElementById("puntoDescripcion").textContent = mision.descripcion;
             panelPunto.classList.add("visible");
             if (!data.error){
-                mostrarNotificacion("¡Misión Completada!", `Combustible extraído: ${data.combustible}`, data.cuerpoCompletado);
+                mostrarNotificacion("¡Planeta Explorado!", 
+                "Has recolectado todos los datos de este sector. Ya puedes volver a la galaxia para continuar tu viaje o mejorar tu nave.",
+                false);
             }
 
             return true;
