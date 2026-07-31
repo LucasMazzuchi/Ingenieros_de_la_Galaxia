@@ -134,7 +134,7 @@ function buscarImagen(imagenId) {
   return imagenes_fondo[imagenId];
 }
 
-    async function pintarPuntosDeInteres(misiones) {
+async function pintarPuntosDeInteres(misiones) {
     // 1. Agrupamos tus constantes sueltas en un molde para poder iterarlas
     const coordenadasVisuales = [
         { top: constantes.PUNTO1_TOP, left: constantes.PUNTO1_LEFT },

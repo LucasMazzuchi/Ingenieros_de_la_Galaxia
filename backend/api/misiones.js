@@ -7,9 +7,7 @@ export const endpointsMisiones = Router();
  
 endpointsMisiones.get("/", validarFiltrosMision, async (req, res) => {
     try {
-
-        const texto = `SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.porcentaje, m.disponible FROM misiones as m, cuerpos_celestes as c WHERE c.id = m.cuerpo_celeste_id AND m.borrado = FALSE AND c.borrado = FALSE`;
-        const listaMisiones = await misiones.getAllMisiones(constantes.consulta(req.query, "mision", texto));
+        const listaMisiones = await misiones.getAllMisiones(req.body);
         res.json(listaMisiones);
     } catch(error) {
         const {estado, msjError} = manejarError(error);
@@ -33,14 +31,15 @@ endpointsMisiones.get("/:id", validarId, async (req, res) => {
  
 endpointsMisiones.post("/", validarMision, async (req, res)=> {
     try{
-        if (await misiones.cantidadMisiones(req.body.cuerpo_celeste_id) >= constantes.MISIONES_MAX){
+        const {mision, id, max} = await misiones.createMision(req.body);
+        if (max){
             return res.status(403).json({error: constantes.ERROR_ENTIDAD_LLENA("mision", constantes.MISIONES_MAX, "por planeta.")});
         }
-        const {mision, id} = await misiones.createMision(req.body);
+        const resId = id;
         if (!mision){
             res.status(500).json({error: constantes.ERROR_CONSULTA("mision", "creada")});
         } else {
-            res.status(201).json({exito : constantes.EXITO_CONSULTA("mision", "creada"), id : id});
+            res.status(201).json({exito : constantes.EXITO_CONSULTA("mision", "creada"), id : resId});
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
@@ -86,7 +85,6 @@ endpointsMisiones.delete("/:id", validarId, async (req, res) => {
             res.status(200).json({exito : constantes.EXITO_CONSULTA("mision", "eliminada"), entidad : mision});
         }
     } catch (error) {
-        console.error("ERROR REAL AL BORRAR:", error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }

@@ -8,18 +8,14 @@ export const validarMision = (req, res, next) => {
     const reglasMision = {
     [constantes.NOMBRE]: validarString,
     [constantes.DESCRIPCION]: validarString,
-    [constantes.PORCENTAJE]: validarEntero,
-    [constantes.DISPONIBLE]: validarBool,
     [constantes.CUERPO_CELESTE]: validarEntero,
     };
     const entrada = {
     [constantes.NOMBRE]: { campo: req.body.nombre, min: 1, max: constantes.NOMBRE_MAX, error: constantes.NOMBRE },
     [constantes.DESCRIPCION]: { campo: req.body.descripcion, min: 0, max: constantes.DESCRIPCION_MAX, error: constantes.DESCRIPCION },
-    [constantes.PORCENTAJE]: { campo: req.body.porcentaje, min: 0, max: constantes.PORCENTAJE_MAX, error: constantes.PORCENTAJE },
-    [constantes.DISPONIBLE]: { campo: req.body.disponible, error: constantes.DISPONIBLE },
     [constantes.CUERPO_CELESTE]: { campo: req.body.cuerpo_celeste_id, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE },
     };
-    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasMision, req.method, Object.keys(req.body));
+    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasMision, req.method, Object.keys(req.body), false);
         if (camposInvalidos.length !== 0) {
             return res.status(400).json({error: constantes.ERROR_CAMPOS, campos: camposInvalidos});
         }
@@ -32,15 +28,12 @@ export const validarMision = (req, res, next) => {
 };
 
 export const validarFiltrosMision = (req, res, next) => {
-    const regex = [constantes.ID, constantes.NOMBRE, constantes.DISPONIBLE,
-    constantes.PORCENTAJE, constantes.CUERPO_CELESTE].join('|');
+    const regex = [constantes.ID, constantes.NOMBRE, constantes.CUERPO_CELESTE].join('|');
     const regexOrdenarPor = new RegExp( `^(${regex})$`, "i");
 
     const validadores = {
         [constantes.ID] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.ID_MAX},
         [constantes.NOMBRE] : {regex: constantes.REGEX_STRING, error: constantes.ERROR_FILTRO_STRING, caster : String},
-        [constantes.PORCENTAJE] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 0, max: constantes.PORCENTAJE_MAX},
-        [constantes.DISPONIBLE] : {regex: constantes.REGEX_BOOL, error: constantes.ERROR_FILTRO_BOOL, caster : (val) => String(val).toLowerCase() === 'true'},
         [constantes.CUERPO_CELESTE] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.ID_MAX},
         [constantes.LIMITE]: { regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min: 1, max: constantes.LIMITE_MAX },
         [constantes.ORDER_BY]: { regex: regexOrdenarPor, error: constantes.ERROR_FILTRO_ORDENAR, caster: String },
@@ -49,8 +42,7 @@ export const validarFiltrosMision = (req, res, next) => {
 
     const permitidos = new Set([
         constantes.ID, constantes.ID + "_min", constantes.ID + "_max",
-        constantes.NOMBRE, constantes.DISPONIBLE, constantes.CUERPO_CELESTE,
-        constantes.PORCENTAJE, constantes.PORCENTAJE + "_min", constantes.PORCENTAJE + "_max",
+        constantes.NOMBRE, constantes.CUERPO_CELESTE,
         constantes.LIMITE, constantes.ORDER_BY, constantes.ORDER
     ]);
 
