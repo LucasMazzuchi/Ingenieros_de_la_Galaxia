@@ -217,8 +217,8 @@ async function inicializarSelects() {
         if (!misionesDelPlaneta.has(i)) {
           const opcion = document.createElement("option");
           opcion.value = i;
-          opcion.textContent = `Posición ${i}`;
-          selectPosicion.appendChild(opt);
+          opcion.textContent = `${i}`;
+          selectPosicion.appendChild(opcion);
         }
       }
     };

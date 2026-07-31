@@ -1,6 +1,4 @@
-import { compileFunction } from "node:vm";
 import * as constantes from "./constantes.js";
-import { completarPlaneta } from "../../backend/bd/progreso.js";
 
 const contenedorMapa = document.getElementById("mapa-planeta");
 const panelPunto = document.getElementById("panelPunto");
@@ -60,8 +58,8 @@ async function iniciarPlaneta() {
                 cuerpo_celeste_id : planetaId
                 })
             });
+            console.log(completarPlaneta);
         }
-        console.log(completarPlaneta);
 
         let puntoActual = vehiculoDatos.punto_interes;
         if (vehiculoDatos.ubicacion_id !== planetaId){

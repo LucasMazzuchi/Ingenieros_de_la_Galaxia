@@ -20,6 +20,7 @@ export const completarMision = async (req, res, next) => {
         }
         return res.status(200).json({mensaje : "Punto expolorado con éxito", combustible : req.body.recompensa, cuerpoCompletado : false});
     } catch (error){
+        console.log(error);
         res.status(500).json({ error: "Error al completar la misión." });
     }
 };
