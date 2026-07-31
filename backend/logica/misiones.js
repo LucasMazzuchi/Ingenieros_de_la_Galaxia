@@ -10,10 +10,10 @@ export const completarMision = async (req, res, next) => {
         }
         req.body.recompensa = parseInt(100/totales) === 33 ? 34 : 100/totales;
         const vehiculo = await getVehiculo(req.params.id);
-        if (vehiculo.combustible+recompensa > 100) {
+        if (vehiculo.combustible+req.body.recompensa > 100) {
             req.body.recompensa = 100-vehiculo.combustible;
         }
-        req.body.nafta = parseInt(vehiculo.combustible + recompensa);
+        req.body.nafta = parseInt(vehiculo.combustible + req.body.recompensa);
         const resCombustible = await progreso.sumarCombustible(req.params.id, req.body.nafta);
         if (completadas === totales) {
             return next();

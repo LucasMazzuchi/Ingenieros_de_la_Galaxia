@@ -58,7 +58,8 @@ async function iniciarPlaneta() {
                 cuerpo_celeste_id : planetaId
                 })
             });
-            console.log(completarPlaneta);
+            const auxCompletarPlaneta = completarPlaneta.json();
+            console.log("completar planeta: ", auxCompletarPlaneta);
         }
 
         let puntoActual = vehiculoDatos.punto_interes;
@@ -213,7 +214,7 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
                 body: JSON.stringify({ cuerpo_celeste_id: cuerpoCelesteId, mision_id: mision.id })
             });
             const data = await resExplorar.json();
-
+            console.log("Planeta explorado: ", data);
             if (resExplorar.error === constantes.ERROR_DISPONIBLE) {
                 console.warn(data.error);
                 return false;
@@ -222,10 +223,7 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
             document.getElementById("puntoDescripcion").textContent = mision.descripcion;
             panelPunto.classList.add("visible");
             if (!data.error){
-                mostrarNotificacion("¡Misión Completada!", `Combustible extraído: ${data.combustible}`);
-            }
-            if (data.cuerpoCompletado) {
-                mostrarNotificacion("¡Planeta Superado!", "Has completado todas las misiones aquí.");
+                mostrarNotificacion("¡Misión Completada!", `Combustible extraído: ${data.combustible}`, data.cuerpoCompletado);
             }
 
             return true;
@@ -301,7 +299,7 @@ botonInfo.addEventListener('click', () => {
 document.addEventListener("DOMContentLoaded", iniciarPlaneta);
 
 // Función reutilizable para mostrar notificaciones en pantalla
-function mostrarNotificacion(titulo, texto) {
+function mostrarNotificacion(titulo, texto, cuerpoCompletado) {
     // Evita duplicar el cartel si ya hay uno abierto
     if (document.getElementById("cartelNotificacion")) return;
 
@@ -328,6 +326,9 @@ function mostrarNotificacion(titulo, texto) {
 
     document.getElementById("btnCerrarNotificacion").addEventListener("click", () => {
         modal.remove();
+        if (cuerpoCompletado){
+            mostrarNotificacion("¡Planeta Superado!", "Has completado todas las misiones aquí.", false);
+        }
     });
 }
 async function verificarPlanetaCompletado(planetaId) {
