@@ -62,9 +62,8 @@ function pintarPlanetas(cuerpos_celestes) {
 
 async function iniciar () {
 try {
-    const respuestaVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?tipo=1`);
-    const vehiculos = await respuestaVehiculo.json();
-    const planetas = await obtenerPlanetas(vehiculos[0].id);
+    const vehiculoId = localStorage.getItem("vehiculoSeleccionadoId");
+    const planetas = await obtenerPlanetas(parseInt(vehiculoId));
     pintarPlanetas(planetas.cuerpos);
   } catch (error) {
     console.log(error);

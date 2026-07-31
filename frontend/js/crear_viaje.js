@@ -301,7 +301,6 @@ selectVehiculo.addEventListener("change", async () => {
   const v = vehiculos.find(item => item.id == id);
   if (v) {
     document.getElementById("inputNombreVehiculo").value = v.nombre;
-    document.getElementById("inputTipoVehiculo").value = v.tipo;
     document.getElementById("inputMotor").value = v.motor;
     document.getElementById("inputEstructura").value = v.estructura;
     document.getElementById("inputCombustible").value = v.combustible;
@@ -319,12 +318,12 @@ formVehiculo.addEventListener("submit", async (e) => {
     
   const datos = {
     nombre: document.getElementById("inputNombreVehiculo").value,
-    tipo: parseInt(document.getElementById("inputTipoVehiculo").value),
     motor: parseInt(document.getElementById("inputMotor").value),
     estructura: parseInt(document.getElementById("inputEstructura").value),
     combustible: parseInt(document.getElementById("inputCombustible").value),
     resistencia: parseInt(document.getElementById("inputResistencia").value),
-    punto_interes: 1
+    punto_interes: 1,
+    ubicacion_id: 1
   };
 
   let exito = false;
@@ -380,8 +379,7 @@ selectPunto.addEventListener("change", async () => {
     document.getElementById("selectPlanetaPunto").value = m.cuerpo_celeste_id;
     document.getElementById("inputTituloPunto").value = m.nombre;
     document.getElementById("inputDescripcionPunto").value = m.descripcion;
-    document.getElementById("inputPorcentaje").value = m.porcentaje;
-    document.getElementById("inputDisponible").value = m.disponible.toString();
+    document.getElementById("inputPosicionPunto").value = m.posicion;
   }
 });
 
@@ -394,8 +392,7 @@ formPunto.addEventListener("submit", async (e) => {
     cuerpo_celeste_id: parseInt(document.getElementById("selectPlanetaPunto").value),
     nombre: document.getElementById("inputTituloPunto").value,
     descripcion: document.getElementById("inputDescripcionPunto").value,
-    porcentaje: parseInt(document.getElementById("inputPorcentaje").value),
-    disponible: document.getElementById("inputDisponible").value === "true"
+    posicion: document.getElementById("imputPosicionPunto").value
   };
 
   let exito = false;

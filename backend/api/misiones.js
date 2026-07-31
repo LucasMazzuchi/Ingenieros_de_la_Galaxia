@@ -7,9 +7,10 @@ export const endpointsMisiones = Router();
  
 endpointsMisiones.get("/", validarFiltrosMision, async (req, res) => {
     try {
-        const listaMisiones = await misiones.getAllMisiones(req.body);
+        const listaMisiones = await misiones.getAllMisiones(req.query);
         res.json(listaMisiones);
     } catch(error) {
+        console.log(error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }
@@ -24,6 +25,7 @@ endpointsMisiones.get("/:id", validarId, async (req, res) => {
             res.status(200).json(mision);
         }
     } catch (error) {
+        console.log(error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }
