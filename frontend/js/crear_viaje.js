@@ -199,7 +199,35 @@ async function inicializarSelects() {
       });
     };
     actualizarMisiones();
-    selectPlanetaPunto.addEventListener("change", actualizarMisiones);
+    function actualizarPosiciones() {
+      const selectPosicion = document.getElementById("inputPosicionPunto");
+      if (!selectPosicion) return;
+      selectPosicion.innerHTML = '<option value="">-- Seleccione posición --</option>';
+
+      const planetaId = parseInt(selectPlanetaPunto.value);
+      const misionId = parseInt(selectPunto.value);
+
+      // Si no hay planeta seleccionado, no mostramos posiciones disponibles
+      if (!planetaId) return;
+
+      const misionesDelPlaneta = new Set(misiones.filter(function (mision) {
+        return (mision.cuerpo_celeste_id === planetaId && mision.id !== misionId);
+      }).map(function (mision) {return parseInt(mision.posicion)})); //Convierte todos los valores a entero.
+      for (let i = 1; i <= 3; i++) {
+        if (!misionesDelPlaneta.has(i)) {
+          const opcion = document.createElement("option");
+          opcion.value = i;
+          opcion.textContent = `Posición ${i}`;
+          selectPosicion.appendChild(opt);
+        }
+      }
+    };
+    actualizarPosiciones();
+    selectPlanetaPunto.addEventListener("change", function () {
+      actualizarMisiones();
+      actualizarPosiciones();
+  });
+    selectPunto.addEventListener("change", actualizarPosiciones);
   }
 }
 document.addEventListener("DOMContentLoaded", inicializarSelects);
@@ -231,7 +259,6 @@ selectPlaneta.addEventListener("change", async () => {
     document.getElementById("inputTerreno").value = p.terreno;
     document.getElementById("inputHabitable").value = p.habitable.toString();
     document.getElementById("inputPosicion").value = p.posicion;
-    // imágenes guardadas en base de datos, las asignas aca
     document.getElementById("inputImagen").value = p.imagen;
     document.getElementById("inputImagenFondo").value = p.imagen_fondo;
   }

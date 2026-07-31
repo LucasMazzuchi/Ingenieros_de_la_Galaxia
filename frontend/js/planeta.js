@@ -1,4 +1,6 @@
+import { compileFunction } from "node:vm";
 import * as constantes from "./constantes.js";
+import { completarPlaneta } from "../../backend/bd/progreso.js";
 
 const contenedorMapa = document.getElementById("mapa-planeta");
 const panelPunto = document.getElementById("panelPunto");
@@ -19,17 +21,14 @@ async function iniciarPlaneta() {
         window.location.href = "usuario.html";
         return;
     }
-
-
     if (!planetaId) {
         window.location.href = "galaxia.html"; // si no hay ID, retorna
         return;
     }
-
     const tipoVehiculo = (planetaId === 1) ? 2 : 1;
     vehiculo.src = (tipoVehiculo === 2) ? "../assets/img/auto1.png" : "../assets/img/nave1.png";
     try {
-        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`); //Acá hay que traerse al id del vehículo.
+        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
         const vehiculoDatos = await resVehiculo.json();
         const resPlaneta = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/?id=${planetaId}&vehiculo_id=${naveId}`);
         const planetas = await resPlaneta.json();
@@ -38,7 +37,6 @@ async function iniciarPlaneta() {
             console.error("El backend no devolvió ningún planeta con ese ID.");
             return;
         }
-        console.log("planeta actual: " ,planetas[0]);
         if (!planetas[0].disponible) {
             alert("Planeta no dsiponible, recorre los demás planetas disponibles para desbloquearlo.");
             window.location.href = "galaxia.html"; // Lo devolvemos al mapa
@@ -50,11 +48,20 @@ async function iniciarPlaneta() {
         const misiones = await resMisiones.json();
         const resEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${planetaId}`);
         const estado = await resEstado.json();
-        console.log("Ver si esta en Progreso",estado);
         if (!estado.planetaCompletado && vehiculoDatos.combustible<100 && !estado.enProgreso){
             alert("Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave para poder viajar a otro.")
             return window.location.href = "galaxia.html";
         }
+        if (!estado.planetaCompletado && resMisiones.length === estado.puntosVisitados.length){
+            const completarPlaneta = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/completar`,{
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                cuerpo_celeste_id : planetaId
+                })
+            });
+        }
+        console.log(completarPlaneta);
 
         let puntoActual = vehiculoDatos.punto_interes;
         if (vehiculoDatos.ubicacion_id !== planetaId){

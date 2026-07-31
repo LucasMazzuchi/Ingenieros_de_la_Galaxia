@@ -62,3 +62,13 @@ endpointsProgreso.patch("/:id/explorar", validarId, validarIds, verificarEstadoM
         res.status(500).json({ error: "Error interno al explorar el punto." });
     }
 });
+
+endpointsProgreso.patch("/:id/completar", validarId, validarIds, async (req, res) => {
+    try {
+        const ok = await progreso.completarPlaneta(req.params.id, req.body.cuerpo_celeste_id);
+        res.status(200).json({mensaje: "Planeta completado!", cuerpoCompletado: ok})
+    } catch (error){
+        console.log("Error en completar:", error);
+        res.status(500).json({ error: "Error interno al querer completar el planeta." });
+    }
+});
