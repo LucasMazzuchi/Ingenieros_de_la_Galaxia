@@ -6,6 +6,7 @@ import { getVehiculo } from "../bd/vehiculos.js";
 import { completarMision } from "../logica/misiones.js";
 import {mejorarVehiculo} from "../logica/vehiculos.js";
 import { getMision, getAllMisiones } from "../bd/misiones.js";
+import { ORDER, ORDER_BY } from "../constantes.js";
 
 export const endpointsProgreso = Router();
 
@@ -25,7 +26,11 @@ endpointsProgreso.patch("/:id/desbloquear", validarId, validarIds, async (req, r
     try {
         const actual = await getMision(req.body.mision_id);
         const vehiculo = await getVehiculo(req.params.id); 
-        const misiones = await getAllMisiones({cuerpo_celeste_id : req.body.cuerpo_celeste_id});
+        const misiones = await getAllMisiones({
+            cuerpo_celeste_id : req.body.cuerpo_celeste_id,
+            [ORDER_BY] : "posicion",
+            [ORDER] : "ASC"
+        });
         if (misiones.length > 2 && Math.abs(vehiculo.punto_interes-actual.posicion)>1){
                 return res.status(409).json({error : "No podés saltar a este punto, debés ir a uno más cercano para poder ir a este."});
         }
@@ -34,7 +39,9 @@ endpointsProgreso.patch("/:id/desbloquear", validarId, validarIds, async (req, r
             return res.status(200).json({error : ""})             
         }
         // 1. Buscamos la misión anterior
-        if (actual.posicion > 1) {
+        console.log("primer misión: ", misiones[0].id);
+        console.log("body misión", req.body.mision_id);
+        if (actual.posicion > 1 && misiones[0].id !== req.body.mision_id) {
             const misionAnterior = await progreso.getMisionAnteriorEnPlaneta(req.body.cuerpo_celeste_id, actual.posicion);
             console.log(misionAnterior);
             const estaDesbloqueada = await progreso.getMision(req.params.id, misionAnterior.id);

@@ -1,4 +1,5 @@
 import * as constantes from "./constantes.js";
+import { mostrarNotificacion } from "./notificaciones.js";
 
 const contenedorMapa = document.getElementById("mapa-planeta");
 const panelPunto = document.getElementById("panelPunto");
@@ -36,8 +37,8 @@ async function iniciarPlaneta() {
             return;
         }
         if (!planetas[0].disponible) {
-            alert("Planeta no dsiponible, recorre los demás planetas disponibles para desbloquearlo.");
-            window.location.href = "galaxia.html"; // Lo devolvemos al mapa
+            window.location.href = "galaxia.html";// Lo devolvemos al mapa
+            mostrarNotificacion("Planeta no dsiponible", "Recorra los demás planetas disponibles para desbloquearlo.", false);
             return;
         }
         const resVehiculos = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?ubicacion_id=${planetas[0].id}`);
@@ -47,7 +48,7 @@ async function iniciarPlaneta() {
         const resEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${planetaId}`);
         const estado = await resEstado.json();
         if (!estado.planetaCompletado && vehiculoDatos.combustible<100 && !estado.enProgreso){
-            alert("Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave para poder viajar a otro.")
+            mostrarNotificacion("No puede entrar al planeta","Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave para poder viajar a otro.", false)
             return window.location.href = "galaxia.html";
         }
         if (!estado.planetaCompletado && resMisiones.length === estado.puntosVisitados.length){
@@ -64,7 +65,7 @@ async function iniciarPlaneta() {
 
         let puntoActual = vehiculoDatos.punto_interes;
         if (vehiculoDatos.ubicacion_id !== planetaId){
-            puntoActual = 1;
+            puntoActual = misiones[0].posicion;
             vehiculoDatos.punto_interes = puntoActual;
         }
         console.log("Pos nueva:",vehiculoDatos.punto_interes);
@@ -76,18 +77,15 @@ async function iniciarPlaneta() {
                 punto_interes: puntoActual
             })
         });
-        
         if (estado.puntosVisitados.length === 0){
             const primerMision = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/desbloquear`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ cuerpo_celeste_id: planetaId, mision_id: misiones[0].id})
                 });
-            console.log("estado Actulización misión 1", primerMision);
         }
 
         const resDibujado = await dibujarDatosDelPlaneta(planetas[0], misiones, vehiculoDatos, vehiculos); // Esto arma la página
-        console.log("Puntos Visitados",estado.puntosVisitados.length);
         if (estado.puntosVisitados.length === 0){ // Gasta combustible si es la primera vez que visita el planeta
             const actualizacionCombustibleVehiculo= await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`, {
                 method: "PATCH",
@@ -241,7 +239,7 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
             const data = await resDesbloquear.json();
 
             if (!resDesbloquear.ok) {
-                mostrarNotificacion("Ruta Inválida", data.error || "Debe explorar el punto anterior primero.");
+                mostrarNotificacion("Ruta Inválida", data.error || "Debe explorar el punto anterior primero.", false);
                 return false;
             }
 
@@ -299,56 +297,6 @@ botonInfo.addEventListener('click', () => {
 document.addEventListener("DOMContentLoaded", iniciarPlaneta);
 
 // Función reutilizable para mostrar notificaciones en pantalla
-function mostrarNotificacion(titulo, texto, cuerpoCompletado) {
-    // Evita duplicar el cartel si ya hay uno abierto
-    if (document.getElementById("cartelNotificacion")) return;
-
-    const modal = document.createElement("div");
-    modal.id = "cartelNotificacion";
-    modal.style.cssText = `
-        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-        background: rgba(0, 0, 0, 0.7);
-        display: flex; justify-content: center; align-items: center;
-        z-index: 10000; backdrop-filter: blur(4px);
-    `;
-
-    modal.innerHTML = `
-        <div style="background: linear-gradient(145deg, #0f172a, #1e293b); border: 2px solid #0ea5e9; border-radius: 12px; padding: 40px; text-align: center; color: white; max-width: 450px; box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);">
-            <h2 style="color: #38bdf8; margin-bottom: 15px; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 1px;">${titulo}</h2>
-            <p style="font-size: 1.1rem; margin-bottom: 25px; line-height: 1.5; color: #cbd5e1;">${texto}</p>
-            <button id="btnCerrarNotificacion" style="background: #0ea5e9; color: #fff; border: none; padding: 12px 25px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: background 0.2s;">
-                Entendido
-            </button>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    document.getElementById("btnCerrarNotificacion").addEventListener("click", () => {
-        modal.remove();
-        if (cuerpoCompletado){
-            mostrarNotificacion("¡Planeta Superado!", "Has completado todas las misiones aquí.", false);
-        }
-    });
-}
-async function verificarPlanetaCompletado(planetaId) {
-    try {
-        const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planetaId}`);
-        const misiones = await resMisiones.json();
-        
-        // Verifica si hay misiones y si TODAS tienen porcentaje 100
-        const todasCompletadas = misiones.length > 0 && misiones.every(m => m.porcentaje === 100);
-        
-        if (todasCompletadas) {
-            mostrarNotificacion(
-                "¡Planeta Explorado!", 
-                "Has recolectado todos los datos de este sector. Ya puedes volver a la galaxia para continuar tu viaje o mejorar tu nave."
-            );
-        }
-    } catch (error) {
-        console.error("Error al verificar el estado del planeta:", error);
-    }
-}
 
 async function pintarVehiculos(vehiculos, vehiculoUsado){
     vehiculos.forEach( function (vehiculoActual){
