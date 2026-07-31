@@ -26,11 +26,11 @@ async function iniciarPlaneta() {
         return;
     }
 
-    const tipoVehiculo = (planetaId === 1) ? 2 : 1;
-    vehiculo.src = (tipoVehiculo === 2) ? "../assets/img/auto1.png" : "../assets/img/nave1.png";
     try {
-        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`); //Acá hay que traerse al id del vehículo.
+        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
         const vehiculoDatos = await resVehiculo.json();
+        const tipoVehiculo = (planetaId === 1) ? 2 : 1;
+        vehiculo.src = (tipoVehiculo === 2) ? "../assets/img/auto1.png" : obtenerImagenNave(vehiculoDatos);
         const resPlaneta = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/?id=${planetaId}&vehiculo_id=${naveId}`);
         const planetas = await resPlaneta.json();
 
@@ -174,6 +174,17 @@ async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
     setTimeout(() => {
         vehiculo.style.transition = "top 1s ease, left 1s ease"; 
     }, 50);
+}
+
+function obtenerImagenNave(vehiculoDatos) {
+    const { motor, estructura, resistencia } = vehiculoDatos;
+    if (motor >= 3 && estructura >= 3 && resistencia >= 3) {
+        return "../assets/img/nivel3.png";
+    }
+    if (motor >= 2 && estructura >= 2 && resistencia >= 2) {
+        return "../assets/img/nivel2.png";
+    }
+    return "../assets/img/nave1.png";
 }
 
 function rellenarApartadoIzquierda(cuerpo_celeste){
@@ -353,8 +364,9 @@ async function pintarVehiculos(vehiculos, vehiculoUsado){
                 <p>${vehiculoActual.nombre}</p>
             `;
         } else {
+            const imagen = obtenerImagenNave(vehiculoActual);
             nave.innerHTML = `
-                <img src="../assets/img/nave1.png" alt="nave en desuso">
+                <img src= ${imagen} alt="nave en desuso">
                 <p>${vehiculoActual.nombre}</p>
             `;
         }
