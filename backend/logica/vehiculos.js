@@ -1,7 +1,10 @@
 import { getVehiculo, updateVehiculo } from "../bd/vehiculos.js";
 export const mejorarVehiculo = async (req, res, next) => {
     const vehiculoDatos = await getVehiculo(req.params.id);
-    campoMejora, mejora = logicaVehiculo(vehiculoDatos);
+    const {campoMejora, mejora} = logicaVehiculo(vehiculoDatos);
+    if (!campoMejora && !mejora){
+        return res.status(403).json({error: "La nave tiene nivel máximo."});
+    }
     const resMejora = await updateVehiculo(req.params.id, {[campoMejora] : mejora});
     next()
 };

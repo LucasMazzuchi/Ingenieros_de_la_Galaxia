@@ -48,11 +48,16 @@ async function iniciarPlaneta() {
         const resEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${planetaId}`);
         const estado = await resEstado.json();
         console.log("misiones: ",misiones);
+        console.log("misiones completadas",estado);
         if (!estado.planetaCompletado && vehiculoDatos.combustible<100 && !estado.enProgreso){
             mostrarNotificacion("No puede entrar al planeta","Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave para poder viajar a otro.", false)
             return window.location.href = "galaxia.html";
         }
-        if (!estado.planetaCompletado && resMisiones.length === estado.puntosVisitados.length){
+        console.log("totales", estado.puntosVisitados.length);
+        console.log("visitados", estado.puntosVisitados.length);
+            console.log("antes del if: ", (!estado.planetaCompletado && misiones.length === estado.puntosVisitados.length));
+        if (!estado.planetaCompletado && misiones.length === estado.puntosVisitados.length){
+            console.log("entra al if: ", (!estado.planetaCompletado && misiones.length === estado.puntosVisitados.length));
             const completarPlaneta = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/completar`,{
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
@@ -228,9 +233,8 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
             document.getElementById("puntoDescripcion").textContent = mision.descripcion;
             panelPunto.classList.add("visible");
             if (!data.error){
-                mostrarNotificacion("¡Planeta Explorado!", 
-                "Has recolectado todos los datos de este sector. Ya puedes volver a la galaxia para continuar tu viaje o mejorar tu nave.",
-                false);
+                console.log("está completado?",data.cuerpoCompletado);
+                mostrarNotificacion("¡Misión Completada!", `Combustible extraído: ${data.combustible}`, data.cuerpoCompletado);
             }
 
             return true;
