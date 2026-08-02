@@ -79,7 +79,7 @@ endpointsMisiones.delete("/:id", validarId, async (req, res) => {
         }
 
         //Si no es de la Tierra, procedemos a borrarla
-        const {ok, mision} = await misiones.removeMision(req.params.id);
+        const {ok, mision} = await misiones.removeMision(mision.posicion, mision.cuerpo_celeste_id, req.params.id);
         
         if (!ok){
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
@@ -87,6 +87,7 @@ endpointsMisiones.delete("/:id", validarId, async (req, res) => {
             res.status(200).json({exito : constantes.EXITO_CONSULTA("mision", "eliminada"), entidad : mision});
         }
     } catch (error) {
+        console.log(error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }
