@@ -26,6 +26,13 @@ const imagenesFondos = [
   "../assets/img/fondo-violeta.jpg"
 ];
 
+const imagenesPuntos = [
+  "../assets/img/marcador1.png",
+  "../assets/img/marcador2.png",
+  "../assets/img/marcador3.png",
+  "../assets/img/marcador4.png",
+  "../assets/img/marcador5.webp"
+]
 
 
 // Crea una galería clickeable dentro de un contenedor, y guarda la elegida en un input hidden
@@ -49,6 +56,8 @@ function crearSelectorImagenes(contenedorId, imagenes, inputHiddenId) {
 
 crearSelectorImagenes("galeriaPlanetas", imagenesPlanetas, "inputImagen");
 crearSelectorImagenes("galeriaFondoPlaneta", imagenesFondos, "inputImagenFondo");
+crearSelectorImagenes("galeriaPuntos", imagenesPuntos, "inputImagenPunto");
+
 // Galería del planeta: imagen del planeta + imagen de fondo (ambas fijas)
 
 
@@ -173,17 +182,54 @@ async function inicializarSelects() {
   // Cargar misiones (puntos de interés) existentes en su select
   const misiones = await obtenerDatos("misiones");
   const selectPunto = document.getElementById("selectPunto");
-  if (selectPunto) {
-    selectPunto.innerHTML = '<option value="">-- Crear nuevo --</option>';
-    misiones.forEach(m => {
-      const opt = document.createElement("option");
-      opt.value = m.id;
-      opt.textContent = m.nombre;
-      selectPunto.appendChild(opt);
-    });
+  
+  if (selectPunto && selectPlanetaPunto) {
+    
+    function actualizarMisiones () {
+      selectPunto.innerHTML = '<option value="">-- Crear nuevo --</option>';
+      const planetaId = parseInt(selectPlanetaPunto.value);
+      const misionesFiltradas = !planetaId ? misiones : misiones.filter(function (mision) {
+        return mision.cuerpo_celeste_id == planetaId;
+      });
+      misionesFiltradas.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = m.nombre;
+        selectPunto.appendChild(opt);
+      });
+    };
+    actualizarMisiones();
+    function actualizarPosiciones() {
+      const selectPosicion = document.getElementById("inputPosicionPunto");
+      if (!selectPosicion) return;
+      selectPosicion.innerHTML = '<option value="">-- Seleccione posición --</option>';
+
+      const planetaId = parseInt(selectPlanetaPunto.value);
+      const misionId = parseInt(selectPunto.value);
+
+      // Si no hay planeta seleccionado, no mostramos posiciones disponibles
+      if (!planetaId) return;
+
+      const misionesDelPlaneta = new Set(misiones.filter(function (mision) {
+        return (mision.cuerpo_celeste_id === planetaId && mision.id !== misionId);
+      }).map(function (mision) {return parseInt(mision.posicion)})); //Convierte todos los valores a entero.
+      for (let i = 1; i <= 3; i++) {
+        if (!misionesDelPlaneta.has(i)) {
+          const opcion = document.createElement("option");
+          opcion.value = i;
+          opcion.textContent = `${i}`;
+          selectPosicion.appendChild(opcion);
+        }
+      }
+    };
+    actualizarPosiciones();
+    selectPlanetaPunto.addEventListener("change", function () {
+      actualizarMisiones();
+      actualizarPosiciones();
+  });
+    selectPunto.addEventListener("change", actualizarPosiciones);
   }
 }
-
 document.addEventListener("DOMContentLoaded", inicializarSelects);
 
 
@@ -213,7 +259,6 @@ selectPlaneta.addEventListener("change", async () => {
     document.getElementById("inputTerreno").value = p.terreno;
     document.getElementById("inputHabitable").value = p.habitable.toString();
     document.getElementById("inputPosicion").value = p.posicion;
-    // imágenes guardadas en base de datos, las asignas aca
     document.getElementById("inputImagen").value = p.imagen;
     document.getElementById("inputImagenFondo").value = p.imagen_fondo;
   }
@@ -315,7 +360,7 @@ formVehiculo.addEventListener("submit", async (e) => {
 
   const vehiculosActuales = await obtenerDatos("vehiculos");
 
-    
+        
   const datos = {
     nombre: document.getElementById("inputNombreVehiculo").value,
     motor: parseInt(document.getElementById("inputMotor").value),
@@ -380,6 +425,7 @@ selectPunto.addEventListener("change", async () => {
     document.getElementById("inputTituloPunto").value = m.nombre;
     document.getElementById("inputDescripcionPunto").value = m.descripcion;
     document.getElementById("inputPosicionPunto").value = m.posicion;
+    document.getElementById("inputImagenPunto").value = m.imagen;
   }
 });
 
@@ -387,18 +433,26 @@ selectPunto.addEventListener("change", async () => {
 formPunto.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = selectPunto.value;
-
+  const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${parseInt(document.getElementById("selectPlanetaPunto").value)}`);
+  const misiones = await resMisiones.json();
+  const punto = parseInt(document.getElementById("inputPosicionPunto").value);
   const datos = {
     cuerpo_celeste_id: parseInt(document.getElementById("selectPlanetaPunto").value),
     nombre: document.getElementById("inputTituloPunto").value,
     descripcion: document.getElementById("inputDescripcionPunto").value,
-    posicion: document.getElementById("imputPosicionPunto").value
+    posicion: parseInt(document.getElementById("inputPosicionPunto").value),
+    imagen: parseInt(document.getElementById("inputImagenPunto").value)
   };
-
+    console.log("Datos a enviar:", datos);
   let exito = false;
   if (id) {
     exito = await modificarRegistro("misiones", id, datos);
   } else {
+    const puntoOcupado = misiones.find(function (mision){ return mision.posicion === punto});
+    if (puntoOcupado){
+      alert("Ocurrió un error al guardar el punto de interés, ya existe un punto de interés en esta posición.");
+    return; // Hay que cambiar a un desplegable que solo te muestre los que no están.
+  }
     exito = await crearRegistro("misiones", datos);
   }
 

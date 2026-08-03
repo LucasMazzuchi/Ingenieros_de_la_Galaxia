@@ -28,3 +28,9 @@ export const verificarDependencia = async (id) => {
     return {misiones : resMisiones.rows, vehiculos : resVehiculos.rows};
 
 };
+
+export const verificarNaves = async (posicion, cuerpoCelesteId) => {
+    const consultaVehiculos = "SELECT * FROM vehiculos WHERE punto_interes = $1 AND ubicacion_id = $2";
+    const resVehiculos = await db.query(consultaVehiculos, [posicion, cuerpoCelesteId]);
+    return resVehiculos.rows;
+};

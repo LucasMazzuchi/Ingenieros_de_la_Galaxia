@@ -89,6 +89,7 @@ endpointsCuerpoCeleste.delete("/:id", validarId, async (req, res) => {
         }
         res.status(200).json({exito : constantes.EXITO_CONSULTA("cuerpo celeste", "eliminada"), entidad : cuerpo});
     } catch (error) {
+        console.log(error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }

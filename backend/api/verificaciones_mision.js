@@ -8,15 +8,19 @@ export const validarMision = (req, res, next) => {
     const reglasMision = {
     [constantes.NOMBRE]: validarString,
     [constantes.DESCRIPCION]: validarString,
-    [constantes.CUERPO_CELESTE]: validarEntero,
-    [constantes.POSICION]: validarEntero
+    [constantes.POSICION]: validarEntero,
+    [constantes.IMAGEN]: validarEntero,
+    [constantes.CUERPO_CELESTE]: validarEntero
+
     };
     const entrada = {
     [constantes.NOMBRE]: { campo: req.body.nombre, min: 1, max: constantes.NOMBRE_MAX, error: constantes.NOMBRE },
     [constantes.DESCRIPCION]: { campo: req.body.descripcion, min: 0, max: constantes.DESCRIPCION_MAX, error: constantes.DESCRIPCION },
-    [constantes.CUERPO_CELESTE]: { campo: req.body.cuerpo_celeste_id, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE },
-    [constantes.POSICION]: {campo: req.body.posicion, min:1, max: constantes.PUNTO_INTERES_MAX, error: constantes.POSICION}
-    };
+    [constantes.POSICION]: {campo: req.body.posicion, min:1, max: constantes.PUNTO_INTERES_MAX, error: constantes.POSICION},
+    [constantes.IMAGEN]: {campo: req.body.imagen, min: 1, max: constantes.IMAGEN_PUNTO_MAX, error: constantes.IMAGEN},
+    [constantes.CUERPO_CELESTE]: { campo: req.body.cuerpo_celeste_id, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE }
+
+};
     const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasMision, req.method, Object.keys(req.body), false);
         if (camposInvalidos.length !== 0) {
             return res.status(400).json({error: constantes.ERROR_CAMPOS, campos: camposInvalidos});

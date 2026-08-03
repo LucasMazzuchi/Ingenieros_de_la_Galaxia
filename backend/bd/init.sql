@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS misiones (
     nombre VARCHAR(50) NOT NULL,
     descripcion TEXT,
     posicion INT NOT NULL,
+    imagen INT NOT NULL,
     cuerpo_celeste_id INT REFERENCES cuerpos_celestes(id) NOT NULL,
     borrado BOOLEAN DEFAULT FALSE
 );
@@ -63,26 +64,26 @@ VALUES
 ('Júpiter', 'Un coloso de nubes arremolinadas y tormentas...', 2, 139820, 24.7, -110, FALSE, 2, 5, 8, 5);
 
 -- 3. Insertar Misiones (Corregida la sintaxis y asignados los IDs de planetas)
-INSERT INTO misiones (nombre, descripcion, posicion, cuerpo_celeste_id)
+INSERT INTO misiones (nombre, descripcion, posicion, imagen, cuerpo_celeste_id)
 VALUES 
 -- Tierra (ID 1)
-('Estructura Alpha', 'Instalaciones sumergidas de origen incierto. Los paneles emiten pulsos...', 1, 1),
-('Eco Orbital', 'Restos de chatarra no documentada flotando en la exósfera...', 2, 1),
-('Abismo Insondable', 'Una anomalía térmica en la Fosa de las Marianas...', 3, 1),
+('Estructura Alpha', 'Instalaciones sumergidas de origen incierto. Los paneles emiten pulsos...', 1, 1, 1),
+('Eco Orbital', 'Restos de chatarra no documentada flotando en la exósfera...', 2, 1, 1),
+('Abismo Insondable', 'Una anomalía térmica en la Fosa de las Marianas...', 3, 1, 1),
 -- Luna (ID 2)
-('Sombra del Mar', 'Un cráter perfectamente circular donde el polvo lunar está cristalizado...', 1, 2),
-('El Ojo de Tycho', 'El pico central del cráter no está compuesto de regolito natural...', 2, 2),
-('Agujas del Sur', 'En el interior oscuro del polo sur hay formaciones de hielo estriado...', 3, 2),
+('Sombra del Mar', 'Un cráter perfectamente circular donde el polvo lunar está cristalizado...', 1, 1, 2),
+('El Ojo de Tycho', 'El pico central del cráter no está compuesto de regolito natural...', 2, 1, 2),
+('Agujas del Sur', 'En el interior oscuro del polo sur hay formaciones de hielo estriado...', 3, 1, 2),
 -- Marte (ID 3)
-('Conducto de Olimpo', 'Cerca de la caldera del mega-volcán, los fuertes vientos han desenterrado...', 1, 3),
-('Fisura Marineris', 'El cañón masivo oculta sedimentos magnéticos ordenados en patrones fractales...', 2, 3),
-('Fractura Polar', 'Bajo los casquetes de hielo seco, los radares de penetración detectan formas...', 3, 3),
--- Mercurio (ID 5)
-('Corazón de Caloris', 'El impacto no formó esta enorme cuenca; expuso lo que había debajo...', 1, 5),
-('La Línea del Ocaso', 'En el terminador, la frontera entre el día abrasador y la noche helada...', 2, 5),
-('Esferas del Norte', 'En los oscuros cráteres polares, esferas de composición desconocida...', 3, 5),
--- Júpiter (ID 6)
-('El Ojo Inmóvil', 'La Gran Mancha Roja no es solo un ciclón constante...', 1, 6),
-('Resonancia Magnética', 'Entre los intensos cinturones de radiación ecuatorial navega una señal...', 2, 6),
-('Latido de Europa', 'La corteza de hielo cruje siguiendo un patrón rítmico, casi respiratorio...', 3, 6);
+('Conducto de Olimpo', 'Cerca de la caldera del mega-volcán, los fuertes vientos han desenterrado...', 1, 1, 3),
+('Fisura Marineris', 'El cañón masivo oculta sedimentos magnéticos ordenados en patrones fractales...', 2, 1, 3),
+('Fractura Polar', 'Bajo los casquetes de hielo seco, los radares de penetración detectan formas...', 3, 1, 3),
+-- Mercurio (ID 4)
+('Corazón de Caloris', 'El impacto no formó esta enorme cuenca; expuso lo que había debajo...', 1, 1, 5),
+('La Línea del Ocaso', 'En el terminador, la frontera entre el día abrasador y la noche helada...', 2, 1, 5),
+('Esferas del Norte', 'En los oscuros cráteres polares, esferas de composición desconocida...', 3, 1, 5),
+-- Júpiter (ID 5)
+('El Ojo Inmóvil', 'La Gran Mancha Roja no es solo un ciclón constante...', 1, 1, 6),
+('Resonancia Magnética', 'Entre los intensos cinturones de radiación ecuatorial navega una señal...', 2, 1, 6),
+('Latido de Europa', 'La corteza de hielo cruje siguiendo un patrón rítmico, casi respiratorio...', 3, 1, 6);
 
