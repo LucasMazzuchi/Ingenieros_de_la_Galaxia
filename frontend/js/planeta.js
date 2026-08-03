@@ -12,63 +12,64 @@ const coordenadasVisuales = [
 
 //Chequea que pueda ingresar al planeta.
 async function iniciarPlaneta() {
-    // 1. Leemos a qué planeta intentó entrar desde la URL
     const parametros = new URLSearchParams(window.location.search);
     const planetaId = parseInt(parametros.get("id"));
     const naveId = localStorage.getItem("vehiculoSeleccionadoId");
+    
     if (!naveId) {
         window.location.href = "usuario.html";
         return;
     }
     if (!planetaId) {
-        window.location.href = "galaxia.html"; // si no hay ID, retorna
+        window.location.href = "galaxia.html"; 
         return;
     }
+    
     const tipoVehiculo = (planetaId === 1) ? 2 : 1;
     vehiculo.src = (tipoVehiculo === 2) ? "../assets/img/auto1.png" : "../assets/img/nave1.png";
+    
     try {
+        // 1. Fetches corregidos: usamos los endpoints y filtros que coinciden con tu DB
+        const resPlanetas = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}`);
+        const planetas = await resPlanetas.json();
+        
+        // Buscamos el planeta en el que el usuario hizo click (en lugar de usar planetas[0] siempre)
+        const planetaActual = planetas.find(p => p.id === planetaId) || planetas[0];
+
+        // Filtramos las misiones por cuerpo_celeste_id en vez de "planeta"
+        const resMisiones = await fetch(`${constantes.API_URL}/misiones?cuerpo_celeste_id=${planetaId}`);
+        let misiones = await resMisiones.json();
+        if (!Array.isArray(misiones)) misiones = []; // Por seguridad, si falla aseguramos que sea un arreglo vacío
+
+        const resVehiculos = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}`);
+        const vehiculos = await resVehiculos.json();
+        
         const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
         const vehiculoDatos = await resVehiculo.json();
-        const resPlaneta = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/?id=${planetaId}&vehiculo_id=${naveId}`);
-        const planetas = await resPlaneta.json();
-
-        if (!planetas || planetas.length === 0) {
-            console.error("El backend no devolvió ningún planeta con ese ID.");
-            return;
-        }
-        if (!planetas[0].disponible) {
-            window.location.href = "galaxia.html";// Lo devolvemos al mapa
-            mostrarNotificacion("Planeta no dsiponible", "Recorra los demás planetas disponibles para desbloquearlo.", false);
-            return;
-        }
-        const resVehiculos = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?ubicacion_id=${planetas[0].id}`);
-        const vehiculos = await resVehiculos.json();
-        const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planetaId}&order_by=posicion&order=ASC`);
-        const misiones = await resMisiones.json();
         const resEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${planetaId}`);
         const estado = await resEstado.json();
-        console.log("misiones: ",misiones);
-        console.log("misiones completadas",estado);
-        if (!estado.planetaCompletado && vehiculoDatos.combustible<100 && !estado.enProgreso){
-            mostrarNotificacion("No puede entrar al planeta","Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave para poder viajar a otro.", false)
+        
+        // Filtramos para asegurarnos de contar solo los puntos visitados de este planeta
+        const puntosVisitadosActuales = estado.puntosVisitados ? estado.puntosVisitados.filter(pv => 
+            misiones.some(m => m.id === pv.mision_id)
+        ) : [];
+
+        if (!estado.planetaCompletado && vehiculoDatos.combustible < 100 && !estado.enProgreso){
+            mostrarNotificacion("No puede entrar al planeta", "Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave para poder viajar a otro.", false)
             return window.location.href = "galaxia.html";
         }
-        console.log("totales", estado.puntosVisitados.length);
-        console.log("visitados", estado.puntosVisitados.length);
-            console.log("antes del if: ", (!estado.planetaCompletado && misiones.length === estado.puntosVisitados.length));
-        if (!estado.planetaCompletado && misiones.length > 0 && misiones.length === estado.puntosVisitados.length){
-            console.log("entra al if: ", (!estado.planetaCompletado && misiones.length === estado.puntosVisitados.length));
+        
+        if (!estado.planetaCompletado && misiones.length > 0 && misiones.length === puntosVisitadosActuales.length){
             const completarPlaneta = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/completar`,{
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                cuerpo_celeste_id : planetaId
+                    cuerpo_celeste_id : planetaId
                 })
             });
             mostrarNotificacion("¡Planeta Explorado!", 
                 "Has recolectado todos los datos de este sector. Ya puedes volver a la galaxia para continuar tu viaje o mejorar tu nave.",
                 false)
-            console.log("completar planeta: ", completarPlaneta.ok);
         }
 
         let puntoActual = vehiculoDatos.punto_interes;
@@ -76,7 +77,7 @@ async function iniciarPlaneta() {
             puntoActual = misiones.length !== 0 ? misiones[0].posicion : 1;
             vehiculoDatos.punto_interes = puntoActual;
         }
-        console.log("Pos nueva:",vehiculoDatos.punto_interes);
+        
         const actualizarVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
@@ -85,43 +86,49 @@ async function iniciarPlaneta() {
                 punto_interes: puntoActual
             })
         });
-        if ( misiones.length !== 0 && estado.puntosVisitados.length === 0){
+        
+        if (misiones.length !== 0 && puntosVisitadosActuales.length === 0){
             const primerMision = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/desbloquear`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ cuerpo_celeste_id: planetaId, mision_id: misiones[0].id})
-                });
+            });
         }
 
-        const resDibujado = await dibujarDatosDelPlaneta(planetas[0], misiones, vehiculoDatos, vehiculos); // Esto arma la página
-        if (misiones.length !==0 && estado.puntosVisitados.length === 0){ // Gasta combustible si es la primera vez que visita el planeta
-            const actualizacionCombustibleVehiculo= await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`, {
+        // 2. Le pasamos planetaActual en lugar de planetas[0]
+        const resDibujado = await dibujarDatosDelPlaneta(planetaActual, misiones, vehiculoDatos, vehiculos); 
+        
+        if (misiones.length !== 0 && puntosVisitadosActuales.length === 0){ 
+            const actualizacionCombustibleVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ combustible: 0})
-                });
+            });
         }
+
         document.getElementById("botonVolver").addEventListener("click", function () {
-        window.location.href = "galaxia.html";
+            window.location.href = "galaxia.html";
         });
+        
     } catch (error) {
-        console.log(error)
+        console.error("Error en iniciarPlaneta:", error);
     }
 }
 
 async function dibujarDatosDelPlaneta(planeta, misiones, vehiculoObjeto, vehiculos){
+  if(!planeta) return;
   try{
-    document.getElementById("nombre-planeta").textContent = planeta.nombre; // Cambia el nombre
+    document.getElementById("nombre-planeta").textContent = planeta.nombre; 
     const ruta = buscarImagenFondo(planeta.imagen_fondo);
     contenedorMapa.style.backgroundImage = `url('${ruta}')`;
-    contenedorMapa.style.backgroundSize = "cover"; // acomoda el tamaño de la imagen al del fondo.
-    contenedorMapa.style.backgroundPosition = "center"; // centrado.
-    contenedorMapa.style.backgroundRepeat = "no-repeat"; // No se duplica el mosaico.
+    contenedorMapa.style.backgroundSize = "cover"; 
+    contenedorMapa.style.backgroundPosition = "center"; 
+    contenedorMapa.style.backgroundRepeat = "no-repeat"; 
     rellenarApartadoIzquierda(planeta);
     if (misiones.length !== 0){
         dibujarCamino(misiones);
         pintarPuntosDeInteres(planeta, misiones, vehiculoObjeto);
-        pintarVehiculos(vehiculos, vehiculoObjeto);
+        pintarVehiculos(vehiculos, vehiculoObjeto, planeta.id);
     }
   } catch (error){
     console.error("Error En la consulta de misiones: ", error);
@@ -156,20 +163,26 @@ function buscarImagenPunto(imagenId){
 }
 
 async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
-        if (misiones.length < 1){
+    if (misiones.length < 1){
         return;
     }
 
     const resProgreso = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoObjetos.id}/${cuerpoCeleste.id}`);
-    const { puntosVisitados } = await resProgreso.json();
-    let posNave = vehiculoObjetos.punto_interes-1;
-    const resMisionesEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoObjetos.id}/${cuerpoCeleste.id}`);
-    const misionesEstado = await resMisionesEstado.json();
+    const progresoData = await resProgreso.json();
+    
+    // 3. SEGURO ANTI-CRASH: Si es la primera vez y no hay puntosVisitados, forzamos un arreglo vacío [] en lugar de undefined.
+    const puntosVisitados = progresoData.puntosVisitados || []; 
+    
+    let posNave = (vehiculoObjetos.punto_interes || 1) - 1;
+    
     misiones.forEach((mision) => {
         const coordenadas = coordenadasVisuales[mision.posicion-1];
         if (!coordenadas) return; 
+        
         const divPunto = document.createElement("div");
         divPunto.className = "punto-interes";
+        
+        // Ahora usar puntosVisitados.find() es seguro
         if (!puntosVisitados.find(function (punto) {return punto.mision_id === mision.id})) {
             divPunto.classList.add("bloqueado");
         }
@@ -191,6 +204,7 @@ async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
         });
         contenedorMapa.appendChild(divPunto);
     });
+    
     vehiculo.style.transition = "none";
     vehiculo.style.top = coordenadasVisuales[posNave].top;
     vehiculo.style.left = coordenadasVisuales[posNave].left;
@@ -222,16 +236,17 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
                 body: JSON.stringify({ cuerpo_celeste_id: cuerpoCelesteId, mision_id: mision.id })
             });
             const data = await resExplorar.json();
-            console.log("Planeta explorado: ", data);
-            if (resExplorar.error === constantes.ERROR_DISPONIBLE) {
+            
+            if (data.error === constantes.ERROR_DISPONIBLE) { 
                 console.warn(data.error);
                 return false;
             }
+            
             document.getElementById("puntoNombre").textContent = mision.nombre;
             document.getElementById("puntoDescripcion").textContent = mision.descripcion;
             panelPunto.classList.add("visible");
+            
             if (!data.error){
-                console.log("está completado?",data.cuerpoCompletado);
                 mostrarNotificacion("¡Misión Completada!", `Combustible extraído: ${data.combustible}`, data.cuerpoCompletado);
             }
 
@@ -255,11 +270,11 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
             }
 
             viajarHacia(coordenadasDestino);
-            const actualizacionUbicacionVehiculo= await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoId}`, {
+            const actualizacionUbicacionVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ punto_interes: mision.posicion})
-                });
+            });
             return true;
         } catch (error) {
             console.error("Error de red al desbloquear:", error);
@@ -270,14 +285,10 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
 
 
 function viajarHacia(coordenadas) {
-    // Bloqueamos los clicks
     document.body.classList.add("bloqueado-viajando");
-
-
     vehiculo.style.top = coordenadas.top;
     vehiculo.style.left = coordenadas.left;
 
-    // Desbloqueamos cuando termina de moverse
     setTimeout(() => {
         document.body.classList.remove("bloqueado-viajando");
     }, 1000); 
@@ -292,45 +303,44 @@ function dibujarCamino(puntosDeInteres){
     camino.setAttribute("points", puntos.join(" "));
 }
 
-
 document.getElementById("btnCerrarPanelPunto").addEventListener("click", () => {
     panelPunto.classList.remove("visible");
 });
 
-const botonInfo = document.getElementById('botonInfo');
-const panelPlaneta = document.getElementById('panelPlaneta');
-
-botonInfo.addEventListener('click', () => {
-    panelPlaneta.classList.toggle('abierto');
-    botonInfo.classList.toggle('abierto');
-    botonInfo.querySelector('.flecha').textContent = panelPlaneta.classList.contains('abierto') ? '‹' : '›';
-});
-document.addEventListener("DOMContentLoaded", iniciarPlaneta);
-
-// Función reutilizable para mostrar notificaciones en pantalla
-
-async function pintarVehiculos(vehiculos, vehiculoUsado){
-    vehiculos.forEach( function (vehiculoActual){
-        if (vehiculoActual.id === vehiculoUsado.id){
+// Aquí está la función que dibuja a los demás jugadores en el mapa
+async function pintarVehiculos(vehiculos, vehiculoUsado, planetaId) { 
+    vehiculos.forEach(function (vehiculoActual) {
+        
+        // Si es la nave que el usuario está manejando, o la nave NO está en este planeta, la ignoramos.
+        if (vehiculoActual.id === parseInt(vehiculoUsado.id) || vehiculoActual.ubicacion_id !== planetaId){
             return;
         }
-        const nave = document.createElement("div");
-        nave.className = "vehiculo-desuso";
-        nave.style.position = "absolute";
-        nave.style.top = coordenadasVisuales[vehiculoActual.punto_interes-1].top;
-        nave.style.left = coordenadasVisuales[vehiculoActual.punto_interes-1].left;
+        
+        // Buscamos en qué punto de interés está estacionada esta nave
+        const posicionNave = (vehiculoActual.punto_interes || 1) - 1;
+        const coordenadas = coordenadasVisuales[posicionNave];
 
-        if (vehiculoActual.ubicacion_id === 1) {
-            nave.innerHTML = `
-                <img src="../assets/img/auto1.png" alt="auto en desuso">
-                <p>${vehiculoActual.nombre}</p>
-            `;
-        } else {
-            nave.innerHTML = `
-                <img src="../assets/img/nave1.png" alt="nave en desuso">
-                <p>${vehiculoActual.nombre}</p>
-            `;
-        }
-        contenedorMapa.appendChild(nave);
+        if (!coordenadas) return;
+
+        // Creamos la navecita para dibujarla en el mapa
+        const divVehiculo = document.createElement("div");
+        divVehiculo.className = "vehiculo-estacionado"; // Asegúrate de tener esta clase en tu CSS
+        divVehiculo.style.position = "absolute";
+        divVehiculo.style.top = coordenadas.top;
+        divVehiculo.style.left = coordenadas.left;
+        
+        // Elegimos si es auto (Tierra) o nave (otros planetas)
+        const tipoVehiculo = (planetaId === 1) ? 2 : 1;
+        const imgSrc = (tipoVehiculo === 2) ? "../assets/img/auto1.png" : "../assets/img/nave1.png";
+
+        divVehiculo.innerHTML = `
+            <img src="${imgSrc}" style="width: 50px; opacity: 0.7; filter: grayscale(50%);">
+            <p style="color: white; font-size: 12px; margin: 0; text-shadow: 1px 1px 2px black;">Nave ${vehiculoActual.id}</p>
+        `;
+
+        contenedorMapa.appendChild(divVehiculo);
     });
 }
+
+// llamamos a iniciarPlaneta cuando cargue la página
+document.addEventListener("DOMContentLoaded", iniciarPlaneta);

@@ -138,11 +138,41 @@ async function eliminarRegistro(recurso, id) {
   }
 }
 
+async function actualizarPosicionesPlanetas() {
+  const selectPosicion = document.getElementById("inputPosicion");
+  if (!selectPosicion) return;
+
+  // Obtenemos los planetas actuales
+  const planetas = await obtenerDatos("cuerpos_celestes");
+  const planetaIdSeleccionado = document.getElementById("selectPlaneta").value;
+
+  selectPosicion.innerHTML = '<option value="">-- Seleccione posición --</option>';
+
+  // Filtramos las posiciones ocupadas por otros planetas 
+  const posicionesOcupadas = new Set(
+    planetas
+      .filter(p => p.id != planetaIdSeleccionado && p.posicion)
+      .map(p => parseInt(p.posicion))
+  );
+
+  const MAX_POSICIONES = 9;  
+
+  for (let i = 1; i <= MAX_POSICIONES; i++) {
+    if (!posicionesOcupadas.has(i)) {
+      const opcion = document.createElement("option");
+      opcion.value = i;
+      opcion.textContent = `${i}`;
+      selectPosicion.appendChild(opcion);
+    }
+  }
+}
 
 // LOGICA DE CONSULTA Y LLENADO DE SELECTS (Al cargar la página) 
 async function inicializarSelects() {
   const planetas = await obtenerDatos("cuerpos_celestes");
 
+  await actualizarPosicionesPlanetas();
+  
   const selectPlaneta = document.getElementById("selectPlaneta");
   const selectPlanetaPunto = document.getElementById("selectPlanetaPunto");
   // Limpiar y poblar selects de planetas
@@ -243,10 +273,15 @@ const btnBorrarPlaneta = document.getElementById("btnBorrarPlaneta");
 // Cargar datos en el form si selecciona uno existente (Modificación)
 selectPlaneta.addEventListener("change", async () => {
   const id = selectPlaneta.value;
+  
+  // Primero actualizamos las opciones de posición (esto liberará la posición del planeta actual)
+  await actualizarPosicionesPlanetas();
+
   if (!id) {
     formPlaneta.reset();
     return;
   }
+  
   const planetas = await obtenerDatos("cuerpos_celestes");
   const p = planetas.find(item => item.id == id);
   if (p) {
@@ -258,7 +293,10 @@ selectPlaneta.addEventListener("change", async () => {
     document.getElementById("inputTemperatura").value = p.temperatura;
     document.getElementById("inputTerreno").value = p.terreno;
     document.getElementById("inputHabitable").value = p.habitable.toString();
+    
+    // Como las opciones ya se actualizaron, podemos asignar el valor directamente
     document.getElementById("inputPosicion").value = p.posicion;
+    
     document.getElementById("inputImagen").value = p.imagen;
     document.getElementById("inputImagenFondo").value = p.imagen_fondo;
   }
@@ -268,18 +306,7 @@ selectPlaneta.addEventListener("change", async () => {
 formPlaneta.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = selectPlaneta.value;
-  const posicionIngresada = parseInt(document.getElementById("inputPosicion").value);
-
-  // Traemos los planetas actuales para validar si la posición está ocupada
-  const planetasActuales = await obtenerDatos("cuerpos_celestes");
   
-  // Buscamos si existe otro planeta (que no sea el que estamos editando) con esa misma posición
-  const posicionOcupada = planetasActuales.find(p => p.posicion === posicionIngresada && p.id != id);
-
-  if (posicionOcupada) {
-    alert(`La posición ${posicionIngresada} ya está ocupada por el planeta "${posicionOcupada.nombre}". Por favor, elige otra.`);
-    return; // Cortamos la ejecución para que no se guarde nada
-  }
   const datos = {
     nombre: document.getElementById("inputNombre").value,
     descripcion: document.getElementById("inputDescripcion").value,
