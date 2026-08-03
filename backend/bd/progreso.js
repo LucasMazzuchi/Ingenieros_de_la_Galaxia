@@ -2,7 +2,7 @@ import { db } from "./pool.js";
 import { updateVehiculo } from "./vehiculos.js";
 
 export const getAllMisiones = async (vehiculoId, cuerpoCelesteId) => {
-    const texto = `SELECT mv.mision_id, mv.vehiculo_id, mv.cuerpo_celeste_id, mv.completado, m.nombre FROM misiones_vehiculos mv, misiones m WHERE mv.mision_id = m.id AND mv.vehiculo_id = $1 AND m.cuerpo_celeste_id = $2`;
+    const texto = `SELECT mv.mision_id, mv.vehiculo_id, mv.cuerpo_celeste_id, mv.completado, m.nombre FROM misiones_vehiculos mv, misiones m WHERE mv.mision_id = m.id AND mv.vehiculo_id = $1 AND m.cuerpo_celeste_id = $2 AND m.borrado = FALSE`;
     const res = await db.query(texto, [vehiculoId, cuerpoCelesteId]);
     return res.rows;
 };
@@ -21,7 +21,7 @@ export const getMision = async (vehiculoId, misionId) => {
 
 // Busca la misión anterior en el mismo planeta basándose en el ID
 export const getMisionAnteriorEnPlaneta = async (cuerpoCelesteId, posicion) => {
-    const texto = `SELECT * FROM misiones WHERE cuerpo_celeste_id = $1 AND posicion = $2`;
+    const texto = `SELECT * FROM misiones WHERE cuerpo_celeste_id = $1 AND posicion < $2 AND borrado = FALSE ORDER BY posicion DESC LIMIT 1`;
     const res = await db.query(texto, [cuerpoCelesteId, posicion]);
     return res.rows[0];
 };
@@ -42,10 +42,10 @@ export const sumarCombustible = async (vehiculoId, cantidad) => {
 
 // Cuenta cuántas misiones tiene el planeta en total y cuántas completó la nave
 export const chequearProgresoPlaneta = async (vehiculoId, cuerpoCelesteId) => {
-    const textoTotales = `SELECT COUNT(*) as total FROM misiones WHERE cuerpo_celeste_id = $1`;
+    const textoTotales = `SELECT COUNT(*) as total FROM misiones WHERE cuerpo_celeste_id = $1 AND borrado = FALSE`;
     const misionesTotales = await db.query(textoTotales, [cuerpoCelesteId]);
 
-    const textoCompletas = `SELECT COUNT(*) as completadas FROM misiones_vehiculos mv, misiones m WHERE mv.mision_id = m.id AND mv.vehiculo_id = $1 AND m.cuerpo_celeste_id = $2 AND mv.completado = TRUE`;
+    const textoCompletas = `SELECT COUNT(*) as completadas FROM misiones_vehiculos mv, misiones m WHERE mv.mision_id = m.id AND mv.vehiculo_id = $1 AND m.cuerpo_celeste_id = $2 AND mv.completado = TRUE AND m.borrado = FALSE`;
     const misionesCompletadas = await db.query(textoCompletas, [vehiculoId, cuerpoCelesteId]);
     return {totales: Number(misionesTotales.rows[0].total), completadas: Number(misionesCompletadas.rows[0].completadas)};
 };

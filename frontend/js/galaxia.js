@@ -1,4 +1,5 @@
 import * as constantes from "./constantes.js";
+import { mostrarNotificacion} from "./notificaciones.js";
 const contenedor = document.getElementById("planetas-contenedor");
 
 async function obtenerPlanetas(vehiculoId){
@@ -27,12 +28,12 @@ function obtenerImagen(imagenId){
   return imagenes_planeta[imagenId];
 }
 
-function pintarPlanetas(cuerpos_celestes) {
+async function pintarPlanetas(cuerpos_celestes, naveId) {
   console.log("Planetas recibidos del backend:", cuerpos_celestes);
 
   contenedor.innerHTML = ""; // limpia por las dudas
-
-  cuerpos_celestes.forEach(cuerpo => {
+  let completados = 0;
+  for (const cuerpo of cuerpos_celestes){
     const div = document.createElement("div");
     div.className = `planeta pos-${cuerpo.posicion}`;
     const ruta = obtenerImagen(cuerpo.imagen);
@@ -49,22 +50,32 @@ function pintarPlanetas(cuerpos_celestes) {
       </div>
       <p class="nombre-planeta">${cuerpo.nombre}</p>
     `;
-
+    const resEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${cuerpo.id}`);
+    const estado = await resEstado.json();
+    console.log(`${cuerpo.nombre}`, estado.planetaCompletado);
+    if (estado.planetaCompletado){
+      completados++;
+    }
     div.addEventListener("click", () => {
       if (cuerpo.disponible) {
         window.location.href = `planeta.html?id=${cuerpo.id}`;
       }
     });
-
     contenedor.appendChild(div);
-  });
+  };
+  return completados;
 }
 
 async function iniciar () {
 try {
     const vehiculoId = localStorage.getItem("vehiculoSeleccionadoId");
     const planetas = await obtenerPlanetas(parseInt(vehiculoId));
-    pintarPlanetas(planetas.cuerpos);
+    const completados = await pintarPlanetas(planetas.cuerpos, parseInt(vehiculoId));
+    console.log("planetas completados:", completados);
+    console.log("planetas totales", planetas.cuerpos.length);
+    if (completados === planetas.cuerpos.length){
+    mostrarNotificacion("Juego completado", "Si querés seguir jugando, podés modificar la galaxia o comenzar de nuevo creando otra nave.", false);
+  }
   } catch (error) {
     console.log(error);
   }
