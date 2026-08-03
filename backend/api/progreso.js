@@ -70,8 +70,9 @@ endpointsProgreso.patch("/:id/explorar", validarId, validarIds, verificarEstadoM
     }
 });
 
-endpointsProgreso.patch("/:id/completar", validarId, validarIds, async (req, res) => {
+endpointsProgreso.patch("/:id/completar", validarId, validarIds, mejorarVehiculo, async (req, res) => {
     try {
+        const combustible = await progreso.sumarCombustible(req.params.id, 100);
         const ok = await progreso.completarPlaneta(req.params.id, req.body.cuerpo_celeste_id);
         res.status(200).json({mensaje: "Planeta completado!", cuerpoCompletado: ok})
     } catch (error){

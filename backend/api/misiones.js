@@ -69,7 +69,7 @@ endpointsMisiones.delete("/:id", validarId, async (req, res) => {
     try {
         //Buscamos la misión en la base de datos para ver sus datos reales
         const misionGuardada = await misiones.getMision(req.params.id);
-        
+        console.log("Datos de la misión:", misionGuardada);
         if (!misionGuardada) {
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         }
@@ -78,8 +78,8 @@ endpointsMisiones.delete("/:id", validarId, async (req, res) => {
             return res.status(403).json({error: "No se pueden eliminar misiones asociadas a la Tierra."});
         }
 
-        //Si no es de la Tierra, procedemos a borrarla
-        const {ok, mision} = await misiones.removeMision(mision.posicion, mision.cuerpo_celeste_id, req.params.id);
+        //Si no es de la Tierra, se borra
+        const {ok, mision} = await misiones.removeMision(parseInt(misionGuardada.posicion), parseInt(misionGuardada.cuerpo_celeste_id), req.params.id);
         
         if (!ok){
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
