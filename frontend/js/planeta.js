@@ -56,7 +56,7 @@ async function iniciarPlaneta() {
         console.log("totales", estado.puntosVisitados.length);
         console.log("visitados", estado.puntosVisitados.length);
             console.log("antes del if: ", (!estado.planetaCompletado && misiones.length === estado.puntosVisitados.length));
-        if (!estado.planetaCompletado && misiones.length === estado.puntosVisitados.length){
+        if (!estado.planetaCompletado && misiones.length > 0 && misiones.length === estado.puntosVisitados.length){
             console.log("entra al if: ", (!estado.planetaCompletado && misiones.length === estado.puntosVisitados.length));
             const completarPlaneta = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/completar`,{
                 method: "PATCH",
@@ -65,12 +65,10 @@ async function iniciarPlaneta() {
                 cuerpo_celeste_id : planetaId
                 })
             });
-            const resActualizarVehiculo =  await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}/mejorar`);
-            const auxCompletarPlaneta = completarPlaneta.json();
             mostrarNotificacion("¡Planeta Explorado!", 
                 "Has recolectado todos los datos de este sector. Ya puedes volver a la galaxia para continuar tu viaje o mejorar tu nave.",
                 false)
-            console.log("completar planeta: ", auxCompletarPlaneta.ok);
+            console.log("completar planeta: ", completarPlaneta.ok);
         }
 
         let puntoActual = vehiculoDatos.punto_interes;

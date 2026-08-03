@@ -1,6 +1,7 @@
 import { db } from "./pool.js";
-import { armar_consulta } from "./consultas.js";
+import { armar_consulta, verificarDependencia, verificarNaves } from "./consultas.js";
 import { consulta, MISIONES_MAX } from "../constantes.js"; 
+import { updateVehiculo } from "./vehiculos.js";
 
 // Busca todas las misiones, se puede filtrar por sus campos. El parámetro texto es la consulta y procesados son los datos.
 // Devuelve todas las misiones que cumplan con los requisitos de filtrado. 
@@ -13,7 +14,7 @@ export async function getAllMisiones(filtros) {
 
 // Busca la misión por el id pasado por parámetro. Devuelve la misión encontrada.
 export async function getMision(id) {
-    const solicitud = "SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.posicion, m.imagen FROM misiones as m, cuerpos_celestes as c WHERE m.id = $1 AND c.id = m.cuerpo_celeste_id AND m.borrado = FALSE AND c.borrado = FALSE";
+    const solicitud = "SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.posicion, m.imagen, m.cuerpo_celeste_id FROM misiones as m, cuerpos_celestes as c WHERE m.id = $1 AND c.id = m.cuerpo_celeste_id AND m.borrado = FALSE AND c.borrado = FALSE";
     const res = await db.query(solicitud, [id]);
     return res.rows[0];
 }
@@ -34,7 +35,31 @@ export async function createMision(mision) {
 
 // Borra una misión por el id pasado por parámetro marcando la casilla borrado como true. En caso de que no exista la misión devuelve false en ok,
 // sino devuelve true en ok junto con el vehiculo borrado.
-export async function removeMision(id){
+export async function removeMision(posicion, cuerpoCelesteId, id){
+    const navesConflicto = await verificarNaves(posicion, cuerpoCelesteId);
+    console.log("Naves en este punto:", navesConflicto);
+    console.log("Arranca remove mision");
+    if (navesConflicto.length !== 0){
+        const misiones = await getAllMisiones({cuerpo_celeste_id: cuerpoCelesteId, "order_by": "posicion", "order": "ASC"});
+        let indice = 0;
+        misiones.forEach(function (mision, index){
+            if (mision.posicion === posicion){
+                indice = index;
+            }
+        });
+        console.log("Termina el forEach");
+        for(const vehiculo of navesConflicto){
+            if (misiones.length > 1){
+                console.log("Indice de misión", indice);
+                const nuevoIndice = indice > 0 ? indice - 1 : indice + 1;
+                console.log("indice de misión", nuevoIndice);
+                const cambioNaveMision = await updateVehiculo(vehiculo.id, {punto_interes: misiones[nuevoIndice].posicion});
+                console.log("punto_interes", misiones[indice].posicion);
+            } else {
+                const cambioNaveCuerpo = await updateVehiculo(vehiculo.id, {ubicacion_id: 1, punto_interes: 1});
+            }
+        };
+    }
     const solicitud = "UPDATE misiones SET borrado = TRUE WHERE id=$1 AND borrado = FALSE RETURNING *";
     const res = await db.query(solicitud, [id]);
     return {ok : res.rowCount == 1, mision : res.rows[0]};
