@@ -24,11 +24,12 @@ async function iniciarPlaneta() {
         window.location.href = "galaxia.html"; // si no hay ID, retorna
         return;
     }
-    const tipoVehiculo = (planetaId === 1) ? 2 : 1;
-    vehiculo.src = (tipoVehiculo === 2) ? "../assets/img/auto1.png" : "../assets/img/nave1.png";
+
     try {
         const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
         const vehiculoDatos = await resVehiculo.json();
+        const tipoVehiculo = (planetaId === 1) ? 2 : 1;
+        vehiculo.src = (tipoVehiculo === 2) ? "../assets/img/auto1.png" : obtenerImagenNave(vehiculoDatos);
         const resPlaneta = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/?id=${planetaId}&vehiculo_id=${naveId}`);
         const planetas = await resPlaneta.json();
 
@@ -201,6 +202,17 @@ async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
     }, 50);
 }
 
+function obtenerImagenNave(vehiculoDatos) {
+    const { motor, estructura, resistencia } = vehiculoDatos;
+    if (motor >= 3 && estructura >= 3 && resistencia >= 3) {
+        return "../assets/img/nivel3.png";
+    }
+    if (motor >= 2 && estructura >= 2 && resistencia >= 2) {
+        return "../assets/img/nivel2.png";
+    }
+    return "../assets/img/nave1.png";
+}
+
 function rellenarApartadoIzquierda(cuerpo_celeste){
     document.getElementById("datoTipo").textContent = constantes.TIPOS_PLANETA[cuerpo_celeste.tipo];
     document.getElementById("datoDiametro").textContent = `${cuerpo_celeste.diametro} km`;
@@ -326,8 +338,9 @@ async function pintarVehiculos(vehiculos, vehiculoUsado){
                 <p>${vehiculoActual.nombre}</p>
             `;
         } else {
+            const imagen = obtenerImagenNave(vehiculoActual);
             nave.innerHTML = `
-                <img src="../assets/img/nave1.png" alt="nave en desuso">
+                <img src= ${imagen} alt="nave en desuso">
                 <p>${vehiculoActual.nombre}</p>
             `;
         }
