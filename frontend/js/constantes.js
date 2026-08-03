@@ -1,4 +1,4 @@
-export const API_URL = "http://localhost:5000/api";
+export const API_URL = "https://backend-xxpu.onrender.com";
 export const CUERPOS_URL = "cuerpos_celestes";
 export const VEHICULOS_URL = "vehiculos";
 export const MISIONES_URL = "misiones";
