@@ -25,7 +25,6 @@ services:
     ports:
       - "${BACKEND_PORT}:5000"
     volumes:
-<<<<<<< Updated upstream
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
     environment:
@@ -34,18 +33,7 @@ services:
       - DB_PASSWORD=$DB_PASSWORD
       - DB_NAME=$DB_NAME
       - PORT=5000
-=======
-      - "./backend:/usr/src/app"
-      - /usr/src/app/node_modules // Para no pisar con los locales
-    environment:
-      - DB_HOST=bd
-      - DB_USER=admin
-      - DB_PASSWORD=galacticos
-      - DB_NAME=espacio_bd
-      - PORT = 5000
->>>>>>> Stashed changes
       - DB_PORT=5432
-      - MODO_ALMACENAMIENTO = local # Cambiar cuando se vaya a levantar en un servidor.
     depends_on:
       bd:
         condition: service_healthy

@@ -161,10 +161,8 @@ async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
     }
 
     const resProgreso = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoObjetos.id}/${cuerpoCeleste.id}`);
-     const { puntosVisitados } = await resProgreso.json();
+    const { puntosVisitados } = await resProgreso.json();
     let posNave = vehiculoObjetos.punto_interes-1;
-    const resMisionesEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoObjetos.id}/${cuerpoCeleste.id}`);
-    const misionesEstado = await resMisionesEstado.json();
     
     misiones.forEach((mision) => {
         const coordenadas = coordenadasVisuales[mision.posicion-1];
@@ -173,7 +171,6 @@ async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
         const divPunto = document.createElement("div");
         divPunto.className = "punto-interes";
         
-        // Ahora usar puntosVisitados.find() es seguro
         if (!puntosVisitados.find(function (punto) {return punto.mision_id === mision.id})) {
             divPunto.classList.add("bloqueado");
         }
@@ -334,5 +331,4 @@ async function pintarVehiculos(vehiculos, vehiculoUsado){
         contenedorMapa.appendChild(nave);
     });
 }
-// llamamos a iniciarPlaneta cuando cargue la página
 document.addEventListener("DOMContentLoaded", iniciarPlaneta);
