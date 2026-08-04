@@ -2,7 +2,7 @@ import { db } from "./pool.js";
 import { updateVehiculo } from "./vehiculos.js";
 
 export const getAllMisiones = async (vehiculoId, cuerpoCelesteId) => {
-    const texto = `SELECT mv.mision_id, mv.vehiculo_id, mv.cuerpo_celeste_id, mv.completado, m.nombre FROM misiones_vehiculos mv, misiones m WHERE mv.mision_id = m.id AND mv.vehiculo_id = $1 AND m.cuerpo_celeste_id = $2 AND m.borrado = FALSE`;
+    const texto = `SELECT mv.mision_id, mv.vehiculo_id, mv.cuerpo_celeste_id, mv.completado, m.nombre FROM misiones_vehiculos mv, misiones m WHERE mv.mision_id = m.id AND mv.vehiculo_id = $1 AND m.cuerpo_celeste_id = $2 AND m.borrado = FALSE AND mv.completado = TRUE`;
     const res = await db.query(texto, [vehiculoId, cuerpoCelesteId]);
     return res.rows;
 };
