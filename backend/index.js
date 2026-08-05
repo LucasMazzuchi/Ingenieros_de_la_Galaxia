@@ -18,7 +18,7 @@ app.use("/api/progreso", endpointsProgreso);
 app.get('/health', (req, res) => {
     res.status(200).send("OK");
 });
-inicializarBd();
+await inicializarBd();
 app.get('/', (req, res) => {
   res.send('¡Servidor de Ingenieros de la Galaxia funcionando!');
 });

@@ -83,7 +83,7 @@ VALUES
 /*Júpiter (ID 5))*/
 ('El Ojo Inmóvil', 'La Gran Mancha Roja no es solo un ciclón constante...', 1, 1, 6),
 ('Resonancia Magnética', 'Entre los intensos cinturones de radiación ecuatorial navega una señal...', 2, 1, 6),
-('Latido de Europa', 'La corteza de hielo cruje siguiendo un patrón rítmico, casi respiratorio...', 3, 1, 6);
+('Latido de Europa', 'La corteza de hielo cruje siguiendo un patrón rítmico, casi respiratorio...', 3, 1, 6),
 /*Plutón (ID 7)*/
 ('El Latido de Tombaugh', 'La enorme llanura de hielo de nitrógeno conocida como el "Corazón" de Plutón oculta un secreto bajo su superficie. Los sensores de profundidad han detectado una red geométrica perfecta emitiendo pulsos de calor controlados. Este sistema termodinámico parece ser el responsable de mantener el hielo en constante movimiento convectivo, borrando cualquier evidencia de impactos. Debemos perforar la corteza y escanear la fuente de energía antes de que los glaciares inicien un nuevo ciclo de congelamiento.', 1, 1, 7),
 ('Ecos de Caronte', 'Plutón y su luna más grande están anclados gravitacionalmente, mostrándose siempre la misma cara. Sin embargo, hemos interceptado un haz de microondas de alta frecuencia que rebota perpetuamente entre ambos cuerpos en un vacío perfecto. La señal no es ruido estático espacial; contiene secuencias matemáticas que se reescriben a sí mismas en cada transmisión. Sintonizar los receptores de la nave para decodificar esta danza binaria podría revelar un antiguo relé de comunicaciones.', 2, 1, 7),
