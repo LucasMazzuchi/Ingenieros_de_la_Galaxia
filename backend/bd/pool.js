@@ -9,8 +9,7 @@ export const db = new Pool({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT || 5432,
 });
-
-export const inicializarBD = async () => {
+const _inicializarBd = async () => {
   try {
     if (existsSync("./bd/init.sql")) {
       const sql = readFileSync("./bd/init.sql", "utf-8");
@@ -18,6 +17,13 @@ export const inicializarBD = async () => {
     }
   } catch (error) {
     console.error("Error al levantar la base de datos: ", error);
+  }
+};
+
+export const inicializarBd = async () => {
+  const res = await db.query("SELECT COUNT(*) FROM cuerpos_celestes");     
+  if (res.rows[0].count === 0) {
+      await inicializarBD();
   }
 };
 
