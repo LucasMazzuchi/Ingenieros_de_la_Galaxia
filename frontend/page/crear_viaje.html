@@ -81,8 +81,10 @@
           </select>
         </label>
 
-        <label>Posición en la galaxia (2-10)
-          <input type="number" id="inputPosicion" min="2" max="10" required>
+        <label>Posición en la galaxia (2-9)
+          <select id="inputPosicion" required>
+            <option value="">-- Seleccione posición --</option>
+          </select>
         </label>
 
         <label>Imagen del planeta</label>
@@ -177,5 +179,5 @@
     <p>&copy; 2026 Todos los derechos reservados — Ingenieros de Galaxia</p>
   </footer>
 
-  <script type="module" src="../js/crear_viaje.js?v=112"></script>
+  <script type="module" src="../js/crear_viaje.js"></script>
 </body>
