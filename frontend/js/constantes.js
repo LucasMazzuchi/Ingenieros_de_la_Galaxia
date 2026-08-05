@@ -1,4 +1,4 @@
-export const API_URL = "https://backend-x82n.onrender.com/api";
+export const API_URL = "https://backend-t3by.onrender.com/api";
 export const CUERPOS_URL = "cuerpos_celestes";
 export const VEHICULOS_URL = "vehiculos";
 export const MISIONES_URL = "misiones";
