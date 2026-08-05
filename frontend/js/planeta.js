@@ -193,7 +193,7 @@ async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
         });
         contenedorMapa.appendChild(divPunto);
     });
-    
+    vehiculo.style.display = "block";
     vehiculo.style.transition = "none";
     vehiculo.style.top = coordenadasVisuales[posNave].top;
     vehiculo.style.left = coordenadasVisuales[posNave].left;
@@ -328,7 +328,6 @@ async function pintarVehiculos(vehiculos, vehiculoUsado){
         nave.style.position = "absolute";
         nave.style.top = coordenadasVisuales[vehiculoActual.punto_interes-1].top;
         nave.style.left = coordenadasVisuales[vehiculoActual.punto_interes-1].left;
-        nave.style.display = "block";
 
         if (vehiculoActual.ubicacion_id === 1) {
             nave.innerHTML = `
