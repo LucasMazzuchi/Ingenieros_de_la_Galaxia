@@ -76,16 +76,16 @@ VALUES
 ('Conducto de Olimpo', 'Cerca de la caldera del mega-volcán, los fuertes vientos han desenterrado...', 1, 1, 3),
 ('Fisura Marineris', 'El cañón masivo oculta sedimentos magnéticos ordenados en patrones fractales...', 2, 1, 3),
 ('Fractura Polar', 'Bajo los casquetes de hielo seco, los radares de penetración detectan formas...', 3, 1, 3),
-/*Mercurio (ID 4))*/
+/*Mercurio (ID 5))*/
 ('Corazón de Caloris', 'El impacto no formó esta enorme cuenca; expuso lo que había debajo...', 1, 1, 5),
 ('La Línea del Ocaso', 'En el terminador, la frontera entre el día abrasador y la noche helada...', 2, 1, 5),
 ('Esferas del Norte', 'En los oscuros cráteres polares, esferas de composición desconocida...', 3, 1, 5),
-/*Júpiter (ID 5))*/
+/*Júpiter (ID 6))*/
 ('El Ojo Inmóvil', 'La Gran Mancha Roja no es solo un ciclón constante...', 1, 1, 6),
 ('Resonancia Magnética', 'Entre los intensos cinturones de radiación ecuatorial navega una señal...', 2, 1, 6),
 ('Latido de Europa', 'La corteza de hielo cruje siguiendo un patrón rítmico, casi respiratorio...', 3, 1, 6),
-/*Plutón (ID 7)*/
-('El Latido de Tombaugh', 'La enorme llanura de hielo de nitrógeno conocida como el "Corazón" de Plutón oculta un secreto bajo su superficie. Los sensores de profundidad han detectado una red geométrica perfecta emitiendo pulsos de calor controlados. Este sistema termodinámico parece ser el responsable de mantener el hielo en constante movimiento convectivo, borrando cualquier evidencia de impactos. Debemos perforar la corteza y escanear la fuente de energía antes de que los glaciares inicien un nuevo ciclo de congelamiento.', 1, 1, 7),
-('Ecos de Caronte', 'Plutón y su luna más grande están anclados gravitacionalmente, mostrándose siempre la misma cara. Sin embargo, hemos interceptado un haz de microondas de alta frecuencia que rebota perpetuamente entre ambos cuerpos en un vacío perfecto. La señal no es ruido estático espacial; contiene secuencias matemáticas que se reescriben a sí mismas en cada transmisión. Sintonizar los receptores de la nave para decodificar esta danza binaria podría revelar un antiguo relé de comunicaciones.', 2, 1, 7),
-('Cenizas de Cthulhu', 'En la oscura y rojiza extensión ecuatorial de Plutón, el análisis espectral indica una concentración anormal de tolinas. Al acercarnos, las cámaras revelan que estos compuestos orgánicos no se formaron naturalmente por radiación, sino que parecen ser los restos de una antigua mega-estructura sintética destrozada. Lo más inquietante es que, al entrar en contacto con los escudos electromagnéticos de nuestra nave, el polvo rojizo de la superficie ha comenzado a levitar y reorganizarse.', 3, 1, 7);
+/*Plutón (ID 4)*/
+('El Latido de Tombaugh', 'La enorme llanura de hielo de nitrógeno conocida como el "Corazón" de Plutón oculta un secreto bajo su superficie. Los sensores de profundidad han detectado una red geométrica perfecta emitiendo pulsos de calor controlados. Este sistema termodinámico parece ser el responsable de mantener el hielo en constante movimiento convectivo, borrando cualquier evidencia de impactos. Debemos perforar la corteza y escanear la fuente de energía antes de que los glaciares inicien un nuevo ciclo de congelamiento.', 1, 1, 4),
+('Ecos de Caronte', 'Plutón y su luna más grande están anclados gravitacionalmente, mostrándose siempre la misma cara. Sin embargo, hemos interceptado un haz de microondas de alta frecuencia que rebota perpetuamente entre ambos cuerpos en un vacío perfecto. La señal no es ruido estático espacial; contiene secuencias matemáticas que se reescriben a sí mismas en cada transmisión. Sintonizar los receptores de la nave para decodificar esta danza binaria podría revelar un antiguo relé de comunicaciones.', 2, 1, 4),
+('Cenizas de Cthulhu', 'En la oscura y rojiza extensión ecuatorial de Plutón, el análisis espectral indica una concentración anormal de tolinas. Al acercarnos, las cámaras revelan que estos compuestos orgánicos no se formaron naturalmente por radiación, sino que parecen ser los restos de una antigua mega-estructura sintética destrozada. Lo más inquietante es que, al entrar en contacto con los escudos electromagnéticos de nuestra nave, el polvo rojizo de la superficie ha comenzado a levitar y reorganizarse.', 3, 1, 4);
 
