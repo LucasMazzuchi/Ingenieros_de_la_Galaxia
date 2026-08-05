@@ -3,7 +3,7 @@ export const mejorarVehiculo = async (req, res, next) => {
     const vehiculoDatos = await getVehiculo(req.params.id);
     const {campoMejora, mejora} = logicaVehiculo(vehiculoDatos);
     if (!campoMejora && !mejora){
-        next();
+        return next();
     }
     const resMejora = await updateVehiculo(req.params.id, {[campoMejora] : mejora});
     next()
