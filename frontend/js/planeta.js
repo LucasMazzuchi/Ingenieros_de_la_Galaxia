@@ -55,7 +55,7 @@ async function iniciarPlaneta() {
             return window.location.href = "galaxia.html";
         }
         const puntosCompletados = estado.puntosVisitados.filter(function (mision){ return mision.completado});
-        if (!estado.planetaCompletado && misiones.length > 0 && misiones.length === puntosCompletados.length){
+        if (!estado.planetaCompletado && misiones.length === puntosCompletados.length){
             const completarPlaneta = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/completar`,{
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
