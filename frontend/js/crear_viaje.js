@@ -274,7 +274,6 @@ const btnBorrarPlaneta = document.getElementById("btnBorrarPlaneta");
 selectPlaneta.addEventListener("change", async () => {
   const id = selectPlaneta.value;
   
-  // Primero actualizamos las opciones de posición (esto liberará la posición del planeta actual)
   await actualizarPosicionesPlanetas();
 
   if (!id) {
@@ -294,7 +293,6 @@ selectPlaneta.addEventListener("change", async () => {
     document.getElementById("inputTerreno").value = p.terreno;
     document.getElementById("inputHabitable").value = p.habitable.toString();
     
-    // Como las opciones ya se actualizaron, podemos asignar el valor directamente
     document.getElementById("inputPosicion").value = p.posicion;
     
     document.getElementById("inputImagen").value = p.imagen;

@@ -53,7 +53,6 @@ CREATE TABLE IF NOT EXISTS misiones_vehiculos (
     PRIMARY KEY (mision_id, vehiculo_id, cuerpo_celeste_id)
 );
 
-/*1. Insertar Cuerpos Celestes)*/
 INSERT INTO cuerpos_celestes (nombre, descripcion, tipo, diametro, gravedad, temperatura, habitable, terreno, posicion, imagen, imagen_fondo)
 VALUES 
 ('Tierra', 'Un mundo azul vibrante...', 1, 12742, 9.8, 15, TRUE, 1, 1, 10, 8),
@@ -63,7 +62,6 @@ VALUES
 ('Mercurio', 'Una esfera de hierro asada por la radiación...', 1, 4879, 3.7, 170, FALSE, 2, 7, 4, 4),
 ('Júpiter', 'Un coloso de nubes arremolinadas y tormentas...', 2, 139820, 24.7, -110, FALSE, 2, 5, 8, 5);
 
-/*3. Insertar Misiones (Corregida la sintaxis y asignados los IDs de planetas))*/
 INSERT INTO misiones (nombre, descripcion, posicion, imagen, cuerpo_celeste_id)
 VALUES 
 /*Tierra (ID 1))*/
@@ -90,5 +88,4 @@ VALUES
 ('El Latido de Tombaugh', 'La enorme llanura de hielo de nitrógeno conocida como el "Corazón" de Plutón oculta un secreto bajo su superficie. Los sensores de profundidad han detectado una red geométrica perfecta emitiendo pulsos de calor controlados. Este sistema termodinámico parece ser el responsable de mantener el hielo en constante movimiento convectivo, borrando cualquier evidencia de impactos. Debemos perforar la corteza y escanear la fuente de energía antes de que los glaciares inicien un nuevo ciclo de congelamiento.', 1, 1, 7),
 ('Ecos de Caronte', 'Plutón y su luna más grande están anclados gravitacionalmente, mostrándose siempre la misma cara. Sin embargo, hemos interceptado un haz de microondas de alta frecuencia que rebota perpetuamente entre ambos cuerpos en un vacío perfecto. La señal no es ruido estático espacial; contiene secuencias matemáticas que se reescriben a sí mismas en cada transmisión. Sintonizar los receptores de la nave para decodificar esta danza binaria podría revelar un antiguo relé de comunicaciones.', 2, 1, 7),
 ('Cenizas de Cthulhu', 'En la oscura y rojiza extensión ecuatorial de Plutón, el análisis espectral indica una concentración anormal de tolinas. Al acercarnos, las cámaras revelan que estos compuestos orgánicos no se formaron naturalmente por radiación, sino que parecen ser los restos de una antigua mega-estructura sintética destrozada. Lo más inquietante es que, al entrar en contacto con los escudos electromagnéticos de nuestra nave, el polvo rojizo de la superficie ha comenzado a levitar y reorganizarse.', 3, 1, 7);
-Pequ
 
