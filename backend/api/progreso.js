@@ -50,7 +50,7 @@ endpointsProgreso.patch("/:id/desbloquear", validarId, validarIds, async (req, r
             }
         }
         const yaVisitado = await progreso.getPlaneta(req.body.cuerpo_celeste_id, req.params.id);
-        if (actual.posicion === misiones[0].posicion && !yaVisitado){
+        if (actual.posicion === misiones[0].posicion && !yaVisitado.completado){
             const planetaVisitando = await progreso.AgregarPlaneta(req.params.id, req.body.cuerpo_celeste_id);
         }
         const resMision = await progreso.desbloquearMision(req.params.id, req.body.mision_id, req.body.cuerpo_celeste_id);
