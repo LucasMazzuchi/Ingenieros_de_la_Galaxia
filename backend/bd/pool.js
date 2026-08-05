@@ -22,7 +22,7 @@ const _inicializarBd = async () => {
 
 export const inicializarBd = async () => {
   const res = await db.query("SELECT COUNT(*) FROM cuerpos_celestes");     
-  if (res.rows[0].count === 0) {
+  if (!res || res.rows[0].count === 0) {
       await inicializarBD();
   }
 };
