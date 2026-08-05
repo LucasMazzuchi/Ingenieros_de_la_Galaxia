@@ -41,7 +41,6 @@ async function pintarPlanetas(cuerpos_celestes, naveId) {
     if (!cuerpo.disponible){
       divNoDisponible = `<div class="capa-oscura">Inalcanzable, explore más planetas para desbloquearlo.</div>`;
       div.classList.add("no-disponible");
-      div.classList
     }
     div.innerHTML = `
       <div class="imagen-contenedor">
@@ -56,9 +55,13 @@ async function pintarPlanetas(cuerpos_celestes, naveId) {
     if (estado.planetaCompletado){
       completados++;
     }
-    div.addEventListener("click", () => {
-      if (cuerpo.disponible) {
+    div.addEventListener("click", async () => {
+      const navePuedeViajar = await puedeViajar(naveId, cuerpo.id);
+      console.log("Nave puede viajar: ", navePuedeViajar);
+      if (cuerpo.disponible && navePuedeViajar) {
         window.location.href = `planeta.html?id=${cuerpo.id}`;
+      } else {
+        mostrarNotificacion("No puede entrar al planeta","Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave para poder viajar a otro.", false)
       }
     });
     contenedor.appendChild(div);
@@ -81,4 +84,11 @@ try {
   }
 }
 
+async function puedeViajar(naveId, planetaId) {
+    const resEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${planetaId}`);
+    const estado = await resEstado.json();
+    const resVehiculoDatos = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
+    const vehiculoDatos = await resVehiculoDatos.json();
+    return !(!estado.planetaCompletado && vehiculoDatos.combustible<100 && !estado.enProgreso);
+}
 document.addEventListener("DOMContentLoaded", iniciar);

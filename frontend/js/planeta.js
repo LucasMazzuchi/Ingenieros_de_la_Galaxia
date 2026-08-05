@@ -50,11 +50,10 @@ async function iniciarPlaneta() {
         const resEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${planetaId}`);
         const estado = await resEstado.json();
         if (!estado.planetaCompletado && vehiculoDatos.combustible<100 && !estado.enProgreso){
-            mostrarNotificacion("No puede entrar al planeta","Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave para poder viajar a otro.", false)
             return window.location.href = "galaxia.html";
         }
-        
-        if (!estado.planetaCompletado && misiones.length > 0 && misiones.length === estado.puntosVisitados.length){
+        const puntosCompletados = estado.puntosVisitados.filter(function (mision){ return mision.completado});
+        if (!estado.planetaCompletado && misiones.length > 0 && misiones.length === puntosCompletados.length){
             const completarPlaneta = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/completar`,{
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
