@@ -328,6 +328,7 @@ async function pintarVehiculos(vehiculos, vehiculoUsado){
         nave.style.position = "absolute";
         nave.style.top = coordenadasVisuales[vehiculoActual.punto_interes-1].top;
         nave.style.left = coordenadasVisuales[vehiculoActual.punto_interes-1].left;
+        nave.style.display = "block";
 
         if (vehiculoActual.ubicacion_id === 1) {
             nave.innerHTML = `
