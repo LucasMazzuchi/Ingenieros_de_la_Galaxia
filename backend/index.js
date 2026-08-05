@@ -18,7 +18,11 @@ app.use("/api/progreso", endpointsProgreso);
 app.get('/health', (req, res) => {
     res.status(200).send("OK");
 });
-//await inicializarBD();
+//const res = await db.query("SELECT COUNT(*) FROM cuerpos_celestes");     
+// Si el conteo es 0 (o si la tabla no existiera y tirara error, lo agarra el catch)
+  //if (parseInt(res.rows[0].count) === 0) {
+      //await inicializarBD();
+  //}
 app.get('/', (req, res) => {
   res.send('¡Servidor de Ingenieros de la Galaxia funcionando!');
 });
