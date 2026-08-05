@@ -49,8 +49,8 @@ endpointsProgreso.patch("/:id/desbloquear", validarId, validarIds, async (req, r
                 return res.status(403).json({ error: "No podés desbloquear este punto porque el anterior está bloqueado." });
             }
         }
-        const yaVisitado = await progreso.getPlaneta(req.body.cuerpo_celeste_id, req.params.id);
-        if (actual.posicion === misiones[0].posicion && !yaVisitado.completado){
+        const yaVisitado = await progreso.getPlaneta(req.params.id, req.body.cuerpo_celeste_id);
+        if (actual.posicion === misiones[0].posicion && !yaVisitado){
             const planetaVisitando = await progreso.AgregarPlaneta(req.params.id, req.body.cuerpo_celeste_id);
         }
         const resMision = await progreso.desbloquearMision(req.params.id, req.body.mision_id, req.body.cuerpo_celeste_id);
