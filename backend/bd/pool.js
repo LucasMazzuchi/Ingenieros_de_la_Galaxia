@@ -21,12 +21,15 @@ const _inicializarBd = async () => {
 };
 
 export const inicializarBd = async () => {
-  const res = await db.query("SELECT COUNT(*) FROM cuerpos_celestes");     
-  if (!res || res.rows[0].count === 0) {
-      await inicializarBD();
+  try {
+    const res = await db.query("SELECT COUNT(*) FROM cuerpos_celestes");
+    if (res.rows[0].count == 0) {
+      await _inicializarBd();
+    }
+  } catch (error) {
+    await _inicializarBd();
   }
 };
-
 db.on('connect', () => {
   console.log("Conexión establecida con la base de datos PostgreSQL.");
 });
