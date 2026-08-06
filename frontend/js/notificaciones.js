@@ -29,13 +29,14 @@ export function mostrarNotificacion(titulo, texto, cuerpoCompletado, naveMejorad
             mostrarNotificacion(
                 "¡Planeta Explorado!", 
                 "Has recolectado todos los datos de este sector. Ya puedes volver a la galaxia para continuar tu viaje o mejorar tu nave.",
-                false
+                false,
+                naveMejorada
             );
-        } else if (naveMejorada) {
+        } else if (naveMejorada){
             mostrarNotificacion("¡La nave subió de nivel!", 
                 `Has alcanzado el nivel ${naveMejorada} en todos los componentes de la nave.`,
                 false
-            );
+                );
         }
     });
 }
