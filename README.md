@@ -34,7 +34,8 @@ cd Ingenieros_de_la_Galaxia
 docker compose up
 ```
 
-Una vez que la terminal indique que los contenedores están corriendo, abrí tu navegador en http://localhost:8080 para acceder a la página inicial.
+Una vez que la terminal indique que los contenedores están corriendo, abrí tu navegador
+en http://localhost:<FRONTEND_PORT> para acceder a la página inicial.
 
 ## Apagado
 ```bash
