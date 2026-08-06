@@ -74,7 +74,7 @@ async function iniciarPlaneta() {
                 false,
                 nivelMejora
             )
-            vehiculo.src = obtenerImagenNave(vehiculoDatos);
+            vehiculo.src = imagen;
         }
 
         let puntoActual = vehiculoDatos.punto_interes;
@@ -256,9 +256,11 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
             panelPunto.classList.add("visible");
             
             if (!data.error){
+                if (data.planetaCompletado){
                 const {nivelMejora, imagen} = await nivelNave(vehiculoId);
+                }
                 mostrarNotificacion("¡Misión Completada!", `Combustible extraído: ${data.combustible}`, data.cuerpoCompletado, nivelMejora);
-                vehiculo.src = imagen;
+                vehiculo.src = imagen ? imagen : vehiculo.src;
             }
 
             return true;
