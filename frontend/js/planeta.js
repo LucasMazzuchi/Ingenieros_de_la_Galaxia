@@ -72,7 +72,6 @@ async function iniciarPlaneta() {
             mostrarNotificacion("¡Planeta Explorado!", 
                 "Has recolectado todos los datos de este sector. Ya puedes volver a la galaxia para continuar tu viaje o mejorar tu nave.",
                 false,
-                nivelMejora
             )
             vehiculo.src = imagen;
         }
@@ -255,11 +254,23 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
             document.getElementById("puntoDescripcion").textContent = mision.descripcion;
             panelPunto.classList.add("visible");
             
-            if (!data.error){
-                if (data.planetaCompletado){
-                const {nivelMejora, imagen} = await nivelNave(vehiculoId);
+            if (!data.error) {
+                let nivelMejora = 0;
+                let imagen = null;
+
+                if (data.planetaCompletado) {
+                    const resultado = await nivelNave(vehiculoId);
+                    nivelMejora = resultado.nivelMejora;
+                    imagen = resultado.imagen;
                 }
-                mostrarNotificacion("¡Misión Completada!", `Combustible extraído: ${data.combustible}`, data.cuerpoCompletado, nivelMejora ? nivelMejora : 0);
+                
+                mostrarNotificacion(
+                    "¡Misión Completada!", 
+                    `Combustible extraído: ${data.combustible}`, 
+                    data.cuerpoCompletado, 
+                    nivelMejora
+                );
+                
                 vehiculo.src = imagen ? imagen : vehiculo.src;
             }
 
