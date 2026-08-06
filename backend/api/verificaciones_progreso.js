@@ -9,7 +9,7 @@ export const validarIds = (req, res, next) => {
     let entrada = {}
     let datos;
     let reglasIds = {};
-    if (req.method === "GET"){
+    if (req.method === "GET" || req.method === "POST"){
     entrada = {
         [constantes.ID]: { campo: req.params.id, min: 1, max: constantes.ID_MAX, error: constantes.ID },
         [constantes.CUERPO_CELESTE]: { campo: req.params.cuerpo_celeste_id, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE }

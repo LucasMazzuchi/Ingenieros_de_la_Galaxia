@@ -25,7 +25,7 @@ endpointsProgreso.get("/:id/:cuerpo_celeste_id", validarIds, async (req, res) =>
 endpointsProgreso.patch("/:id/desbloquear", validarId, validarIds, async (req, res) => {
     try {
         const actual = await getMision(req.body.mision_id);
-        const vehiculo = await getVehiculo(req.params.id); 
+        const vehiculo = await getVehiculo(req.params.id);
         const misiones = await getAllMisiones({
             cuerpo_celeste_id : req.body.cuerpo_celeste_id,
             [ORDER_BY] : "posicion",
@@ -49,8 +49,9 @@ endpointsProgreso.patch("/:id/desbloquear", validarId, validarIds, async (req, r
                 return res.status(403).json({ error: "No podés desbloquear este punto porque el anterior está bloqueado." });
             }
         }
-        if (actual.posicion === misiones[0].posicion){
-            const planetaVisitando = await progreso.AgregarPlaneta(req.params.id, req.body.cuerpo_celeste_id);
+        const yaVisitado = await progreso.getPlaneta(req.params.id, req.body.cuerpo_celeste_id);
+        if (actual.posicion === misiones[0].posicion && !yaVisitado){
+            const planetaVisitando = await progreso.agregarPlaneta(req.params.id, req.body.cuerpo_celeste_id);
         }
         const resMision = await progreso.desbloquearMision(req.params.id, req.body.mision_id, req.body.cuerpo_celeste_id);
         res.status(200).json({ mensaje: "¡Nuevo punto de interés descubierto!" });
@@ -80,3 +81,13 @@ endpointsProgreso.patch("/:id/completar", validarId, validarIds, mejorarVehiculo
         res.status(500).json({ error: "Error interno al querer completar el planeta." });
     }
 });
+
+endpointsProgreso.post("/:id/:cuerpo_celeste_id/agregar", validarIds, async (req,res) => {
+    try{
+        const ok = await progreso.agregarPlaneta(req.params.id, req.params.cuerpo_celeste_id);
+        res.status(200).json({mensaje: "Planeta Agregado!", cuerpoAgregado: ok});
+    }   catch(error) {
+        console.log("Error en agregar: ", error);
+        res.status(500).json({error: "Error interno al querer agregar el planeta."});
+    }
+})

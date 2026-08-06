@@ -65,7 +65,7 @@ export const completarPlaneta = async (vehiculoId, cuerpoCelesteId) => {
     return res.rowCount === 1;
 };
 
-export const AgregarPlaneta = async (vehiculoId, cuerpoCelesteId) => {
+export const agregarPlaneta = async (vehiculoId, cuerpoCelesteId) => {
     // Registramos que completó el planeta
     const textoCompletado = `INSERT INTO cuerpos_celestes_vehiculos (vehiculo_id, cuerpo_celeste_id, completado) VALUES ($1, $2, FALSE)`;
     const res = await db.query(textoCompletado,[vehiculoId, cuerpoCelesteId]);

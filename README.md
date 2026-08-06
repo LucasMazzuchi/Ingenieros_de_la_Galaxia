@@ -17,6 +17,14 @@ En el backend, hacemos uso de CORS para gestionar las solicitudes entre el front
 Para ejecutar el proyecto, tenés que tener instalado:
 - Git: https://git-scm.com/
 - Docker: https://docs.docker.com/engine/install/
+- Recordá declarar las siguientes variables de entorno en un .env a tu gusto en la raíz del proyecto:
+    - DB_USER
+    - DB_PASSWORD
+    - DB_NAME
+    - DB_PORT
+    - BACKEND_PORT
+    - FRONTEND_PORT
+- Además, cambiá la constante puerto en el archivo frontend/constantes.js por el puerto que pusiste en BACKEND_PORT.
 
 
 ## Como levantar el proyecto
@@ -26,7 +34,8 @@ cd Ingenieros_de_la_Galaxia
 docker compose up
 ```
 
-Una vez que la terminal indique que los contenedores están corriendo, abrí tu navegador en http://localhost:8080 para acceder a la página inicial.
+Una vez que la terminal indique que los contenedores están corriendo, abrí tu navegador  
+en `http://localhost:8080<FRONTEND_PORT>` para acceder a la página inicial.
 
 ## Apagado
 ```bash
