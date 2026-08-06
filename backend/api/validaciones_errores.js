@@ -1,9 +1,9 @@
 import * as constantes from "../constantes.js";
-export const validarEntrada = (parametros, validaciones, metodo, camposRecibidos) => {
+export const validarEntrada = (parametros, validaciones, metodo, camposRecibidos, progreso) => {
     let errores = [];
     let procesados = {};
     for (const [campo, validador] of Object.entries(validaciones)) {
-        if (metodo === "PATCH" && parametros[campo].campo === undefined) {
+        if (metodo === "PATCH" && parametros[campo].campo === undefined && !progreso) {
             continue;
         }
         const error = validador(parametros[campo]);
@@ -34,6 +34,7 @@ export const validarValorFiltro = (filtros, validadores) => {
             clave = filtro.substring(0, filtro.length-4);
         }
         if (!validadores[clave].regex.test(valor)){
+            console.log(filtro, valor);
             erroresValores.push(validadores[clave].error);
             continue;
         }
@@ -92,15 +93,21 @@ export const validarFloat = ({ campo, min, max, error }) => {
 // Si hay un error en la solicitud, envía un error 400 y devuelve. Sino, pasa a la función next pasada por parámetro.
 
 export const validarId = (req, res, next) => {
-    const id = Number(req.params.id);
-    if (!/^[0-9]+$/.test(req.params.id) || !Number.isInteger(id) || id<1 || id>2147483647){
-        res.status(400).json({error: constantes.ERROR_INT("id", 1, 2147483647)});
-        return;
+    const ok = _validarId({campo : req.params.id, min: 1, max: constantes.ID_MAX, error: constantes.ID});
+    if (ok.length !== 0){
+        return res.status(400).json({error: constantes.ERROR_INT("id", 1, constantes.ID_MAX)});
     }
-    req.params.id = id;
+    req.params.id = Number(req.params.id);
     next();
 };
 
+export const _validarId = ({campo, min, max, error}) => {
+    const id = Number(campo);
+    if (!/^[0-9]+$/.test(campo) || !Number.isInteger(id) || id<min || id>max){
+        return `El campo debe ser un entero entre ${min} y ${max}`;
+    }
+    return "";
+}
 
 export const manejarError = (error) => {
     switch (error.code) {

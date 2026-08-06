@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elegí tu Nave</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+  <link rel="stylesheet" href="../css/usuario.css">
+  <link rel="stylesheet" href="../css/pie.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <section class="pantalla-usuario">
+    <video autoplay muted loop playsinline class="video-fondo">
+      <source src="../assets/img/audio/video/video-menu-galaxia.mp4" type="video/mp4">
+    </video>
+
+    <a href="../index.html" class="button is-primary volver-bienvenida">Volver</a>
+
+    <div class="panel-usuario">
+      <h1 class="titulo-usuario">Elegí tu Nave</h1>
+      <p class="subtitulo-usuario">Seleccioná una existente o creá una nueva para empezar tu viaje.</p>
+
+      <div class="lista-vehiculos" id="listaVehiculos"></div>
+
+      <button class="button is-primary boton-nuevo-vehiculo" id="btnMostrarForm">
+        + Crear nueva nave
+      </button>
+
+      <form class="form-nuevo-vehiculo" id="formNuevoVehiculo" hidden>
+        <label>Nombre de tu nave
+          <input type="text" id="inputNombreNuevoVehiculo" maxlength="50" required placeholder="Ej: Halcón Milenario">
+        </label>
+        <div class="botones-form-vehiculo">
+          <button type="submit" class="button is-primary">Crear y empezar</button>
+          <button type="button" class="button is-danger" id="btnCancelarNuevoVehiculo">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <script type="module" src="../js/usuario.js"></script>
+
+  <footer class="pie-pagina">
+    <p>&copy; 2026 Todos los derechos reservados — Ingenieros de Galaxia</p>
+  </footer>
+
+</body>
+</html>

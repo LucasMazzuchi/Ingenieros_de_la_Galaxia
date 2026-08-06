@@ -7,11 +7,10 @@ export const endpointsMisiones = Router();
  
 endpointsMisiones.get("/", validarFiltrosMision, async (req, res) => {
     try {
-
-        const texto = `SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.porcentaje, m.disponible FROM misiones as m, cuerpos_celestes as c WHERE c.id = m.cuerpo_celeste_id AND m.borrado = FALSE AND c.borrado = FALSE`;
-        const listaMisiones = await misiones.getAllMisiones(constantes.consulta(req.query, "mision", texto));
+        const listaMisiones = await misiones.getAllMisiones(req.query);
         res.json(listaMisiones);
     } catch(error) {
+        console.log(error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }
@@ -26,6 +25,7 @@ endpointsMisiones.get("/:id", validarId, async (req, res) => {
             res.status(200).json(mision);
         }
     } catch (error) {
+        console.log(error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }
@@ -33,14 +33,15 @@ endpointsMisiones.get("/:id", validarId, async (req, res) => {
  
 endpointsMisiones.post("/", validarMision, async (req, res)=> {
     try{
-        if (await misiones.cantidadMisiones(req.body.cuerpo_celeste_id) >= constantes.MISIONES_MAX){
+        const {mision, id, max} = await misiones.createMision(req.body);
+        if (max){
             return res.status(403).json({error: constantes.ERROR_ENTIDAD_LLENA("mision", constantes.MISIONES_MAX, "por planeta.")});
         }
-        const {mision, id} = await misiones.createMision(req.body);
+        const resId = id;
         if (!mision){
             res.status(500).json({error: constantes.ERROR_CONSULTA("mision", "creada")});
         } else {
-            res.status(201).json({exito : constantes.EXITO_CONSULTA("mision", "creada"), id : id});
+            res.status(201).json({exito : constantes.EXITO_CONSULTA("mision", "creada"), id : resId});
         }
     } catch (error) {
         const {estado, msjError} = manejarError(error);
@@ -68,18 +69,17 @@ endpointsMisiones.delete("/:id", validarId, async (req, res) => {
     try {
         //Buscamos la misión en la base de datos para ver sus datos reales
         const misionGuardada = await misiones.getMision(req.params.id);
-        
+        console.log("Datos de la misión:", misionGuardada);
         if (!misionGuardada) {
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         }
 
-        //AHORA SÍ revisamos si es de la Tierra (id === 1)
         if (misionGuardada.cuerpo_celeste_id === 1) {
             return res.status(403).json({error: "No se pueden eliminar misiones asociadas a la Tierra."});
         }
 
-        //Si no es de la Tierra, procedemos a borrarla
-        const {ok, mision} = await misiones.removeMision(req.params.id);
+        //Si no es de la Tierra, se borra
+        const {ok, mision} = await misiones.removeMision(parseInt(misionGuardada.posicion), parseInt(misionGuardada.cuerpo_celeste_id), req.params.id);
         
         if (!ok){
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
@@ -87,7 +87,7 @@ endpointsMisiones.delete("/:id", validarId, async (req, res) => {
             res.status(200).json({exito : constantes.EXITO_CONSULTA("mision", "eliminada"), entidad : mision});
         }
     } catch (error) {
-        console.error("ERROR REAL AL BORRAR:", error);
+        console.log(error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }

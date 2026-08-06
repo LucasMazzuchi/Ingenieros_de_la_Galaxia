@@ -66,6 +66,7 @@ export const TIPO = "tipo";
 export const UBICACION = "ubicacion_id";
 export const POSICION = "posicion";
 export const VEHICULO = "vehiculo_id";
+export const MISION = "mision_id";
 
 /* La función arma la consulta con los filtros que se le pasen, para la entidad especificada,
 comenzando con el texto ingresado por parámetro.*/
@@ -166,4 +167,5 @@ export const PUNTO_INTERES_MAX = 3;
 // Límites a parámetros de misiones.
 export const PORCENTAJE_MAX = 100;
 export const LIMITE_MAX = 100;
-export const MISIONES_MAX = 4;
+export const MISIONES_MAX = 3;
+export const IMAGEN_PUNTO_MAX = 5;

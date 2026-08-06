@@ -5,16 +5,13 @@ import * as constantes from "../constantes.js";
 import { validarId, manejarError } from "./validaciones_errores.js";
 import * as logica from "../logica/cuerpos_celestes.js";
 import { getVehiculo } from "../bd/vehiculos.js";
+import {removeMision} from "../bd/misiones.js"
 export const endpointsCuerpoCeleste = Router();
  
 endpointsCuerpoCeleste.get("/", validarFiltrosCuerpoCeleste, async (req, res) => {
-    try {
-        const texto = "SELECT c.id, c.nombre, c.descripcion, c.tipo, c.diametro, c.gravedad, c.temperatura, c.habitable, c.terreno, c.posicion, c.imagen, c.imagen_fondo FROM cuerpos_celestes as c WHERE c.borrado = FALSE";
-        
+    try {        
         const { vehiculo_id, ...sinVehiculo } = req.query;
-        
-        let listaCuerposCelestes = await cuerpos.getAllCuerposCelestes(constantes.consulta(sinVehiculo, "cuerpo_celeste", texto));
-        
+        let listaCuerposCelestes = await cuerpos.getAllCuerposCelestes(sinVehiculo, "cuerpo_celeste");
         if (vehiculo_id) { 
             const vehiculoUsuario = await getVehiculo(vehiculo_id);
             listaCuerposCelestes = listaCuerposCelestes.map(planeta => {
@@ -48,15 +45,14 @@ endpointsCuerpoCeleste.get("/:id", validarId, async (req, res) => {
  
 endpointsCuerpoCeleste.post("/", validarCuerpoCeleste, async (req, res)=> {
     try{
-        if (await cuerpos.cantidadCuerposCelestes() >= constantes.CUERPOS_CELESTES_MAX){
+        const {cuerpo, id, max} = await cuerpos.createCuerpoCeleste(req.body)
+        if (max){
             return res.status(403).json({error: constantes.ERROR_ENTIDAD_LLENA("cuerpo celeste", constantes.CUERPOS_CELESTES_MAX)});
         }
-        const {cuerpo, id} = await cuerpos.createCuerpoCeleste(req.body)
         if (!cuerpo){
-            res.status(500).json({error: constantes.ERROR_CONSULTA("cuerpo celeste", "creada")});
-        } else {
-            res.status(201).json({exito : constantes.EXITO_CONSULTA("cuerpo celeste", "creada"), id : id});
+            return res.status(500).json({error: constantes.ERROR_CONSULTA("cuerpo celeste", "creada")});
         }
+        res.status(201).json({exito : constantes.EXITO_CONSULTA("cuerpo celeste", "creada"), id : id});
     } catch (error) {
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
@@ -65,7 +61,7 @@ endpointsCuerpoCeleste.post("/", validarCuerpoCeleste, async (req, res)=> {
  
 endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req, res) => {
     try{
-        if (req.params.id ===1){
+        if (RegExp("^1$").test(req.params.id)){
             return res.status(403).json({error: "No se puede modificar la Tierra."});
         }
         const cuerpoCeleste = await cuerpos.getCuerpoCeleste(req.params.id)
@@ -84,18 +80,16 @@ endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req
  
 endpointsCuerpoCeleste.delete("/:id", validarId, async (req, res) => {
     try{
-        if (req.params.id ===1){
+        if (RegExp("^1$").test(req.params.id)){
             return res.status(403).json({error: "No se puede modificar la Tierra."});
         }
-        const {ok, cuerpoCeleste, tieneDependientes} = await cuerpos.removeCuerpoCeleste(req.params.id);
-        if (!ok){
-            if (tieneDependientes) {
-                return res.status(409).json({error: constantes.ERROR_DEPENDENCIAS, entidad : cuerpoCeleste, tieneDependientes : tieneDependientes});
-            }
+        const {cuerpo, misiones, vehiculos} = await cuerpos.removeCuerpoCeleste(req.params.id);
+        if (!cuerpo && misiones.length === 0  && vehiculos.length === 0){
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         }
-        res.status(200).json({exito : constantes.EXITO_CONSULTA("cuerpo celeste", "eliminada"), entidad : cuerpoCeleste, tieneDependientes : tieneDependientes});
+        res.status(200).json({exito : constantes.EXITO_CONSULTA("cuerpo celeste", "eliminada"), entidad : cuerpo});
     } catch (error) {
+        console.log(error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }

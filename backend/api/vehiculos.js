@@ -3,14 +3,15 @@ import * as vehiculos from "../bd/vehiculos.js";
 import {validarVehiculo, validarFiltrosVehiculo} from "./verificaciones_vehiculo.js";
 import * as constantes from "../constantes.js";
 import {validarId, manejarError} from "./validaciones_errores.js";
+import { logicaVehiculo } from "../logica/vehiculos.js";
 export const endpointsVehiculos = Router();
 
 endpointsVehiculos.get("/", validarFiltrosVehiculo, async (req, res) => {
     try {
-        const texto = "SELECT v.id, v.nombre, v.tipo, v.motor, v.estructura, v.resistencia, v.combustible, v.punto_interes FROM vehiculos as v WHERE v.borrado = FALSE";
-        const listaVehiculos = await vehiculos.getAllVehiculos(constantes.consulta(req.query, "vehiculo", texto));
-        res.json(listaVehiculos);
+        const listaVehiculos = await vehiculos.getAllVehiculos(req.query, "vehiculo");
+        res.status(200).json(listaVehiculos);
     } catch(error) {
+        console.log(error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }
@@ -32,15 +33,11 @@ endpointsVehiculos.get("/:id", validarId, async (req, res) => {
 
 endpointsVehiculos.post("/", validarVehiculo, async (req, res)=> {
     try{
-        if (await vehiculos.cantidadVehiculos() >= constantes.VEHICULOS_MAX){
-            return res.status(403).json({error: constantes.ERROR_ENTIDAD_LLENA("vehiculo", constantes.VEHICULOS_MAX)});
+        const { vehiculo, id} = await vehiculos.createVehiculo(req.body);
+        if (!vehiculo){    
+            return res.status(500).json({error: constantes.ERROR_CONSULTA("vehiculo", "creada")});
         }
-        const { vehiculo, id } = await vehiculos.createVehiculo(req.body);
-        if (!vehiculo){
-            res.status(500).json({error: constantes.ERROR_CONSULTA("vehiculo", "creada")});
-        } else {
-            res.status(201).json({exito : constantes.EXITO_CONSULTA("vehiculo", "creada"), id: id});
-        }
+        res.status(201).json({exito : constantes.EXITO_CONSULTA("vehiculo", "creada"), id: id});
     } catch (error) {
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
@@ -73,3 +70,24 @@ endpointsVehiculos.delete("/:id", validarId, async (req, res) => {
         res.status(estado).json({error : msjError});
     }
 });
+
+endpointsVehiculos.get("/:id/mejorar", validarId, async(req, res) => {
+    try {
+        const vehiculo = vehiculos.getVehiculo(req.params.id);
+        if (!vehiculo){
+            return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
+        }
+        const {campoMejora, mejora} = logicaVehiculo(vehiculo);
+        if (!campoMejora && !mejora){
+            return res.status(403).json({error: "La nave ya alcanzó el máximo nivel."});
+        }
+        const ok = vehiculos.updateVehiculo(req.params.id, {[campoMejora] : mejora});
+        if (!ok){
+            return res.status(400).json({error: constantes.ERROR_CONSULTA("vehiculo", "mejorada.")});
+        }
+        return res.status(200).json({campoMejora : campoMejora, mejora : mejora})
+    } catch (error){
+        const {estado, msjError} = manejarError(error);
+        res.status(estado).json({error : msjError});
+    }
+})
