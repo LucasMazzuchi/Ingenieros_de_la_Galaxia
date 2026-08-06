@@ -256,7 +256,7 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
             panelPunto.classList.add("visible");
             
             if (!data.error){
-                const nivelMejora, imagen = await nivelNave(vehiculoId);
+                const {nivelMejora, imagen} = await nivelNave(vehiculoId);
                 mostrarNotificacion("¡Misión Completada!", `Combustible extraído: ${data.combustible}`, data.cuerpoCompletado, nivelMejora);
                 vehiculo.src = imagen;
             }

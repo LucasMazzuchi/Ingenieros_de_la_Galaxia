@@ -17,6 +17,13 @@ En el backend, hacemos uso de CORS para gestionar las solicitudes entre el front
 Para ejecutar el proyecto, tenés que tener instalado:
 - Git: https://git-scm.com/
 - Docker: https://docs.docker.com/engine/install/
+Recordá declarar las siguientes variables de entorno en un .env a tu gusto en la raíz del proyecto:
+DB_USER
+DB_PASSWORD
+DB_NAME
+DB_PORT
+BACKEND_PORT
+FRONTEND_PORT
 
 
 ## Como levantar el proyecto
