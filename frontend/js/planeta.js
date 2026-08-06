@@ -259,7 +259,7 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
                 if (data.planetaCompletado){
                 const {nivelMejora, imagen} = await nivelNave(vehiculoId);
                 }
-                mostrarNotificacion("¡Misión Completada!", `Combustible extraído: ${data.combustible}`, data.cuerpoCompletado, nivelMejora);
+                mostrarNotificacion("¡Misión Completada!", `Combustible extraído: ${data.combustible}`, data.cuerpoCompletado, nivelMejora ? nivelMejora : 0);
                 vehiculo.src = imagen ? imagen : vehiculo.src;
             }
 
