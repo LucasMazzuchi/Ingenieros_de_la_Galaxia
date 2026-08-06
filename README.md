@@ -24,6 +24,7 @@ Para ejecutar el proyecto, tenés que tener instalado:
     - DB_PORT
     - BACKEND_PORT
     - FRONTEND_PORT
+- Además, cambiá la constante puerto en el archivo frontend/constantes.js por el puerto que pusiste en BACKEND_PORT.
 
 
 ## Como levantar el proyecto

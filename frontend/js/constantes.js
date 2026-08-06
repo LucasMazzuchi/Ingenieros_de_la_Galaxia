@@ -1,4 +1,5 @@
-export const API_URL = "https://backend-t3by.onrender.com/api";
+const PUERTO = 5000;
+export const API_URL = window.location.hostname === "localhost"? `http://localhost:${PUERTO}/api` : "https://backend-t3by.onrender.com/api";
 export const CUERPOS_URL = "cuerpos_celestes";
 export const VEHICULOS_URL = "vehiculos";
 export const MISIONES_URL = "misiones";
