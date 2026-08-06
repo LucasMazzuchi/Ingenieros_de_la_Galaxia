@@ -51,7 +51,7 @@ endpointsProgreso.patch("/:id/desbloquear", validarId, validarIds, async (req, r
         }
         const yaVisitado = await progreso.getPlaneta(req.params.id, req.body.cuerpo_celeste_id);
         if (actual.posicion === misiones[0].posicion && !yaVisitado){
-            const planetaVisitando = await progreso.AgregarPlaneta(req.params.id, req.body.cuerpo_celeste_id);
+            const planetaVisitando = await progreso.agregarPlaneta(req.params.id, req.body.cuerpo_celeste_id);
         }
         const resMision = await progreso.desbloquearMision(req.params.id, req.body.mision_id, req.body.cuerpo_celeste_id);
         res.status(200).json({ mensaje: "¡Nuevo punto de interés descubierto!" });
@@ -81,3 +81,13 @@ endpointsProgreso.patch("/:id/completar", validarId, validarIds, mejorarVehiculo
         res.status(500).json({ error: "Error interno al querer completar el planeta." });
     }
 });
+
+endpointsProgreso.post("/:id/:cuerpo_celeste_id/agregar", validarIds, async (req,res) => {
+    try{
+        const ok = await progreso.agregarPlaneta(req.params.id, req.params.cuerpo_celeste_id);
+        res.status(200).json({mensaje: "Planeta Agregado!", cuerpoAgregado: ok});
+    }   catch(error) {
+        console.log("Error en agregar: ", error);
+        res.status(500).json({error: "Error interno al querer agregar el planeta."});
+    }
+})
