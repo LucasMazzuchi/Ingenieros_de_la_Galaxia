@@ -258,7 +258,7 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
                 let nivelMejora = 0;
                 let imagen = null;
 
-                if (data.planetaCompletado) {
+                if (data.cuerpoCompletado) {
                     const resultado = await nivelNave(vehiculoId);
                     nivelMejora = resultado.nivelMejora;
                     imagen = resultado.imagen;
