@@ -1,4 +1,3 @@
-import { agregarPlaneta } from "../../backend/bd/progreso.js";
 import * as constantes from "./constantes.js";
 import { mostrarNotificacion } from "./notificaciones.js";
 
@@ -58,7 +57,7 @@ async function iniciarPlaneta() {
         const puntosCompletados = estado.puntosVisitados.filter(function (mision){ return mision.completado});
         if (!estado.planetaCompletado && misiones.length === puntosCompletados.length){
             if (misiones.length === 0){
-                const agregarPlaneta = await fetch (`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${planetaId}/agregar`, {
+                const planetaAgregado = await fetch (`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${planetaId}/agregar`, {
                     method: "POST"
                 });
             }
