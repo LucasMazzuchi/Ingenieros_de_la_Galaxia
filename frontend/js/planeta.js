@@ -68,9 +68,13 @@ async function iniciarPlaneta() {
                     cuerpo_celeste_id : planetaId
                 })
             });
+            const {nivelMejora, imagen} = await nivelNave(naveId);
             mostrarNotificacion("¡Planeta Explorado!", 
                 "Has recolectado todos los datos de este sector. Ya puedes volver a la galaxia para continuar tu viaje o mejorar tu nave.",
-                false)
+                false,
+                nivelMejora
+            )
+            vehiculo.src = obtenerImagenNave(vehiculoDatos);
         }
 
         let puntoActual = vehiculoDatos.punto_interes;
@@ -252,7 +256,9 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
             panelPunto.classList.add("visible");
             
             if (!data.error){
-                mostrarNotificacion("¡Misión Completada!", `Combustible extraído: ${data.combustible}`, data.cuerpoCompletado);
+                const nivelMejora, imagen = await nivelNave(vehiculoId);
+                mostrarNotificacion("¡Misión Completada!", `Combustible extraído: ${data.combustible}`, data.cuerpoCompletado, nivelMejora);
+                vehiculo.src = imagen;
             }
 
             return true;
@@ -348,5 +354,17 @@ async function pintarVehiculos(vehiculos, vehiculoUsado){
         }
         contenedorMapa.appendChild(nave);
     });
+}
+
+async function nivelNave(naveId){
+    const resPostMejora = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
+    const postMejora = await resPostMejora.json();
+    let nivelMejora = 0;
+    if (postMejora["motor"]===postMejora["estructura"] &&
+        postMejora["estructura"]===postMejora["resistencia"]){
+        nivelMejora = postMejora["motor"];
+    }
+
+    return {nivelMejora, imagen : obtenerImagenNave(postMejora)};
 }
 document.addEventListener("DOMContentLoaded", iniciarPlaneta);

@@ -1,4 +1,4 @@
-export function mostrarNotificacion(titulo, texto, cuerpoCompletado) {
+export function mostrarNotificacion(titulo, texto, cuerpoCompletado, naveMejorada = 0) {
     // Evita duplicar el cartel si ya hay uno abierto
     if (document.getElementById("cartelNotificacion")) return;
 
@@ -29,6 +29,11 @@ export function mostrarNotificacion(titulo, texto, cuerpoCompletado) {
             mostrarNotificacion(
                 "¡Planeta Explorado!", 
                 "Has recolectado todos los datos de este sector. Ya puedes volver a la galaxia para continuar tu viaje o mejorar tu nave.",
+                false
+            );
+        } else if (naveMejorada) {
+            mostrarNotificacion("¡La nave subió de nivel!", 
+                `Has alcanzado el nivel ${naveMejorada} en todos los componentes de la nave.`,
                 false
             );
         }
