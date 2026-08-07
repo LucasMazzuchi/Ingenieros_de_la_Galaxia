@@ -3,7 +3,6 @@ import * as vehiculos from "../bd/vehiculos.js";
 import {validarVehiculo, validarFiltrosVehiculo} from "./verificaciones_vehiculo.js";
 import * as constantes from "../constantes.js";
 import {validarId, manejarError} from "./validaciones_errores.js";
-import { logicaVehiculo } from "../logica/vehiculos.js";
 export const endpointsVehiculos = Router();
 
 endpointsVehiculos.get("/", validarFiltrosVehiculo, async (req, res) => {
@@ -77,15 +76,14 @@ endpointsVehiculos.get("/:id/mejorar", validarId, async(req, res) => {
         if (!vehiculo){
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         }
-        const {campoMejora, mejora} = logicaVehiculo(vehiculo);
-        if (!campoMejora && !mejora){
+        if (vehiculo.motor === 3 && vehiculo.estructura === 3 && vehiculo.resistencia === 3){
             return res.status(403).json({error: "La nave ya alcanzó el máximo nivel."});
         }
-        const ok = vehiculos.updateVehiculo(req.params.id, {[campoMejora] : mejora});
+        const ok = vehiculos.updateVehiculo(req.params.id, {puntos : vehiculo.puntos+1});
         if (!ok){
             return res.status(400).json({error: constantes.ERROR_CONSULTA("vehiculo", "mejorada.")});
         }
-        return res.status(200).json({campoMejora : campoMejora, mejora : mejora})
+        return res.status(200).json({mensaje: "El vehículo fue mejorado correctamente."})
     } catch (error){
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});

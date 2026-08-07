@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS vehiculos (
     combustible INT NOT NULL,
     resistencia INT NOT NULL,
     punto_interes INT NOT NULL,
+    puntos INT DEFAULT 0,
     ubicacion_id INT REFERENCES cuerpos_celestes(id) NOT NULL,
     borrado BOOLEAN DEFAULT FALSE
 );

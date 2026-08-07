@@ -1,4 +1,4 @@
-export function mostrarNotificacion(titulo, texto, cuerpoCompletado, naveMejorada = 0) {
+export function mostrarNotificacion(titulo, texto, cuerpoCompletado, curepoCelesteId = 0, punto = true) {
     // Evita duplicar el cartel si ya hay uno abierto
     if (document.getElementById("cartelNotificacion")) return;
 
@@ -25,16 +25,16 @@ export function mostrarNotificacion(titulo, texto, cuerpoCompletado, naveMejorad
 
     document.getElementById("btnCerrarNotificacion").addEventListener("click", () => {
         modal.remove();
-        if (cuerpoCompletado){
+        if (cuerpoCompletado && cuerpoCelesteid !== 1){
+            const texto = punto ? constantes.PUNTO_DESBLOQUEADO : constantes.ERROR_PUNTO_MAX;
             mostrarNotificacion(
                 "¡Planeta Explorado!", 
-                "Has recolectado todos los datos de este sector. Ya puedes volver a la galaxia para continuar tu viaje o mejorar tu nave.",
-                false,
-                naveMejorada
+                `Visitaste todos los puntos de interés ${texto}. Podés volver a la galaxia para continuar tu viaje o mejorar tu nave.`,
+                false
             );
-        } else if (naveMejorada){
-            mostrarNotificacion("¡La nave subió de nivel!", 
-                `Has alcanzado el nivel ${naveMejorada} en todos los componentes de la nave.`,
+        } else if (cuerpoCelesteId === 1){
+            mostrarNotificacion("¡Planeta Explorado!", 
+                "Visitaste todos los puntos de interés de este sector y desbloqueaste una nave. Podés volver a la galaxia para continuar tu viaje con tu nueva nave.",
                 false
                 );
         }

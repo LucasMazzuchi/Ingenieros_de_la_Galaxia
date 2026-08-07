@@ -68,12 +68,14 @@ async function iniciarPlaneta() {
                     cuerpo_celeste_id : planetaId
                 })
             });
-            const {nivelMejora, imagen} = await nivelNave(naveId);
-            mostrarNotificacion("¡Planeta Explorado!", 
-                "Has recolectado todos los datos de este sector. Ya puedes volver a la galaxia para continuar tu viaje o mejorar tu nave.",
+            const punto = await okPunto(naveId);
+            const texto = punto ? constantes.PUNTO_DESBLOQUEADO : 
+            mostrarNotificacion("¡Planeta Explorado!",
+                `Visitaste todos los puntos de interés ${texto}. Podés volver a la galaxia para continuar tu viaje o mejorar tu nave.`,
                 false,
+                0,
+                punto
             )
-            vehiculo.src = imagen;
         }
 
         let puntoActual = vehiculoDatos.punto_interes;
@@ -255,25 +257,15 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
             panelPunto.classList.add("visible");
             
             if (!data.error) {
-                let nivelMejora = 0;
-                let imagen = null;
-
-                if (data.cuerpoCompletado) {
-                    const resultado = await nivelNave(vehiculoId);
-                    nivelMejora = resultado.nivelMejora;
-                    imagen = resultado.imagen;
-                }
-                
+                const desbloqueaPunto = okPunto(vehiculoId);
                 mostrarNotificacion(
                     "¡Misión Completada!", 
                     `Combustible extraído: ${data.combustible}`, 
                     data.cuerpoCompletado, 
-                    nivelMejora
-                );
-                
-                vehiculo.src = imagen ? imagen : vehiculo.src;
-            }
+                    cuerpoCelesteId,
 
+                );
+            }
             return true;
         } catch (error) {
             console.error("Error de red al explorar:", error);
@@ -369,15 +361,9 @@ async function pintarVehiculos(vehiculos, vehiculoUsado){
     });
 }
 
-async function nivelNave(naveId){
+async function okPunto (naveId){
     const resPostMejora = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
     const postMejora = await resPostMejora.json();
-    let nivelMejora = 0;
-    if (postMejora["motor"]===postMejora["estructura"] &&
-        postMejora["estructura"]===postMejora["resistencia"]){
-        nivelMejora = postMejora["motor"];
-    }
-
-    return {nivelMejora, imagen : obtenerImagenNave(postMejora)};
+    return (postMejora["motor"]===3 && postMejora["estructura"]===3 && postMejora["resistencia"] === 3);
 }
 document.addEventListener("DOMContentLoaded", iniciarPlaneta);
