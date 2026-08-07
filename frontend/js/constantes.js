@@ -13,6 +13,7 @@ export const PUNTO2_LEFT = "78%";
 export const PUNTO3_LEFT = "20%";
 
 export const PUNTO_DESBLOQUEADO = "y obtuviste un punto de mejora"
+export const ERROR_PUNTO_MAX = "pero no obtuviste puntos de mejora, ya los adquiriste todos"
 
 export const ERROR_COMPLETADO = "Este punto ya fue explorado por la nave.";
 export const ERROR_DISPONIBLE = "Error al verificar el estado de la misión.";

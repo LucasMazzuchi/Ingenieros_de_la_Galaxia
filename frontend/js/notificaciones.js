@@ -1,3 +1,4 @@
+import {PUNTO_DESBLOQUEADO, ERROR_PUNTO_MAX} from "./constantes.js";
 export function mostrarNotificacion(titulo, texto, cuerpoCompletado, cuerpoCelesteId = 0, punto = true) {
     // Evita duplicar el cartel si ya hay uno abierto
     if (document.getElementById("cartelNotificacion")) return;
@@ -25,14 +26,14 @@ export function mostrarNotificacion(titulo, texto, cuerpoCompletado, cuerpoCeles
 
     document.getElementById("btnCerrarNotificacion").addEventListener("click", () => {
         modal.remove();
-        if (cuerpoCompletado && cuerpoCelesteid !== 1){
-            const texto = punto ? constantes.PUNTO_DESBLOQUEADO : constantes.ERROR_PUNTO_MAX;
+        if (cuerpoCompletado && cuerpoCelesteId !== 1){
+            const texto = punto ? PUNTO_DESBLOQUEADO : ERROR_PUNTO_MAX;
             mostrarNotificacion(
                 "¡Planeta Explorado!", 
                 `Visitaste todos los puntos de interés ${texto}. Podés volver a la galaxia para continuar tu viaje o mejorar tu nave.`,
                 false
             );
-        } else if (cuerpoCelesteId === 1){
+        } else if (cuerpoCompletado && cuerpoCelesteId === 1){
             mostrarNotificacion("¡Planeta Explorado!", 
                 "Visitaste todos los puntos de interés de este sector y desbloqueaste una nave. Podés volver a la galaxia para continuar tu viaje con tu nueva nave.",
                 false
