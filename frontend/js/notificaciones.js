@@ -1,4 +1,4 @@
-export function mostrarNotificacion(titulo, texto, cuerpoCompletado, curepoCelesteId = 0, punto = true) {
+export function mostrarNotificacion(titulo, texto, cuerpoCompletado, cuerpoCelesteId = 0, punto = true) {
     // Evita duplicar el cartel si ya hay uno abierto
     if (document.getElementById("cartelNotificacion")) return;
 
