@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estación Espacial</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <link rel="stylesheet" href="../css/estacion_espacial.css?v=4">
+    <link rel="stylesheet" href="../css/pie.css">
+</head>
+<body>
+
+    <div id="estacion-espacial">
+
+        <img id="fondoEstacion" src="../assets/img/estacion_espacial.jpg" alt="Estación Espacial">
+
+        <button id="botonVolver">Volver a la Galaxia</button>
+
+        <div id="panelCombustible">
+            <p>Combustible: <span id="datoCombustible">0</span>%</p>
+            <button id="btnRecargar">Recargar Combustible</button>
+        </div>
+
+        <div id="panelMejoras">
+            <h2>Mejoras disponibles: <span id="datoPuntos">0</span></h2>
+
+            <div class="atributo" id="filaMotor">
+                <p>Motor - Nivel <span id="nivelMotor">1</span></p>
+                <button class="btnMejorarAtributo" data-atributo="motor">Mejorar</button>
+            </div>
+
+            <div class="atributo" id="filaEstructura">
+                <p>Estructura - Nivel <span id="nivelEstructura">1</span></p>
+                <button class="btnMejorarAtributo" data-atributo="estructura">Mejorar</button>
+            </div>
+
+            <div class="atributo" id="filaResistencia">
+                <p>Resistencia - Nivel <span id="nivelResistencia">1</span></p>
+                <button class="btnMejorarAtributo" data-atributo="resistencia">Mejorar</button>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="pie-pagina">
+        <p>&copy; 2026 Todos los derechos reservados — Ingenieros de Galaxia</p>
+    </footer>
+
+    <script type="module" src="../js/estacion_espacial.js"></script>
+</body>
+</html>
