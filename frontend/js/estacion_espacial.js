@@ -8,7 +8,7 @@ async function iniciarEstacion() {
         window.location.href = "usuario.html";
         return;
     }
-    await actualizarPantallaDesdeBD(vehiculoId);
+    const ok = await actualizarPantallaDesdeBD(vehiculoId);
     inicializarBotones(vehiculoId);
 }
 
@@ -16,7 +16,7 @@ async function actualizarPantallaDesdeBD(vehiculoId) {
     try {
         const res = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoId}`);
         const vehiculoActualizado = await res.json();
-        document.getElementById("porcentaje") = vehiculoActualizado.combustible;
+        document.getElementById("datoCombustible").textContent = vehiculoActualizado.combustible;
         pintarEstado(vehiculoActualizado);
     } catch (error) {
         console.error("Error al actualizar la pantalla:", error);
@@ -25,12 +25,12 @@ async function actualizarPantallaDesdeBD(vehiculoId) {
 
 function pintarEstado(vehiculo) {
     const campos = ["motor", "estructura", "resistencia"];
-    const elPuntos = document.getElementById("puntos-disponibles");
-    if (elPuntos) {
-        elPuntos.textContent = vehiculo.puntos; 
+    const puntos = document.getElementById("datoPuntos");
+    if (puntos) {
+        puntos.textContent = vehiculo.puntos; 
     }
     campos.forEach((campo) => {
-        const elemento = document.getElementById(campo);
+        const elemento = document.getElementById(`nivel-${campo}`);
         const boton = document.getElementById(`boton-${campo}`);
         if (elemento) {
             elemento.textContent = vehiculo[campo];
@@ -53,7 +53,7 @@ function pintarEstado(vehiculo) {
 function inicializarBotones(vehiculoId) {
     const campos = ["motor", "estructura", "resistencia"];
 
-    campos.forEach((campo) => {
+    campos.forEach((campo, index) => {
         const boton = document.getElementById(`boton-${campo}`);
         if (!boton) return;
 
@@ -67,6 +67,12 @@ function inicializarBotones(vehiculoId) {
             }
             if (vehiculo.puntos <= 0) {
                 mostrarNotificacion("Sin Puntos", "La nave no tiene puntos de mejora disponibles.", false);
+                return;
+            }
+            const otrosCampos = campos.filter(function (campoActual) {return campoActual !== campo});
+            const campoInvalido = otrosCampos.filter(function (otroCampo){return vehiculo[otroCampo] < vehiculo[campo]});
+            if (campoInvalido.length !== 0){
+                mostrarNotificacion("Mejora no disponible", `Tenés que mejorar primero todos los atributos al nivel ${vehiculo[campo]} para poder desbloquearla.`, false);
                 return;
             }
             try {
@@ -87,7 +93,7 @@ function inicializarBotones(vehiculoId) {
             }
         });
     });
-    const botonCargarCombustible = document.getElementById("boton-cargar-combustible");
+    const botonCargarCombustible = document.getElementById("btnRecargar");
     botonCargarCombustible.addEventListener("click", async () => {
         const resActualVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoId}`);
         const vehiculo = await resActualVehiculo.json();
