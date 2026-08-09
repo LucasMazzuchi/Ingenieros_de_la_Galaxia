@@ -79,6 +79,11 @@ try {
     if (completados === planetas.cuerpos.length){
     mostrarNotificacion("Juego completado", "Si querés seguir jugando, podés modificar la galaxia o comenzar de nuevo creando otra nave.", false);
   }
+
+  document.getElementById("estacionEspacial").addEventListener("click", () => {
+    window.location.href = "estacion_espacial.html"
+  });
+
   } catch (error) {
     console.log(error);
   }

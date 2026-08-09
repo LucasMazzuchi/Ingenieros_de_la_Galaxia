@@ -99,3 +99,23 @@
     box-sizing: border-box;
     border-radius: 50%;
 }
+
+#estacionEspacial {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  text-align: center;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+
+#estacionEspacial img {
+  width: 140px;
+  border-radius: 50%;
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+#estacionEspacial:hover img {
+  filter: drop-shadow(0 0 20px #7b2ff7) drop-shadow(0 0 35px rgba(123, 47, 247, 0.6));
+  transform: scale(1.08);
+}
