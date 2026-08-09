@@ -61,7 +61,8 @@ VALUES
 ('Marte', 'Un desierto oxidado barrido por tormentas...', 1, 6779, 16.0, -110, FALSE, 1, 4, 3, 3),
 ('Plutón', 'Un mundo enano en la periferia helada...', 2, 3000, 14, -30, FALSE, 1, 6, 9, 9),
 ('Mercurio', 'Una esfera de hierro asada por la radiación...', 1, 4879, 3.7, 170, FALSE, 2, 7, 4, 4),
-('Júpiter', 'Un coloso de nubes arremolinadas y tormentas...', 2, 139820, 24.7, -110, FALSE, 2, 5, 8, 5);
+('Júpiter', 'Un coloso de nubes arremolinadas y tormentas...', 2, 139820, 24.7, -110, FALSE, 2, 5, 8, 5),
+('Venus', 'Un infierno tóxico envuelto en densas nubes de ácido sulfúrico...', 1, 12104, 8.8, 462, FALSE, 1, 2, 5, 6);
 
 INSERT INTO misiones (nombre, descripcion, posicion, imagen, cuerpo_celeste_id)
 VALUES 
@@ -88,5 +89,8 @@ VALUES
 /*Plutón (ID 4)*/
 ('El Latido de Tombaugh', 'La enorme llanura de hielo de nitrógeno conocida como el "Corazón" de Plutón oculta un secreto bajo su superficie. Los sensores de profundidad han detectado una red geométrica perfecta emitiendo pulsos de calor controlados. Este sistema termodinámico parece ser el responsable de mantener el hielo en constante movimiento convectivo, borrando cualquier evidencia de impactos. Debemos perforar la corteza y escanear la fuente de energía antes de que los glaciares inicien un nuevo ciclo de congelamiento.', 1, 1, 4),
 ('Ecos de Caronte', 'Plutón y su luna más grande están anclados gravitacionalmente, mostrándose siempre la misma cara. Sin embargo, hemos interceptado un haz de microondas de alta frecuencia que rebota perpetuamente entre ambos cuerpos en un vacío perfecto. La señal no es ruido estático espacial; contiene secuencias matemáticas que se reescriben a sí mismas en cada transmisión. Sintonizar los receptores de la nave para decodificar esta danza binaria podría revelar un antiguo relé de comunicaciones.', 2, 1, 4),
-('Cenizas de Cthulhu', 'En la oscura y rojiza extensión ecuatorial de Plutón, el análisis espectral indica una concentración anormal de tolinas. Al acercarnos, las cámaras revelan que estos compuestos orgánicos no se formaron naturalmente por radiación, sino que parecen ser los restos de una antigua mega-estructura sintética destrozada. Lo más inquietante es que, al entrar en contacto con los escudos electromagnéticos de nuestra nave, el polvo rojizo de la superficie ha comenzado a levitar y reorganizarse.', 3, 1, 4);
-
+('Cenizas de Cthulhu', 'En la oscura y rojiza extensión ecuatorial de Plutón, el análisis espectral indica una concentración anormal de tolinas. Al acercarnos, las cámaras revelan que estos compuestos orgánicos no se formaron naturalmente por radiación, sino que parecen ser los restos de una antigua mega-estructura sintética destrozada. Lo más inquietante es que, al entrar en contacto con los escudos electromagnéticos de nuestra nave, el polvo rojizo de la superficie ha comenzado a levitar y reorganizarse.', 3, 1, 4),
+/*Venus (ID 7)*/
+('Ciudades en la Bruma', 'Las sondas atmosféricas han sido destruidas por la presión, pero antes de apagarse transmitieron sombras estructurales. No están en la superficie, sino flotando estáticamente en la capa alta de nubes de ácido sulfúrico, desafiando la gravedad del planeta.', 1, 1, 7),
+('El Faro de Maxwell', 'Maxwell Montes, la montaña más alta de Venus, no es solo roca volcánica. Su cumbre metálica está actuando como un pararrayos gigantesco, absorbiendo la energía estática de la atmósfera para alimentar un pulso electromagnético que se dispara hacia el espacio profundo.', 2, 1, 7),
+('Tectónica Sintética', 'Venus no debería tener placas tectónicas, sin embargo, los radares muestran grietas perfectamente rectas formándose en las llanuras de lava. Estas fisuras se abren y cierran siguiendo un patrón lógico, como si el núcleo del planeta fuera un inmenso engranaje recalentado.', 3, 1, 7);
