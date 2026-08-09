@@ -24,15 +24,10 @@ async function iniciarPlaneta() {
         window.location.href = "galaxia.html"; 
         return;
     }
-    
-    const tipoVehiculo = (planetaId === 1) ? 2 : 1;
-    vehiculo.src = (tipoVehiculo === 2) ? "../assets/img/auto1.png" : "../assets/img/nave1.png";
-    
     try {
         const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
         const vehiculoDatos = await resVehiculo.json();
-        const tipoVehiculo = (planetaId === 1) ? 2 : 1;
-        vehiculo.src = (tipoVehiculo === 2) ? "../assets/img/auto1.png" : obtenerImagenNave(vehiculoDatos);
+        vehiculo.src = (planetaId === 1) ? "../assets/img/auto1.png" : obtenerImagenNave(vehiculoDatos);
         const resPlaneta = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/?id=${planetaId}&vehiculo_id=${naveId}`);
         const planetas = await resPlaneta.json();
 
@@ -68,12 +63,15 @@ async function iniciarPlaneta() {
                     cuerpo_celeste_id : planetaId
                 })
             });
-            const {nivelMejora, imagen} = await nivelNave(naveId);
-            mostrarNotificacion("¡Planeta Explorado!", 
-                "Has recolectado todos los datos de este sector. Ya puedes volver a la galaxia para continuar tu viaje o mejorar tu nave.",
+            const punto = !(await okPunto(naveId));
+            const texto = punto ? constantes.PUNTO_DESBLOQUEADO : constantes.ERROR_PUNTO_MAX;
+            mostrarNotificacion("¡Planeta Explorado!",
+                `Visitaste todos los puntos de interés ${texto}. Podés volver a la galaxia para continuar tu viaje o mejorar tu nave.`,
                 false,
+                0,
+                punto,
+
             )
-            vehiculo.src = imagen;
         }
 
         let puntoActual = vehiculoDatos.punto_interes;
@@ -81,13 +79,15 @@ async function iniciarPlaneta() {
             puntoActual = misiones.length !== 0 ? misiones[0].posicion : 1;
             vehiculoDatos.punto_interes = puntoActual;
         }
-        
+        if (misiones.length >= 1 && misiones.filter(function (mision) {return mision.posicion === puntoActual}).length === 0){
+            vehiculoDatos.punto_interes = misiones[0].posicion;
+        }
         const actualizarVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 ubicacion_id : planetaId,
-                punto_interes: puntoActual
+                punto_interes: vehiculoDatos.punto_interes
             })
         });
         
@@ -238,6 +238,7 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
     const estamosAhi = ((vehiculoDOM.style.top === coordenadasDestino.top) && (vehiculoDOM.style.left === coordenadasDestino.left));
     if (estamosAhi) {
         try {
+            const estadoPlanetaAntes = await planetaCompletado(cuerpoCelesteId);
             const resExplorar = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoId}/explorar`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
@@ -253,27 +254,12 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
             document.getElementById("puntoNombre").textContent = mision.nombre;
             document.getElementById("puntoDescripcion").textContent = mision.descripcion;
             panelPunto.classList.add("visible");
-            
             if (!data.error) {
-                let nivelMejora = 0;
-                let imagen = null;
-
-                if (data.cuerpoCompletado) {
-                    const resultado = await nivelNave(vehiculoId);
-                    nivelMejora = resultado.nivelMejora;
-                    imagen = resultado.imagen;
-                }
-                
-                mostrarNotificacion(
-                    "¡Misión Completada!", 
-                    `Combustible extraído: ${data.combustible}`, 
-                    data.cuerpoCompletado, 
-                    nivelMejora
-                );
-                
-                vehiculo.src = imagen ? imagen : vehiculo.src;
+                const texto = estadoPlanetaAntes? "No obtuviste recompensas, el planeta ya estaba completado.":`Combustible extraído: ${data.combustible}`;
+                const desbloqueaPunto = !(await okPunto(vehiculoId));
+                const completado = estadoPlanetaAntes ? false : data.cuerpoCompletado;
+                mostrarNotificacion("¡Misión Completada!", texto, completado, cuerpoCelesteId, desbloqueaPunto);
             }
-
             return true;
         } catch (error) {
             console.error("Error de red al explorar:", error);
@@ -367,17 +353,17 @@ async function pintarVehiculos(vehiculos, vehiculoUsado){
         }
         contenedorMapa.appendChild(nave);
     });
-}
+};
 
-async function nivelNave(naveId){
+async function okPunto (naveId){
     const resPostMejora = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
     const postMejora = await resPostMejora.json();
-    let nivelMejora = 0;
-    if (postMejora["motor"]===postMejora["estructura"] &&
-        postMejora["estructura"]===postMejora["resistencia"]){
-        nivelMejora = postMejora["motor"];
-    }
+    return (postMejora["motor"]+postMejora["estructura"]+postMejora["resistencia"]+postMejora.puntos >= 9);
+};
 
-    return {nivelMejora, imagen : obtenerImagenNave(postMejora)};
-}
+async function planetaCompletado(cuerpoCelesteId){
+    const resCuerpoCeleste = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/${cuerpoCelesteId}`);
+    const cuerpoCeleste = await resCuerpoCeleste.json();
+    return cuerpoCeleste.completado;
+};
 document.addEventListener("DOMContentLoaded", iniciarPlaneta);

@@ -84,7 +84,8 @@ formNuevoVehiculo.addEventListener("submit", async (e) => {
     combustible: 100,
     resistencia: 1,
     ubicacion_id: 1,
-    punto_interes: 1
+    punto_interes: 1,
+    puntos: 0
   };
 
   try {

@@ -11,7 +11,7 @@
     display: flex; 
     justify-content: center; 
     align-items: center;
-    z-index: 5; 
+    z-index: 10; 
     backdrop-filter: blur(4px);
 }
 
@@ -24,7 +24,8 @@
     text-align: center; 
     color: white; 
     max-width: 450px; 
-    box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+    box-shadow: 0 0 20px rgba(14, 1105, 233, 0.4);
+    z-index: 10;
 }
 
 /* Título de la notificación */
@@ -52,13 +53,13 @@
     padding: 12px 25px; 
     font-size: 1rem; 
     font-weight: bold; 
-    border-radius: 6px; 
+    border-radius: 10px; 
     cursor: pointer; 
     text-transform: uppercase; 
     transition: background 0.2s;
+    z-index: 10;
 }
 
-/* Efecto hover opcional para cuando le pasas el mouse por encima al botón */
 .notificacion-boton:hover {
     background: #0284c7;
 }
