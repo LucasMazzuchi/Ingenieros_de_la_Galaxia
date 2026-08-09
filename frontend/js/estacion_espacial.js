@@ -32,19 +32,13 @@ function pintarEstado(vehiculo) {
     campos.forEach((campo) => {
         const elemento = document.getElementById(`nivel-${campo}`);
         const boton = document.getElementById(`boton-${campo}`);
+        console.log(campo, "Encontrado:", !!boton, "Nivel:", vehiculo[campo], "Puntos:", vehiculo.puntos);
         if (elemento) {
             elemento.textContent = vehiculo[campo];
         }
         if (boton) {
-            const alMaximo = vehiculo[campo] >= 3;
-            const sinPuntos = vehiculo.puntos <= 0;
-
-            if (alMaximo || sinPuntos) {
+            if (vehiculo[campo] >= 3 || vehiculo.puntos <= 0) {
                 boton.disabled = true;
-                boton.classList.add("bloqueado"); // Hay que poner el estilo para bloquear el botón en el css como el del planeta.
-            } else {
-                boton.disabled = false;
-                boton.classList.remove("bloqueado");
             }
         }
     });
@@ -75,6 +69,10 @@ function inicializarBotones(vehiculoId) {
                 mostrarNotificacion("Mejora no disponible", `Tenés que mejorar primero todos los atributos al nivel ${vehiculo[campo]} para poder desbloquearla.`, false);
                 return;
             }
+            let nivelNave = 0;
+            if (vehiculo[otrosCampos[0]] === vehiculo[otrosCampos[1]] && vehiculo[campo]+1 === vehiculo[otrosCampos[0]]){
+                nivelNave = vehiculo[campo]+1;
+            }
             try {
                 const actualizarVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoId}`, {
                     method: "PATCH",
@@ -86,7 +84,7 @@ function inicializarBotones(vehiculoId) {
                 });
                 if (actualizarVehiculo.ok) {
                     await actualizarPantallaDesdeBD(vehiculoId);
-                    mostrarNotificacion("¡Mejora Aplicada!", `Se ha subido el atributo ${campo} al nivel ${vehiculo[campo] + 1}.`, false);
+                    mostrarNotificacion("¡Mejora Aplicada!", `Se ha subido el atributo ${campo} al nivel ${vehiculo[campo] + 1}.`, false, 0, true, nivelNave);
                 }
             } catch (error) {
                 console.error(`Error al mejorar ${campo}:`, error);

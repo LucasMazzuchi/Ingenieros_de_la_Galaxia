@@ -61,7 +61,7 @@ endpointsProgreso.patch("/:id/desbloquear", validarId, validarIds, async (req, r
 endpointsProgreso.patch("/:id/explorar", validarId, validarIds, verificarEstadoMision, completarMision, mejorarVehiculo, async (req, res) => {
     try {
         const ok = await progreso.completarPlaneta(req.params.id, req.body.cuerpo_celeste_id);
-        res.status(200).json({ mensaje: "¡Punto explorado con éxito!", combustible: req.body.recompensa, cuerpoCompletado: ok , mejorado: req.body.mejorado});
+        res.status(200).json({ mensaje: "¡Punto explorado con éxito!", combustible: req.body.recompensa, cuerpoCompletado: ok});
     } catch (error) {
         console.log("Error en explorar:", error);
         res.status(500).json({ error: "Error interno al explorar el punto." });
@@ -72,7 +72,7 @@ endpointsProgreso.patch("/:id/completar", validarId, validarIds, mejorarVehiculo
     try {
         const combustible = await progreso.sumarCombustible(req.params.id, 100);
         const ok = await progreso.completarPlaneta(req.params.id, req.body.cuerpo_celeste_id);
-        res.status(200).json({mensaje: "Planeta completado!", cuerpoCompletado: ok, mejorado : req.body.completado});
+        res.status(200).json({mensaje: "Planeta completado!", cuerpoCompletado: ok});
     } catch (error){
         console.log("Error en completar:", error);
         res.status(500).json({ error: "Error interno al querer completar el planeta." });

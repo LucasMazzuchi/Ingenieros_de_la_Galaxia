@@ -4,7 +4,9 @@ export const mejorarVehiculo = async (req, res, next) => {
         return next();
     }
     const vehiculoDatos = await getVehiculo(req.params.id);
+    if (vehiculoDatos.motor+vehiculoDatos.estructura+vehiculoDatos.resistencia+vehiculoDatos.puntos >= 9){
+        return next();
+    }
     const resMejora = await updateVehiculo(req.params.id, {puntos : vehiculoDatos.puntos+1});
-    req.body.mejorado = resMejora;
     next();
 };
