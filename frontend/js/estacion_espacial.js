@@ -116,6 +116,9 @@ function inicializarBotones(vehiculoId) {
             console.error("Error al recargar combustible:", error);
         }
     });
+    document.getElementById("botonVolver").addEventListener("click", async() => {
+        window.location.href = "galaxia.html"
+    });
 }
 
 document.addEventListener("DOMContentLoaded", iniciarEstacion);
