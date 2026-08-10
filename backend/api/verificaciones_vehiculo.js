@@ -12,6 +12,7 @@ export const validarVehiculo = (req, res, next) => {
     [constantes.COMBUSTIBLE]:validarEntero,
     [constantes.RESISTENCIA]: validarEntero,
     [constantes.PUNTO_INTERES]:validarEntero,
+    [constantes.PUNTOS]:validarEntero,
     [constantes.UBICACION]: validarEntero
     };
     const body = req.body || {};
@@ -22,6 +23,7 @@ export const validarVehiculo = (req, res, next) => {
     [constantes.COMBUSTIBLE]:{ campo : req.body.combustible, min : 0, max : constantes.COMBUSTIBLE_MAX, error : constantes.COMBUSTIBLE },
     [constantes.RESISTENCIA]:{ campo : req.body.resistencia, min : 1, max : constantes.RESISTENCIA_MAX, error : constantes.RESISTENCIA },
     [constantes.PUNTO_INTERES]:{campo: req.body.punto_interes, min:0, max: constantes.PUNTO_INTERES_MAX, error: constantes.PUNTO_INTERES},
+    [constantes.PUNTOS]:{campo: req.body.puntos, min:0, max: constantes.PUNTOS_MAX, error: constantes.PUNTOS},
     [constantes.UBICACION]:{campo:req.body.ubicacion_id, min: 1, max: constantes.ID_MAX, error: constantes.UBICACION}
     };
     const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasVehiculo, req.method, Object.keys(req.body), false);
@@ -48,6 +50,7 @@ export const validarFiltrosVehiculo = (req, res, next) => {
         [constantes.RESISTENCIA] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.RESISTENCIA_MAX},
         [constantes.COMBUSTIBLE] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 0, max: constantes.COMBUSTIBLE_MAX},
         [constantes.PUNTO_INTERES] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster:Number, min:0, max: constantes.PUNTO_INTERES_MAX},
+        [constantes.PUNTOS] : {regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min:0, max: constantes.PUNTOS_MAX},
         [constantes.UBICACION] : {regex : constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster : Number, min: 1, max: constantes.ID_MAX},
         [constantes.LIMIT]: { regex: constantes.REGEX_ENTERO, error: constantes.ERROR_FILTRO_ENTERO, caster: Number, min: 1, max: constantes.LIMITE_MAX },
         [constantes.ORDENAR_POR]: { regex: regexOrdenarPor, error: constantes.ERROR_FILTRO_ORDENAR, caster: String },
@@ -56,6 +59,7 @@ export const validarFiltrosVehiculo = (req, res, next) => {
     const permitidos = new Set([
         constantes.ID, constantes.ID + "_min", constantes.ID + "_max",
         constantes.NOMBRE, constantes.PUNTO_INTERES, constantes.UBICACION,
+         constantes.PUNTOS, constantes.PUNTOS + "_min", constantes.PUNTOS + "_max",
         constantes.MOTOR, constantes.MOTOR + "_min", constantes.MOTOR + "_max",
         constantes.ESTRUCTURA, constantes.ESTRUCTURA + "_min", constantes.ESTRUCTURA +"_max",
         constantes.RESISTENCIA, constantes.RESISTENCIA + "_min", constantes.RESISTENCIA+"_max",

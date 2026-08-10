@@ -1,4 +1,5 @@
 import * as constantes from "./constantes.js";
+import {mostrarNotificacion} from "./notificaciones.js";
 // Listas de imágenes reales (todas sueltas en assets/img, sin subcarpetas)
 const imagenesPlanetas = [
   "../assets/img/agujero_negro.png",
@@ -344,6 +345,7 @@ btnBorrarPlaneta.addEventListener("click", async () => {
     return;
   }
   if (confirm("¿Estás seguro de borrar este planeta?")) {
+
     const exito = await eliminarRegistro("cuerpos_celestes", id);
     if (exito) {
       alert("Planeta eliminado.");
@@ -364,17 +366,17 @@ selectVehiculo.addEventListener("change", async () => {
   const id = selectVehiculo.value;
   if (!id) {
     formVehiculo.reset();
-    actualizarGaleriaVehiculo();
     return;
   }
-  const vehiculos = await obtenerDatos("vehiculos");
-  const v = vehiculos.find(item => item.id == id);
-  if (v) {
-    document.getElementById("inputNombreVehiculo").value = v.nombre;
-    document.getElementById("inputMotor").value = v.motor;
-    document.getElementById("inputEstructura").value = v.estructura;
-    document.getElementById("inputCombustible").value = v.combustible;
-    document.getElementById("inputResistencia").value = v.resistencia;
+  const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${id}`);
+  const vehiculo = await resVehiculo.json();
+  if (vehiculo) {
+    document.getElementById("inputNombreVehiculo").value = vehiculo.nombre;
+    document.getElementById("inputMotor").value = vehiculo.motor;
+    document.getElementById("inputEstructura").value = vehiculo.estructura;
+    document.getElementById("inputCombustible").value = vehiculo.combustible;
+    document.getElementById("inputResistencia").value = vehiculo.resistencia;
+    document.getElementById("inputPuntos").value = vehiculo.puntos;
   }
 });
 
@@ -382,18 +384,25 @@ selectVehiculo.addEventListener("change", async () => {
 formVehiculo.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id = selectVehiculo.value;
-
-  const vehiculosActuales = await obtenerDatos("vehiculos");
-
-        
+  let vehiculo;
+  if (id){
+    const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${id}`);
+    vehiculo = await resVehiculo.json();
+    const puntosDisponibles = 9-parseInt(document.getElementById("inputEstructura").value)- parseInt(document.getElementById("inputResistencia").value) -parseInt(document.getElementById("inputMotor").value);
+    if (puntosDisponibles < parseInt(document.getElementById("inputPuntos").value)){
+        mostrarNotificacion("Puntos disponibles excedidos", `Podés elegir tener como máximo ${puntosDisponibles} puntos de mejora.`, false);
+        return
+      }
+    }
   const datos = {
     nombre: document.getElementById("inputNombreVehiculo").value,
     motor: parseInt(document.getElementById("inputMotor").value),
     estructura: parseInt(document.getElementById("inputEstructura").value),
     combustible: parseInt(document.getElementById("inputCombustible").value),
     resistencia: parseInt(document.getElementById("inputResistencia").value),
-    punto_interes: 1,
-    ubicacion_id: 1
+    puntos: parseInt(document.getElementById("inputPuntos").value),
+    punto_interes: id ? parseInt(vehiculo.punto_interes): 1,
+    ubicacion_id: id ? parseInt(vehiculo.punto_interes): 1
   };
 
   let exito = false;
@@ -468,7 +477,6 @@ formPunto.addEventListener("submit", async (e) => {
     posicion: parseInt(document.getElementById("inputPosicionPunto").value),
     imagen: parseInt(document.getElementById("inputImagenPunto").value)
   };
-    console.log("Datos a enviar:", datos);
   let exito = false;
   if (id) {
     exito = await modificarRegistro("misiones", id, datos);
@@ -476,7 +484,7 @@ formPunto.addEventListener("submit", async (e) => {
     const puntoOcupado = misiones.find(function (mision){ return mision.posicion === punto});
     if (puntoOcupado){
       alert("Ocurrió un error al guardar el punto de interés, ya existe un punto de interés en esta posición.");
-    return; // Hay que cambiar a un desplegable que solo te muestre los que no están.
+    return;
   }
     exito = await crearRegistro("misiones", datos);
   }

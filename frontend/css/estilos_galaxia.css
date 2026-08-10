@@ -14,7 +14,6 @@
   overflow: hidden;
 }
 
-/* Cada planeta */
 .planeta {
   position: absolute;
   text-align: center;
@@ -47,7 +46,7 @@
 .pos-6 { top: 70%; left: 10%; }
 .pos-7 { top: 20%; left: 40%; }
 .pos-8 { top: 55%; left: 20%; }
-.pos-9 { top: 55%; left: 50%; }
+.pos-9 { top: 80%; left: 50%; }
 
 
 .volver-bienvenida {
@@ -78,11 +77,15 @@
 .imagen-contenedor {
     position: relative;
     display: inline-flex;
+    width: 160px;
+    height: 160px;
+    justify-content: center;
+    align-items: center;
 }
 
 .planeta.no-disponible {
-    opacity: 0.6;
-    cursor: not-allowed;
+  opacity: 0.85;
+  cursor: not-allowed;
 }
 
 .capa-oscura {
@@ -99,4 +102,5 @@
     font-weight: bold;
     box-sizing: border-box;
     border-radius: 50%;
+    cursor: not-allowed;
 }

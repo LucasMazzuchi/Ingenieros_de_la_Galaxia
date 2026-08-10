@@ -30,16 +30,33 @@ function obtenerImagen(imagenId){
 
 async function pintarPlanetas(cuerpos_celestes, naveId) {
   console.log("Planetas recibidos del backend:", cuerpos_celestes);
+  const resEstadoTierra = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/1`);
+  const estadoTierra = await resEstadoTierra.json();
+  if (!estadoTierra.planetaCompletado){
+    document.getElementById("estacionEspacial").classList.add("no-disponible");
+    document.getElementById("contenedorEstacion").insertAdjacentHTML(
+      "beforeend", 
+      `<div class="capa-oscura">Se necesita una nave.</div>`
+    );
+  }
+  document.getElementById("contenedorEstacion").addEventListener("click", () => {
+    if (estadoTierra.planetaCompletado){
+      window.location.href = "estacion_espacial.html";
+    } else {
+      mostrarNotificacion("No puede entrar a la estación","Desbloquee la nave completando todos los puntos en la Tierra.", false);
+    }
+  });
 
-  contenedor.innerHTML = ""; // limpia por las dudas
+  contenedor.innerHTML = "";
   let completados = 0;
   for (const cuerpo of cuerpos_celestes){
     const div = document.createElement("div");
     div.className = `planeta pos-${cuerpo.posicion}`;
     const ruta = obtenerImagen(cuerpo.imagen);
     let divNoDisponible = ``;
-    if (!cuerpo.disponible){
-      divNoDisponible = `<div class="capa-oscura">Inalcanzable, explore más planetas para desbloquearlo.</div>`;
+    if (cuerpo.id !== 1 && (!cuerpo.disponible || !estadoTierra.planetaCompletado)){
+      const texto = estadoTierra.planetaCompletado ? `explore más planetas`: `se necesita una nave`
+      divNoDisponible = `<div class="capa-oscura">Inalcanzable, ${texto} para desbloquearlo.</div>`;
       div.classList.add("no-disponible");
     }
     div.innerHTML = `
@@ -61,7 +78,10 @@ async function pintarPlanetas(cuerpos_celestes, naveId) {
       if (cuerpo.disponible && navePuedeViajar) {
         window.location.href = `planeta.html?id=${cuerpo.id}`;
       } else {
-        mostrarNotificacion("No puede entrar al planeta","Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave para poder viajar a otro.", false)
+        const errorNave = "Nave no desbloqueada, completa todos los puntos de interés del planeta Tierra para poder acceder a los demás."
+        const errorCombustible = "Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave o recarga combustible para poder viajar a otro.";
+        const textoError = estadoTierra.planetaCompletado ? errorCombustible : errorNave;
+        mostrarNotificacion("No puede entrar al planeta",textoError, false)
       }
     });
     contenedor.appendChild(div);
@@ -79,6 +99,8 @@ try {
     if (completados === planetas.cuerpos.length){
     mostrarNotificacion("Juego completado", "Si querés seguir jugando, podés modificar la galaxia o comenzar de nuevo creando otra nave.", false);
   }
+
+
   } catch (error) {
     console.log(error);
   }

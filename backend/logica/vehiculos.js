@@ -1,26 +1,12 @@
 import { getVehiculo, updateVehiculo } from "../bd/vehiculos.js";
 export const mejorarVehiculo = async (req, res, next) => {
-    const vehiculoDatos = await getVehiculo(req.params.id);
-    const {campoMejora, mejora} = logicaVehiculo(vehiculoDatos);
-    if (!campoMejora && !mejora){
+    if (req.body.cuerpo_celeste_id === 1){
         return next();
     }
-    const resMejora = await updateVehiculo(req.params.id, {[campoMejora] : mejora});
-    next()
-};
-
-export const logicaVehiculo = (vehiculo) => {
-    const campos = ["motor", "estructura", "resistencia"]
-    let campoMejora = campos[0];
-    campos.forEach(function (campo){
-        if (vehiculo[campo]<vehiculo[campoMejora]){
-            campoMejora = campo;
-        }
-    }); 
-    const mejora = vehiculo[campoMejora]+1;
-    console.log(mejora);
-    if (vehiculo[campoMejora] < 3) {
-        return {campoMejora : campoMejora, mejora: mejora};
+    const vehiculoDatos = await getVehiculo(req.params.id);
+    if (vehiculoDatos.motor+vehiculoDatos.estructura+vehiculoDatos.resistencia+vehiculoDatos.puntos >= 9){
+        return next();
     }
-    return {campoMejora : undefined, mejora: undefined};
+    const resMejora = await updateVehiculo(req.params.id, {puntos : vehiculoDatos.puntos+1});
+    next();
 };
