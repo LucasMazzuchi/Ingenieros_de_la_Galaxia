@@ -4,7 +4,9 @@ export const puedeViajar = (vehiculo, planeta) => {
     if (!vehiculo) {
         return false;
     }
-
+    //Tipo 1: Rocoso
+    //Tipo 2: Gaseoso
+    //Tipo 3: Helado
     // Cuerpo tipo 3 necesita la resistencia 3, sino devuelve false.
     if ((planeta.tipo == 3 && vehiculo.resistencia < 3) ||
         (planeta.tipo == 2 && vehiculo.resistencia < 2)) {
@@ -14,7 +16,9 @@ export const puedeViajar = (vehiculo, planeta) => {
     if (planeta.diametro > 50000 && vehiculo.motor < 3) {
         return false;
     }
-
+    // Terreno 1: Desértico
+    // Terreno 2: Rocoso
+    // Terreno 3: Helado
     if (!(planeta.terreno == 1 && (vehiculo.resistencia >= 1 )) &&
         !(planeta.terreno == 2 && vehiculo.resistencia >= 2) &&
         !(planeta.terreno == 3 && (vehiculo.resistencia == 3 && vehiculo.estructura == 3))){

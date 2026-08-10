@@ -255,7 +255,13 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
             document.getElementById("puntoDescripcion").textContent = mision.descripcion;
             panelPunto.classList.add("visible");
             if (!data.error) {
-                const texto = estadoPlanetaAntes? "No obtuviste recompensas, el planeta ya estaba completado.":`Combustible extraído: ${data.combustible}`;
+                let texto = `Combustible extraído: ${data.combustible}`
+                if (estadoPlanetaAntes){
+                    texto = "No obtuviste recompensas, el planeta ya estaba completado.";
+                }
+                if (data.combustible === 0){
+                    texto = "Se encontró combustible pero no se pudo aprovechar porque el tanque está lleno.";
+                }
                 const desbloqueaPunto = !(await okPunto(vehiculoId));
                 const completado = estadoPlanetaAntes ? false : data.cuerpoCompletado;
                 mostrarNotificacion("¡Misión Completada!", texto, completado, cuerpoCelesteId, desbloqueaPunto);
