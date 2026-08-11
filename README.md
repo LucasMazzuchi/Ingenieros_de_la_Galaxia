@@ -44,11 +44,17 @@ docker compose down
 ## Pantalla Inicial
 ![screenshot](imagenesReadme/bienvenida.png)
 
+## Selección de nave
+![screenshot](imagenesReadme/nave.png)
+
 ## Mapa de los planetas
 ![screenshot](imagenesReadme/mapa.png)
 
 ## Mapa de un planeta
 ![screenshot](imagenesReadme/planeta.png)
+
+## Estación espacial
+![screenshot](imagenesReadme/estacion.png)
 
 ## Interfaz de Creado
 ![screenshot](imagenesReadme/crear.png)
