@@ -41,10 +41,6 @@ export const ERROR_FILTRO_RANGO = (campo) => {
     return `El valor min del campo ${campo} debe ser menor al valor máx.`
 };
 
-export const ERROR_URL = (campo) => {
-    return `La URL ingresada para acceder al campo ${campo} es incorrecta, la ruta local no es válida o no cumple con el protocolo (HTTP/HTTPS).`;
-};
-
 // Resultado de consulta.
 export const ERROR_CONSULTA = (entidad, consulta) => {
     return `La entidad ${entidad} no pudo ser ${consulta}`;
@@ -74,7 +70,7 @@ export const consulta = (filtros, entidad, texto) => {
     let procesados = [];
     let indice = 1;
     for (let [campo, filtro] of Object.entries(filtros)) {
-        if (campo === "limit" || campo === "order_by" || campo === "order") {
+        if (campo === "limit" || campo === "order_by" || campo === "order") { // Los agrega a lo último
             continue; 
         }
         let operador = "=";
@@ -102,7 +98,6 @@ export const consulta = (filtros, entidad, texto) => {
 // Errores de consultas.
 export const ERROR_BODY_VACIO = "El cuerpo de la solicitud (body) no puede estar vacío.";
 export const ERROR_INEXISTENTE = "La entidad no existe.";
-export const ERROR_DEPENDENCIAS = "No se puede eliminar el cuerpo celeste porque tiene vehículos o misiones activos asociados.";
 export const ERROR_FILTROS = "Los filtros enviados son incorrectos.";
 export const ERROR_FILTROS_VALORES = "Los valores envíados para filtrar son incorrectos.";
 export const ERROR_CAMPOS = "El cuerpo de la solicitud contiene campos no permitidos.";
@@ -119,7 +114,6 @@ export const MOTOR = "motor";
 export const ESTRUCTURA = "estructura";
 export const RESISTENCIA= "resistencia";
 export const PUNTOS = "puntos";
-
 export const COMBUSTIBLE = "combustible";
 export const PUNTO_INTERES = "punto_interes";
 
@@ -150,9 +144,7 @@ export const TEMPERATURA_MAX = 10000;
 export const CUERPOS_CELESTES_MAX = 10;
 export const IMAGEN_MAX = 10;
 export const IMAGEN_FONDO_MAX = 10;
-
-export const POSICION_MAX = 10; //Cambiar en base a la cantidad de planetas que se hagan en el front
-
+export const POSICION_MAX = 10;
 export const TERRENO_MAX = 3;
 export const DIAMETRO_MAX = 10000000;
 export const GRAVEDAD_MAX = 1000;
@@ -163,7 +155,6 @@ export const RESISTENCIA_MAX = 3;
 export const ESTRUCTURA_MAX = 3;
 export const PUNTOS_MAX = 6;
 export const COMBUSTIBLE_MAX = 100;
-export const VEHICULOS_MAX = 2;
 export const PUNTO_INTERES_MAX = 3;
 
 // Límites a parámetros de misiones.

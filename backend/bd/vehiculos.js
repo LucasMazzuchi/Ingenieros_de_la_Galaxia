@@ -41,8 +41,3 @@ export async function updateVehiculo(id, vehiculo){
     const res = await db.query(solicitud, valores);
     return res.rowCount == 1;
 }
-// Cuenta la cantidad de vehículos que hay en la base de datos sin borrar.
-export async function cantidadVehiculos(){
-    const res = await db.query("SELECT COUNT(*) FROM vehiculos WHERE borrado=FALSE");
-    return Number(res.rows[0].count);
-}

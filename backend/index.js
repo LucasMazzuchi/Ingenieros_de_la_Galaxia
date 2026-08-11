@@ -9,7 +9,6 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors());
-
 app.use(express.json());
 app.use("/api/vehiculos", endpointsVehiculos);
 app.use("/api/cuerpos_celestes", endpointsCuerpoCeleste);
@@ -26,4 +25,3 @@ app.get('/', (req, res) => {
 const server = app.listen(port, () => {
     console.log(`API escuchando en el puerto ${port}`);
   });
-export default app;

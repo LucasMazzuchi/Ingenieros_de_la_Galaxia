@@ -3,8 +3,8 @@ import { armar_consulta, verificarDependencia, verificarNaves } from "./consulta
 import { consulta, MISIONES_MAX } from "../constantes.js"; 
 import { updateVehiculo } from "./vehiculos.js";
 
-// Busca todas las misiones, se puede filtrar por sus campos. El parámetro texto es la consulta y procesados son los datos.
-// Devuelve todas las misiones que cumplan con los requisitos de filtrado. 
+// Busca todas los puntos de interés, se puede filtrar por sus campos. El parámetro texto es la consulta y procesados son los datos.
+// Devuelve todas los puntos de interés que cumplan con los requisitos de filtrado. 
 export async function getAllMisiones(filtros) {
     const sinFiltro = `SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.posicion, m.imagen, m.cuerpo_celeste_id FROM misiones as m, cuerpos_celestes as c WHERE c.id = m.cuerpo_celeste_id AND m.borrado = FALSE AND c.borrado = FALSE`;
     const {texto, procesados} = consulta(filtros, "misiones", sinFiltro);
@@ -12,14 +12,14 @@ export async function getAllMisiones(filtros) {
     return res.rows;
 }
 
-// Busca la misión por el id pasado por parámetro. Devuelve la misión encontrada.
+// Busca el punto de interés por el id pasado por parámetro. Devuelve el punto de interés encontrado.
 export async function getMision(id) {
     const solicitud = "SELECT m.id, m.nombre, c.nombre AS cuerpo_celeste, m.descripcion, m.posicion, m.imagen, m.cuerpo_celeste_id FROM misiones as m, cuerpos_celestes as c WHERE m.id = $1 AND c.id = m.cuerpo_celeste_id AND m.borrado = FALSE AND c.borrado = FALSE";
     const res = await db.query(solicitud, [id]);
     return res.rows[0];
 }
-// Crea una misión con los datos pasados por parámetro mediante el diccionario mision.
-// Devuelve true en mision, si fue creada exitosamente, sino devuelve false. También devuelve su id.
+// Crea un punto de interés con los datos pasados por parámetro mediante el diccionario puntoInteres.
+// Devuelve true en puntoInteres, si fue creado exitosamente, sino devuelve false. También devuelve su id.
 export async function createMision(mision) {
     if (await cantidadMisiones(mision.cuerpo_celeste_id) >= MISIONES_MAX){
         return { mision: false, id: undefined, max: true};
@@ -33,7 +33,7 @@ export async function createMision(mision) {
 }
 
 
-// Borra una misión por el id pasado por parámetro marcando la casilla borrado como true. En caso de que no exista la misión devuelve false en ok,
+// Borra un punto de interés por el id pasado por parámetro marcando la casilla borrado como true. En caso de que no exista el punto de interés devuelve false en ok,
 // sino devuelve true en ok junto con el vehiculo borrado.
 export async function removeMision(posicion, cuerpoCelesteId, id){
     const navesConflicto = await verificarNaves(posicion, cuerpoCelesteId);
@@ -65,7 +65,7 @@ export async function removeMision(posicion, cuerpoCelesteId, id){
     return {ok : res.rowCount == 1, mision : res.rows[0]};
 }
 
-// Actualiza la misión con los datos pasados por el objeto mision, para buscarla usa el id pasado por parámetro. Devuelve true si se actualizo la misión,
+// Actualiza el punto de interés con los datos pasados por el objeto puntoInteres, para buscarlo usa el id pasado por parámetro. Devuelve true si se actualizo el punto de interés,
 // en caso contrario devuelve false.
 export async function updateMision(id, mision){
     const { consulta, valores, numeroId } = armar_consulta(id, mision)
@@ -74,7 +74,7 @@ export async function updateMision(id, mision){
     return res.rowCount == 1;
 }
 
-// Cuenta la cantidad de misiones que hay en la base de datos sin borrar.
+// Cuenta la cantidad de puntos de interés que hay en la base de datos sin borrar.
 export async function cantidadMisiones(id){
     const res = await db.query("SELECT COUNT(*) FROM misiones WHERE borrado=FALSE AND cuerpo_celeste_id=$1", [id]);
     return Number(res.rows[0].count);
