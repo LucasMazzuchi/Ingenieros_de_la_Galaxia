@@ -1,6 +1,11 @@
 import * as constantes from "../constantes.js";
 import {validarEntrada, validarString, validarEntero,
     validarFiltros, validarValorFiltro, validarRango, orden} from "./validaciones_errores.js";
+
+// La función inicializa el diccionario de validadores y el de entrada para la entidad vehículo, valida la entrada mediante validarEntrada y llama a la
+// next. En caso de tener campos que no cumplan con los validadores, responde con un error 400 que contiene los campos inválidos y sus errores. Si ocurre un error
+// dentro de las validaciones, responde con un código 400 y los errores.
+
 export const validarVehiculo = (req, res, next) => {
         if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).json({ error: constantes.ERROR_BODY_VACIO });
@@ -38,6 +43,9 @@ export const validarVehiculo = (req, res, next) => {
     next();
 };
 
+// La función inicializa los diccionarios con los validadores y los campos permitidos para filtrar en la entidad vehículo, valida que los filtros dentro de req
+// sean correctos, los procesa, los carga en body y llama a next. En caso de haber filtros que no cumplen con los validadores, responde con un código 400, los
+// los filtros equivocados y sus errores.
 export const validarFiltrosVehiculo = (req, res, next) => {
     const regex = [constantes.ID, constantes.NOMBRE, constantes.TIPO, constantes.MOTOR, 
     constantes.ESTRUCTURA, constantes.COMBUSTIBLE, constantes.RESISTENCIA, constantes.UBICACION].join('|');

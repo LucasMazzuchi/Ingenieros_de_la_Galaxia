@@ -93,7 +93,11 @@ position: absolute;
     height: 40px;
     z-index: 4;
     transform: translate(-50%, -50%);
-    transition: top 1.5s linear, left 1.5s linear;
+    transition: top 1s ease, left 1s ease;
+}
+
+.bloqueado-viajando {
+    pointer-events: none;
 }
 
 .punto-interes.bloqueado {
@@ -244,4 +248,4 @@ position: absolute;
 .cerrar-panel-punto:hover {
   transform: scale(1.05);
   box-shadow: 0 0 30px #a86bff;
-}/* TEST DESDE LA TERMINAL */
+}

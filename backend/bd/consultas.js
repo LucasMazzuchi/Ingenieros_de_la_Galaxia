@@ -1,7 +1,7 @@
 import { db } from "./pool.js";
 
-// Arma dinámicamente la sección SET de un UPDATE de forma segura contra inyección SQL.
-// Los campos toman marcadores desde $1 hasta $N, y el ID toma la posición $N+1 al final.
+// Arma dinámicamente la sección SET de un UPDATE.
+// Los campos toman marcadores desde $1 hasta $N sieendo N la cantidad de campos a actualizar, y el ID toma la posición $N+1 al final.
 
 export const armar_consulta = (id, entidad) => {
     const campos = Object.keys(entidad);
@@ -18,7 +18,7 @@ export const armar_consulta = (id, entidad) => {
     return { consulta, valores, numeroId };
 };
 
-// Verifica si un cuerpo celeste está siendo usado activamente por vehículos o misiones
+// Verifica si un cuerpo celeste está siendo usado activamente por vehículos o puntos de interés
 // antes de permitir un borrado lógico.
 export const verificarDependencia = async (id) => {
     const consultaMisiones = "SELECT * FROM misiones WHERE cuerpo_celeste_id = $1 AND borrado = FALSE";
@@ -29,6 +29,7 @@ export const verificarDependencia = async (id) => {
 
 };
 
+// Retorna todas las nave que se encuentran en la posición pasada por parámetro dentro del cuerpo celeste asociado a cuerpoCelesteId.
 export const verificarNaves = async (posicion, cuerpoCelesteId) => {
     const consultaVehiculos = "SELECT * FROM vehiculos WHERE punto_interes = $1 AND ubicacion_id = $2";
     const resVehiculos = await db.query(consultaVehiculos, [posicion, cuerpoCelesteId]);

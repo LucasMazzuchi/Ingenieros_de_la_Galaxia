@@ -1,6 +1,6 @@
 import * as constantes from "./constantes.js";
 import {mostrarNotificacion} from "./notificaciones.js";
-// Listas de imágenes reales (todas sueltas en assets/img, sin subcarpetas)
+// Listas de imágenes de los planetas por fuera
 const imagenesPlanetas = [
   "../assets/img/agujero_negro.png",
   "../assets/img/luna.png",
@@ -14,6 +14,7 @@ const imagenesPlanetas = [
   "../assets/img/tierra.png"
 ];
 
+// Listas de imágenes de los planetas por dentro
 const imagenesFondos = [
   "../assets/img/fondo-agujero_negro.jpg",
   "../assets/img/fondo-luna.jpg",
@@ -27,6 +28,7 @@ const imagenesFondos = [
   "../assets/img/fondo-violeta.jpg"
 ];
 
+// Listas de imágenes de los puntos de interés
 const imagenesPuntos = [
   "../assets/img/marcador1.png",
   "../assets/img/marcador2.png",
@@ -54,30 +56,24 @@ function crearSelectorImagenes(contenedorId, imagenes, inputHiddenId) {
     contenedor.appendChild(img);
   });
 }
-
+// Galería del planeta: imagen del planeta e imagen de fondo
 crearSelectorImagenes("galeriaPlanetas", imagenesPlanetas, "inputImagen");
 crearSelectorImagenes("galeriaFondoPlaneta", imagenesFondos, "inputImagenFondo");
+
+// Galería de los puntos de interés.
 crearSelectorImagenes("galeriaPuntos", imagenesPuntos, "inputImagenPunto");
 
-// Galería del planeta: imagen del planeta + imagen de fondo (ambas fijas)
-
-
-// Galería de vehículo: cambia entre naves/autos según el tipo elegido
-const selectTipoVehiculo = document.getElementById("inputTipoVehiculo");
-
-
-// Tabs: switching entre Planeta / Punto de interés / Vehículo
+// Tabs: cambia entre Planeta / Punto de interés / Vehículo
 const botonesTab = document.querySelectorAll(".tab-btn");
 const seccionesTab = document.querySelectorAll(".seccion-tab");
 
+// Cambia de color al botón seleccionado y desliza la pantalla hasta la sección indicada.
 botonesTab.forEach(boton => {
   boton.addEventListener("click", () => {
-    botonesTab.forEach(b => b.classList.remove("activo"));
+    botonesTab.forEach(botonActual => botonActual.classList.remove("activo"));
     boton.classList.add("activo");
 
     const tabElegido = boton.dataset.tab; // "planeta" | "punto" | "vehiculo"
-    let seccionElegida = null;
-
     seccionesTab.forEach(seccion => {
       const esVisible = seccion.id === `tab-${tabElegido}`;
       seccion.hidden = !esVisible;
@@ -87,7 +83,8 @@ botonesTab.forEach(boton => {
   });
 });
 
-
+// Hace un fetch para obtener los datos de la URL pasada por recurso y lo devuelve, si ocurre
+// un error devuelve un arreglo vacío.
 async function obtenerDatos(recurso) {
   try {
     const res = await fetch(`${constantes.API_URL}/${recurso}`);
@@ -97,8 +94,10 @@ async function obtenerDatos(recurso) {
     console.error(error);
     return [];
   }
-}
+};
 
+// Hace un fetch para crear una entidad con lo que contiene datos usando como URL recurso y
+// devuelve un booleano indicando si la creación fue exitosa.
 async function crearRegistro(recurso, datos) {
   try {
     const res = await fetch(`${constantes.API_URL}/${recurso}`, {
@@ -113,6 +112,8 @@ async function crearRegistro(recurso, datos) {
   }
 }
 
+// Hace un fetch para modificar la entidad asociada al id con lo que contiene datos usando
+// como URL recurso y devuelve un booleano indicando si la creación fue exitosa.
 async function modificarRegistro(recurso, id, datos) {
   try {
     const res = await fetch(`${constantes.API_URL}/${recurso}/${id}`, {
@@ -127,6 +128,8 @@ async function modificarRegistro(recurso, id, datos) {
   }
 }
 
+// Hace un fetch para eliminar la entidad asociada a id usando como URL recurso y
+// devuelve un booleano indicando si la creación fue exitosa.
 async function eliminarRegistro(recurso, id) {
   try {
     const res = await fetch(`${constantes.API_URL}/${recurso}/${id}`, {
@@ -139,21 +142,22 @@ async function eliminarRegistro(recurso, id) {
   }
 }
 
+// La función arma el desplegable de las posiciones disponibles para crear o modificar un planeta.
 async function actualizarPosicionesPlanetas() {
   const selectPosicion = document.getElementById("inputPosicion");
   if (!selectPosicion) return;
 
   // Obtenemos los planetas actuales
-  const planetas = await obtenerDatos("cuerpos_celestes");
+  const planetas = await obtenerDatos("cuerpos_celestes"); // Cambiar por cte
   const planetaIdSeleccionado = document.getElementById("selectPlaneta").value;
 
   selectPosicion.innerHTML = '<option value="">-- Seleccione posición --</option>';
 
-  // Filtramos las posiciones ocupadas por otros planetas 
+  // Filtramos las posiciones ocupadas por otros planetas y las volvemos un entero.
   const posicionesOcupadas = new Set(
     planetas
-      .filter(p => p.id != planetaIdSeleccionado && p.posicion)
-      .map(p => parseInt(p.posicion))
+      .filter(planeta => planeta.id != planetaIdSeleccionado && planeta.posicion)
+      .map(planeta => parseInt(planeta.posicion))
   );
 
   const MAX_POSICIONES = 9;  
@@ -170,73 +174,70 @@ async function actualizarPosicionesPlanetas() {
 
 // LOGICA DE CONSULTA Y LLENADO DE SELECTS (Al cargar la página) 
 async function inicializarSelects() {
-  const planetas = await obtenerDatos("cuerpos_celestes");
-
+  const planetas = await obtenerDatos("cuerpos_celestes"); //Cambiar cte
   await actualizarPosicionesPlanetas();
-  
   const selectPlaneta = document.getElementById("selectPlaneta");
-  const selectPlanetaPunto = document.getElementById("selectPlanetaPunto");
+  const selectPlanetaPunto = document.getElementById("selectPlanetaPunto"); // El que esta en la sección puntos de interés
   // Limpiar y poblar selects de planetas
-  [selectPlaneta, selectPlanetaPunto].forEach(sel => {
-    if (!sel) return;
-    if (sel === selectPlaneta) {
-      sel.innerHTML = '<option value="">-- Crear nuevo --</option>';
+  [selectPlaneta, selectPlanetaPunto].forEach(selectActual => {
+    if (!selectActual) return;
+    if (selectActual === selectPlaneta) {
+      selectActual.innerHTML = '<option value="">-- Crear nuevo --</option>';
     } else {
-      sel.innerHTML = '<option value="">-- Seleccione un planeta --</option>';
+      selectActual.innerHTML = '<option value="">-- Seleccione un planeta --</option>';
     }
 
-    planetas.forEach(p => {
-      if (p.nombre.toLowerCase().includes("tierra")) {
+    planetas.forEach(planeta => {
+      if (planeta.nombre.toLowerCase().includes("tierra")) {
         return; 
       }
-
-      const opt = document.createElement("option");
-      opt.value = p.id;
-      opt.textContent = p.nombre;
-      sel.appendChild(opt);
+      const opcion = document.createElement("option");
+      opcion.value = planeta.id;
+      opcion.textContent = planeta.nombre;
+      selectActual.appendChild(opcion);
     });
   });
 
   // Cargar vehículos existentes en su select
-  const vehiculos = await obtenerDatos("vehiculos");
+  const vehiculos = await obtenerDatos("vehiculos"); // cambiar cte
   const selectVehiculo = document.getElementById("selectVehiculo");
   if (selectVehiculo) {
     selectVehiculo.innerHTML = '<option value="">-- Crear nuevo --</option>';
-    vehiculos.forEach(v => {
-      const opt = document.createElement("option");
-      opt.value = v.id;
-      opt.textContent = v.nombre;
-      selectVehiculo.appendChild(opt);
+    vehiculos.forEach(vehiculo => {
+      const opcion = document.createElement("option");
+      opcion.value = vehiculo.id;
+      opcion.textContent = vehiculo.nombre;
+      selectVehiculo.appendChild(opcion);
     });
   }
 
-  // Cargar misiones (puntos de interés) existentes en su select
-  const misiones = await obtenerDatos("misiones");
+  // Cargar puntos de interés existentes en su select
+  const misiones = await obtenerDatos("misiones"); // Cambiar cte
   const selectPunto = document.getElementById("selectPunto");
   
   if (selectPunto && selectPlanetaPunto) {
     
-    function actualizarMisiones () {
-      selectPunto.innerHTML = '<option value="">-- Crear nuevo --</option>';
+    function actualizarMisiones () { // Pasar por params selectPunto, misiones, planetaId
+      selectPunto.innerHTML = '<option value="">-- Crear nuevo --</option>'; // Este hay que sacarlo afuera de la función
       const planetaId = parseInt(selectPlanetaPunto.value);
       const misionesFiltradas = !planetaId ? misiones : misiones.filter(function (mision) {
         return mision.cuerpo_celeste_id == planetaId;
       });
-      misionesFiltradas.forEach(m => {
-        const opt = document.createElement("option");
-        opt.value = m.id;
-        opt.textContent = m.nombre;
-        selectPunto.appendChild(opt);
+      misionesFiltradas.forEach(puntoInteres => {
+        const opcion = document.createElement("option");
+        opcion.value = puntoInteres.id;
+        opcion.textContent = puntoInteres.nombre;
+        selectPunto.appendChild(opcion);
       });
     };
     actualizarMisiones();
-    function actualizarPosiciones() {
-      const selectPosicion = document.getElementById("inputPosicionPunto");
-      if (!selectPosicion) return;
-      selectPosicion.innerHTML = '<option value="">-- Seleccione posición --</option>';
+    function actualizarPosiciones() {// Pasar selectPosicion, planetaId, misionId, misiones
+      const selectPosicion = document.getElementById("inputPosicionPunto"); // Va afuera
+      if (!selectPosicion) return; // Va afuera
+      selectPosicion.innerHTML = '<option value="">-- Seleccione posición --</option>'; // Va afuera
 
-      const planetaId = parseInt(selectPlanetaPunto.value);
-      const misionId = parseInt(selectPunto.value);
+      const planetaId = parseInt(selectPlanetaPunto.value); // Por parámetro
+      const misionId = parseInt(selectPunto.value); // Por parámetro
 
       // Si no hay planeta seleccionado, no mostramos posiciones disponibles
       if (!planetaId) return;
@@ -244,7 +245,7 @@ async function inicializarSelects() {
       const misionesDelPlaneta = new Set(misiones.filter(function (mision) {
         return (mision.cuerpo_celeste_id === planetaId && mision.id !== misionId);
       }).map(function (mision) {return parseInt(mision.posicion)})); //Convierte todos los valores a entero.
-      for (let i = 1; i <= 3; i++) {
+      for (let i = 1; i <= 3; i++) { // Hacer el 3 cte.
         if (!misionesDelPlaneta.has(i)) {
           const opcion = document.createElement("option");
           opcion.value = i;
@@ -272,37 +273,32 @@ const selectPlaneta = document.getElementById("selectPlaneta");
 const btnBorrarPlaneta = document.getElementById("btnBorrarPlaneta");
 
 // Cargar datos en el form si selecciona uno existente (Modificación)
-selectPlaneta.addEventListener("change", async () => {
+selectPlaneta.addEventListener("change", async () => { // función de cargado aparte
   const id = selectPlaneta.value;
-  
   await actualizarPosicionesPlanetas();
-
   if (!id) {
     formPlaneta.reset();
     return;
   }
-  
   const planetas = await obtenerDatos("cuerpos_celestes");
-  const p = planetas.find(item => item.id == id);
-  if (p) {
-    document.getElementById("inputNombre").value = p.nombre;
-    document.getElementById("inputDescripcion").value = p.descripcion;
-    document.getElementById("inputTipo").value = p.tipo;
-    document.getElementById("inputDiametro").value = p.diametro;
-    document.getElementById("inputGravedad").value = p.gravedad;
-    document.getElementById("inputTemperatura").value = p.temperatura;
-    document.getElementById("inputTerreno").value = p.terreno;
-    document.getElementById("inputHabitable").value = p.habitable.toString();
-    
-    document.getElementById("inputPosicion").value = p.posicion;
-    
-    document.getElementById("inputImagen").value = p.imagen;
-    document.getElementById("inputImagenFondo").value = p.imagen_fondo;
+  const planeta = planetas.find(item => item.id == id);
+  if (planeta) { // Inicializa los valores actuales de planeta
+    document.getElementById("inputNombre").value = planeta.nombre;
+    document.getElementById("inputDescripcion").value = planeta.descripcion;
+    document.getElementById("inputTipo").value = planeta.tipo;
+    document.getElementById("inputDiametro").value = planeta.diametro;
+    document.getElementById("inputGravedad").value = planeta.gravedad;
+    document.getElementById("inputTemperatura").value = planeta.temperatura;
+    document.getElementById("inputTerreno").value = planeta.terreno;
+    document.getElementById("inputHabitable").value = planeta.habitable.toString();
+    document.getElementById("inputPosicion").value = planeta.posicion;
+    document.getElementById("inputImagen").value = planeta.imagen;
+    document.getElementById("inputImagenFondo").value = planeta.imagen_fondo;
   }
 });
 
 // Guardar (Alta o Modificación) Planeta
-formPlaneta.addEventListener("submit", async (e) => {
+formPlaneta.addEventListener("submit", async (e) => { // Hacer una func aparte de Guardar
   e.preventDefault();
   const id = selectPlaneta.value;
   
@@ -316,7 +312,6 @@ formPlaneta.addEventListener("submit", async (e) => {
     terreno: parseInt(document.getElementById("inputTerreno").value),
     habitable: document.getElementById("inputHabitable").value === "true",
     posicion: parseInt(document.getElementById("inputPosicion").value),
-    
     imagen: parseInt(document.getElementById("inputImagen").value),
     imagen_fondo: parseInt(document.getElementById("inputImagenFondo").value)
   };
@@ -338,7 +333,7 @@ formPlaneta.addEventListener("submit", async (e) => {
 });
 
 // Borrar Planeta
-btnBorrarPlaneta.addEventListener("click", async () => {
+btnBorrarPlaneta.addEventListener("click", async () => { // Armar func aparte
   const id = selectPlaneta.value;
   if (!id) {
     alert("Selecciona un planeta existente para borrar.");
@@ -350,7 +345,7 @@ btnBorrarPlaneta.addEventListener("click", async () => {
     if (exito) {
       alert("Planeta eliminado.");
       formPlaneta.reset();
-      inicializarSelects();
+      inicializarSelects();// Tiene que ser pasada por parámetro y ejecutada o tiene que devolver un flag tipo ok
     } else {
       alert("No se pudo eliminar.");
     }
@@ -362,7 +357,7 @@ const selectVehiculo = document.getElementById("selectVehiculo");
 const btnBorrarVehiculo = document.getElementById("btnBorrarVehiculo");
 
 // Cargar datos en el form si selecciona un vehículo existente
-selectVehiculo.addEventListener("change", async () => {
+selectVehiculo.addEventListener("change", async () => { // Función aparte de cargado
   const id = selectVehiculo.value;
   if (!id) {
     formVehiculo.reset();
@@ -381,7 +376,7 @@ selectVehiculo.addEventListener("change", async () => {
 });
 
 // Guardar (Alta o Modificación) Vehículo
-formVehiculo.addEventListener("submit", async (e) => {
+formVehiculo.addEventListener("submit", async (e) => { // Función aparte de guardado
   e.preventDefault();
   const id = selectVehiculo.value;
   let vehiculo;
@@ -423,7 +418,7 @@ formVehiculo.addEventListener("submit", async (e) => {
 });
 
 // Borrar Vehículo
-btnBorrarVehiculo.addEventListener("click", async () => {
+btnBorrarVehiculo.addEventListener("click", async () => { // func aparte
   const id = selectVehiculo.value;
   if (!id) {
     alert("Selecciona un vehículo existente para borrar.");
@@ -446,27 +441,27 @@ const selectPunto = document.getElementById("selectPunto");
 const btnBorrarPunto = document.getElementById("btnBorrarPunto");
 
 // Cargar datos en el form si selecciona una misión existente
-selectPunto.addEventListener("change", async () => {
+selectPunto.addEventListener("change", async () => { // Func aparte
   const id = selectPunto.value;
   if (!id) {
     formPunto.reset();
     return;
   }
   const misiones = await obtenerDatos("misiones");
-  const m = misiones.find(item => item.id == id);
-  if (m) {
-    document.getElementById("selectPlanetaPunto").value = m.cuerpo_celeste_id;
-    document.getElementById("inputTituloPunto").value = m.nombre;
-    document.getElementById("inputDescripcionPunto").value = m.descripcion;
-    document.getElementById("inputPosicionPunto").value = m.posicion;
-    document.getElementById("inputImagenPunto").value = m.imagen;
+  const puntoInteres = misiones.find(item => item.id == id);
+  if (puntoInteres) {
+    document.getElementById("selectPlanetaPunto").value = puntoInteres.cuerpo_celeste_id;
+    document.getElementById("inputTituloPunto").value = puntoInteres.nombre;
+    document.getElementById("inputDescripcionPunto").value = puntoInteres.descripcion;
+    document.getElementById("inputPosicionPunto").value = puntoInteres.posicion;
+    document.getElementById("inputImagenPunto").value = puntoInteres.imagen;
   }
 });
 
 // Guardar (Alta o Modificación) Punto de Interés
-formPunto.addEventListener("submit", async (e) => {
+formPunto.addEventListener("submit", async (e) => { // Func aparte guardado
   e.preventDefault();
-  const id = selectPunto.value;
+  const id = selectPunto.value; // Poner el select del html como parámetro
   const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${parseInt(document.getElementById("selectPlanetaPunto").value)}`);
   const misiones = await resMisiones.json();
   const punto = parseInt(document.getElementById("inputPosicionPunto").value);
@@ -499,7 +494,7 @@ formPunto.addEventListener("submit", async (e) => {
 });
 
 // Borrar Punto de Interés
-btnBorrarPunto.addEventListener("click", async () => {
+btnBorrarPunto.addEventListener("click", async () => { // Func aparte
   const id = selectPunto.value;
   if (!id) {
     alert("Selecciona un punto de interés existente para borrar.");

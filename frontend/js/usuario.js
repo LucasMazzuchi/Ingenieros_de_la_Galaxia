@@ -6,6 +6,7 @@ const formNuevoVehiculo = document.getElementById("formNuevoVehiculo");
 const btnCancelarNuevoVehiculo = document.getElementById("btnCancelarNuevoVehiculo");
 const inputNombreNuevoVehiculo = document.getElementById("inputNombreNuevoVehiculo");
 
+// Carga todos los vehículos dentro del menú de naves.
 async function cargarVehiculos() {
   try {
     const res = await fetch(`${API_URL}/${VEHICULOS_URL}`);
@@ -17,6 +18,7 @@ async function cargarVehiculos() {
   }
 }
 
+// Hace visbles todos los vehículos pasados por parámetro en forma de lista.
 function pintarVehiculos(vehiculos) {
   listaVehiculos.innerHTML = "";
 
@@ -26,34 +28,36 @@ function pintarVehiculos(vehiculos) {
     return;
   }
 
-  vehiculos.forEach(v => {
+  vehiculos.forEach(vehiculo => {
     const tarjeta = document.createElement("div");
     tarjeta.className = "tarjeta-vehiculo";
     tarjeta.innerHTML = `
       <div class="info-vehiculo">
-        <span class="numero-vehiculo">Nave ${v.id}</span>
-        <span class="nombre-vehiculo">${v.nombre}</span>
+        <span class="numero-vehiculo">Nave ${vehiculo.id}</span>
+        <span class="nombre-vehiculo">${vehiculo.nombre}</span>
       </div>
     `;
-    tarjeta.addEventListener("click", () => seleccionarVehiculo(v.id));
+    tarjeta.addEventListener("click", () => seleccionarVehiculo(vehiculo.id));
     listaVehiculos.appendChild(tarjeta);
   });
 }
 
+// Resalta el formulario para el nombre de la nave.
 function mostrarFormulario() {
   formNuevoVehiculo.hidden = false;
   btnMostrarForm.hidden = true;
   inputNombreNuevoVehiculo.focus();
 }
 
+// Saca el resaltado del formulario para el nombre de la nave.
 function ocultarFormulario() {
   formNuevoVehiculo.hidden = true;
   btnMostrarForm.hidden = false;
   formNuevoVehiculo.reset();
 }
 
-
-
+// Guarda en localStorage el id del vehículo seleccionado y redirige al usuario a la tierra si no está completada, sino a la galaxia. Si ocurre un error
+// redirige a galaxia.
 async function seleccionarVehiculo(idVehiculo) {
   localStorage.setItem("vehiculoSeleccionadoId", idVehiculo);
 
@@ -71,10 +75,13 @@ async function seleccionarVehiculo(idVehiculo) {
     window.location.href = "galaxia.html";
   }
 }
+
+// Guarda en la base de datos a la nave con el nombre elegido por el usuario, guarda el id en localStorage con seleccionarVehiculo y lo redirecciona a la página
+// correspondiente.
 formNuevoVehiculo.addEventListener("submit", async (e) => {
   e.preventDefault();
-
   const nombre = inputNombreNuevoVehiculo.value.trim();
+  // Acpa cortar la interacción con la página.
   if (!nombre) return;
 
   const datosVehiculoNuevo = {
@@ -106,6 +113,7 @@ formNuevoVehiculo.addEventListener("submit", async (e) => {
     alert("Ocurrió un error al crear el nave.");
   }
 });
+
 btnMostrarForm.addEventListener("click", mostrarFormulario);
 btnCancelarNuevoVehiculo.addEventListener("click", ocultarFormulario);
 document.addEventListener("DOMContentLoaded", cargarVehiculos);

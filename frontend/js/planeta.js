@@ -9,13 +9,16 @@ const coordenadasVisuales = [
         { top: constantes.PUNTO2_TOP, left: constantes.PUNTO2_LEFT },
         { top: constantes.PUNTO3_TOP, left: constantes.PUNTO3_LEFT }
     ];
+const botonInfo = document.getElementById('botonInfo');
+const panelPlaneta = document.getElementById('panelPlaneta');
 
-//Chequea que pueda ingresar al planeta.
+// La función verifica que el usuario pueda acceder al planeta y muestra por pantalla todos los datos que contiene el planeta (puntos de interés, fondo, datos
+// nave).
 async function iniciarPlaneta() {
     const parametros = new URLSearchParams(window.location.search);
     const planetaId = parseInt(parametros.get("id"));
     const naveId = localStorage.getItem("vehiculoSeleccionadoId");
-    
+    // Arrancan verificaciones, tiene que devolver el texto de la noti.
     if (!naveId) {
         window.location.href = "usuario.html";
         return;
@@ -32,7 +35,7 @@ async function iniciarPlaneta() {
         const planetas = await resPlaneta.json();
 
         if (!planetas || planetas.length === 0) {
-            console.error("El backend no devolvió ningún planeta con ese ID.");
+            console.error("El backend no devolvió ningún planeta con ese ID."); //Sacar
             return;
         }
         if (!planetas[0].disponible) {
@@ -40,6 +43,7 @@ async function iniciarPlaneta() {
             mostrarNotificacion("Planeta no dsiponible", "Recorra los demás planetas disponibles para desbloquearlo.", false);
             return;
         }
+        // Terminan verificaciones
         const resVehiculos = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?ubicacion_id=${planetaId}`);
         const vehiculos = await resVehiculos.json();
         const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${planetaId}&order_by=posicion&order=ASC`);
@@ -49,6 +53,7 @@ async function iniciarPlaneta() {
         if (!estado.planetaCompletado && vehiculoDatos.combustible<100 && !estado.enProgreso){
             return window.location.href = "galaxia.html";
         }
+        // Verificación completado
         const puntosCompletados = estado.puntosVisitados.filter(function (mision){ return mision.completado});
         if (!estado.planetaCompletado && misiones.length === puntosCompletados.length){
             if (misiones.length === 0){
@@ -73,7 +78,9 @@ async function iniciarPlaneta() {
 
             )
         }
+        // Termina verificación completado
 
+        // Inicializar ubicación
         let puntoActual = vehiculoDatos.punto_interes;
         if (vehiculoDatos.ubicacion_id !== planetaId){
             puntoActual = misiones.length !== 0 ? misiones[0].posicion : 1;
@@ -90,7 +97,8 @@ async function iniciarPlaneta() {
                 punto_interes: vehiculoDatos.punto_interes
             })
         });
-        
+        // Termina inicializar ubicación
+
         if (misiones.length !== 0 && estado.puntosVisitados.length === 0){
             const primerMision = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/desbloquear`, {
                 method: "PATCH",
@@ -98,8 +106,7 @@ async function iniciarPlaneta() {
                 body: JSON.stringify({ cuerpo_celeste_id: planetaId, mision_id: misiones[0].id})
             });
         }
-
-               const resDibujado = await dibujarDatosDelPlaneta(planetas[0], misiones, vehiculoDatos, vehiculos); // Esto arma la página
+        const resDibujado = await dibujarDatosDelPlaneta(planetas[0], misiones, vehiculoDatos, vehiculos); // Esto arma la página
         if (misiones.length !==0 && estado.puntosVisitados.length === 0){ // Gasta combustible si es la primera vez que visita el planeta
             const actualizacionCombustibleVehiculo= await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`, {
                 method: "PATCH",
@@ -117,6 +124,7 @@ async function iniciarPlaneta() {
     }
 }
 
+// La función se encarga de mostrar todos los datos del planeta por pantalla
 async function dibujarDatosDelPlaneta(planeta, misiones, vehiculoObjeto, vehiculos){
   if(!planeta) return;
   try{
@@ -137,6 +145,7 @@ async function dibujarDatosDelPlaneta(planeta, misiones, vehiculoObjeto, vehicul
   }
 }
 
+// Devuelve la ruta a la imagen que está asociada con imagenId.
 function buscarImagenFondo(imagenId) {
     const imagenes_fondo = {
     1 : "../assets/img/fondo-agujero_negro.jpg",
@@ -153,6 +162,7 @@ function buscarImagenFondo(imagenId) {
   return imagenes_fondo[imagenId];
 }
 
+// Devuelve la ruta a la imagen que está asociada con imagenId.
 function buscarImagenPunto(imagenId){
     const imagenes_punto = {
         1: "../assets/img/marcador1.png",
@@ -164,6 +174,8 @@ function buscarImagenPunto(imagenId){
     return imagenes_punto[imagenId];
 }
 
+// La función se encarga de posicionar, mostrar por pantalla e inicializar los los puntos de interés como botón para que muestren la información correspondiente
+// y que otorgen recompensas.
 async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
     if (misiones.length < 1){
         return;
@@ -183,7 +195,6 @@ async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
         if (!puntosVisitados.find(function (punto) {return punto.mision_id === mision.id})) {
             divPunto.classList.add("bloqueado");
         }
-
         divPunto.style.position = "absolute";
         divPunto.style.top = coordenadas.top;
         divPunto.style.left = coordenadas.left;
@@ -201,17 +212,18 @@ async function pintarPuntosDeInteres(cuerpoCeleste, misiones, vehiculoObjetos) {
         });
         contenedorMapa.appendChild(divPunto);
     });
+    // Ver si esto puede ir a otro lado
     vehiculo.style.display = "block";
     vehiculo.style.transition = "none";
     vehiculo.style.top = coordenadasVisuales[posNave].top;
     vehiculo.style.left = coordenadasVisuales[posNave].left;
     vehiculo.dataset.indiceActual = posNave;
 
-    setTimeout(() => {
-        vehiculo.style.transition = "top 1s ease, left 1s ease"; 
-    }, 50);
+    setTimeout(() => {vehiculo.style.transition = "top 1s ease, left 1s ease"}, 50);
+    // Hasta acá
 }
 
+// La función devuelve la imagen de la nave correspondiente según sus atributos.
 function obtenerImagenNave(vehiculoDatos) {
     const { motor, estructura, resistencia } = vehiculoDatos;
     if (motor >= 3 && estructura >= 3 && resistencia >= 3) {
@@ -223,6 +235,7 @@ function obtenerImagenNave(vehiculoDatos) {
     return "../assets/img/nave1.png";
 }
 
+// La función inicializa los valores dentro del apartado con información del cuerpo celeste utilizando cuerpo_celeste.
 function rellenarApartadoIzquierda(cuerpo_celeste){
     document.getElementById("datoTipo").textContent = constantes.TIPOS_PLANETA[cuerpo_celeste.tipo];
     document.getElementById("datoDiametro").textContent = `${cuerpo_celeste.diametro} km`;
@@ -299,7 +312,7 @@ async function manejarClickPunto(cuerpoCelesteId, mision, vehiculoId, coordenada
     }
 }
 
-
+// La función mueve a la nave de un punto de interés a otro a otro. Bloquea las interacciones mientras la nave se mueve.
 function viajarHacia(coordenadas) {
     document.body.classList.add("bloqueado-viajando");
     vehiculo.style.top = coordenadas.top;
@@ -310,6 +323,7 @@ function viajarHacia(coordenadas) {
     }, 1000); 
 }
 
+// La función dibuja el camino entre los puntos de interés pasados por parámetro.
 function dibujarCamino(puntosDeInteres){
     const camino = document.getElementById("camino-polyline");
     const puntos = [];
@@ -323,17 +337,13 @@ document.getElementById("btnCerrarPanelPunto").addEventListener("click", () => {
     panelPunto.classList.remove("visible");
 });
 
-const botonInfo = document.getElementById('botonInfo');
-const panelPlaneta = document.getElementById('panelPlaneta');
 botonInfo.addEventListener('click', () => {
     panelPlaneta.classList.toggle('abierto');
     botonInfo.classList.toggle('abierto');
     botonInfo.querySelector('.flecha').textContent = panelPlaneta.classList.contains('abierto') ? '‹' : '›';
 });
-document.addEventListener("DOMContentLoaded", iniciarPlaneta);
 
-
-
+// La función crea el div y ubica cada nave excepto la del usuario. 
 async function pintarVehiculos(vehiculos, vehiculoUsado){
     vehiculos.forEach( function (vehiculoActual){
         if (vehiculoActual.id === vehiculoUsado.id){
@@ -347,13 +357,13 @@ async function pintarVehiculos(vehiculos, vehiculoUsado){
 
         if (vehiculoActual.ubicacion_id === 1) {
             nave.innerHTML = `
-                <img src="../assets/img/auto1.png" alt="auto en desuso">
+                <img src="../assets/img/auto1.png">
                 <p>${vehiculoActual.nombre}</p>
             `;
         } else {
             const imagen = obtenerImagenNave(vehiculoActual);
             nave.innerHTML = `
-                <img src= ${imagen} alt="nave en desuso">
+                <img src= ${imagen}>
                 <p>${vehiculoActual.nombre}</p>
             `;
         }
@@ -361,15 +371,18 @@ async function pintarVehiculos(vehiculos, vehiculoUsado){
     });
 };
 
+// La función trae del backend el estado del punto de interés y si está completado devuelve true, sino false.
 async function okPunto (naveId){
     const resPostMejora = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
     const postMejora = await resPostMejora.json();
     return (postMejora["motor"]+postMejora["estructura"]+postMejora["resistencia"]+postMejora.puntos >= 9);
 };
 
-async function planetaCompletado(cuerpoCelesteId){
-    const resCuerpoCeleste = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/${cuerpoCelesteId}`);
+// La función trae del backend el estado del cuerpo celeste respectoy si está completado devuelve true, sino false.
+async function planetaCompletado(cuerpoCelesteId){ // Pedir por parámetro vehiculoId también
+    const resCuerpoCeleste = await fetch(`${constantes.API_URL}/${constantes.CUERPOS_URL}/${cuerpoCelesteId}`); // CAmbiar el endpoint a progreso
     const cuerpoCeleste = await resCuerpoCeleste.json();
     return cuerpoCeleste.completado;
 };
+
 document.addEventListener("DOMContentLoaded", iniciarPlaneta);

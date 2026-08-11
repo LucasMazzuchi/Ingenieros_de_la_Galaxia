@@ -1,7 +1,7 @@
 // Conexión con la base de datos.
 import { Pool } from "pg";
 import {existsSync, readFileSync} from "fs";
-
+// Arma la conexión a la base de datos con las variables declaradas en el .env.
 export const db = new Pool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -9,10 +9,13 @@ export const db = new Pool({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT || 5432,
 });
-const _inicializarBd = async () => {
+
+// La función lee el archivo que se encuentra en ruta y lo convierte en una cadena, para después mandarla como petición a la base de datos.
+// En caso de que no exista la base de datos lo imprime por la consola del backend.
+const _inicializarBd = async (ruta, encoding) => {
   try {
-    if (existsSync("./bd/init.sql")) {
-      const sql = readFileSync("./bd/init.sql", "utf-8");
+    if (existsSync(ruta)) { // Sacar if  y dejar solo llamada readFileSync, manejar error directamente.
+      const sql = readFileSync(ruta, encoding);
       await db.query(sql);
     }
   } catch (error) {
@@ -20,14 +23,16 @@ const _inicializarBd = async () => {
   }
 };
 
+// La función inicializa la base de datos a través de _inicializarBd pasando la ruta al init y el encoding, si no existe la base de datos, la crea.
+// Si existe y está vacía, la llena con los datos que están dentro del init. Si existe y no está vacía, no hace nada.
 export const inicializarBd = async () => {
   try {
     const res = await db.query("SELECT COUNT(*) FROM cuerpos_celestes");
     if (res.rows[0].count == 0) {
-      await _inicializarBd();
+      await _inicializarBd("./bd/init.sql", "utf-8");
     }
   } catch (error) {
-    await _inicializarBd();
+    await _inicializarBd("./bd/init.sql", "utf-8"); // Si no existe, la crea.
   }
 };
 db.on('connect', () => {
