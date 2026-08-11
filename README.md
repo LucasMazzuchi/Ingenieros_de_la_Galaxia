@@ -35,7 +35,7 @@ docker compose up
 ```
 
 Una vez que la terminal indique que los contenedores están corriendo, abrí tu navegador  
-en `http://localhost:8080<BACKEND_PORT>` para acceder a la página inicial.
+en `http://localhost:<FRONTEND_PORT>` para acceder a la página inicial.
 
 ## Apagado
 ```bash

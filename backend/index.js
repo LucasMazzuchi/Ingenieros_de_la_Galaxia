@@ -14,6 +14,7 @@ app.use("/api/vehiculos", endpointsVehiculos);
 app.use("/api/cuerpos_celestes", endpointsCuerpoCeleste);
 app.use("/api/misiones", endpointsMisiones);
 app.use("/api/progreso", endpointsProgreso);
+// Healthcheck, falta agregar el de la bd.
 app.get('/health', (req, res) => {
     res.status(200).send("OK");
 });
