@@ -1,6 +1,6 @@
 import { db } from "./pool.js";
 import { armar_consulta } from "./consultas.js";
-import {consulta, VEHICULOS_MAX} from "../constantes.js"
+import {consulta} from "../constantes.js"
 
 // Busca todos los vehículos, se puede filtrar por sus campos. El parámetro texto es la consulta y procesados son los datos.
 // Devuelve todos los vehículos que cumplan con los requisitos de filtrado. 

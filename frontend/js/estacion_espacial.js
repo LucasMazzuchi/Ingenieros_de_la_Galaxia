@@ -47,6 +47,8 @@ function pintarEstado(vehiculo) {
     });
 }
 
+// La funfión inicializa los botones de mejora de los campos de vehículo junto con el de cargar combustible. Cuando ocurre una mejora o se carga combustible,
+// muestra una notificación detallando la acción y el resultado con la función mostrarNotificación.
 function inicializarBotones(vehiculoId) {
     const campos = ["motor", "estructura", "resistencia"]; // Hacer cte
 
