@@ -7,7 +7,6 @@ import { getPunto, getAllPuntos } from "../bd/puntos_interes.js";
 // _validarId, sino usa validarEntero. Valida los datos con validarEntrada y llama a la función next. En caso de no cumplir con los validadores, responde un
 // error 400 con los errores y los campos a los que corresponden. Si ocurre un error responde con un error 400 y el error.
 export const validarIdsParams = (req, res, next) => {
-    // Chequeo de seguridad de params
     if (!req.params || Object.keys(req.params).length === 0 || Object.keys(req.params).length > 2) {
         return res.status(400).json({ error: constantes.ERROR_CAMPOS });
     }
@@ -61,15 +60,14 @@ export const validarReglasDesbloqueo = async (req, res, next) => {
         req.primero = await esPrimeraVez(actual, puntosInteres, req.params.id, req.body.cuerpo_celeste_id);
         next();
     } catch (error) {
-        console.error("Error exacto en validarReglasDesbloqueo:", error);
         res.status(500).json({ error: "Error interno al validar las reglas de exploración." });
     }
 };
 
 // La función busca el estado del punto de interés asociado al id pasado por el cuerpo de req respecto al vehículo asociado al id pasado por parámetro en req
-// y llama a la función next, Si ocurre un error, responde. En caso de tener que descubrir otro punto primero responde con estado 403 junto con su error, si el punto fue explorado con estado 400, en otros
+// y llama a la función next, Si ocurre un error, responde un 500. En caso de tener que descubrir otro punto primero responde con estado 403 junto con su error, si el punto fue explorado con estado 400, en otros
 // casos de error con un estado 500.
-export const verificarEstadoPunto = async (req, res, next) => {// Si hay 0 puntos de interes, o no se puede desubrir el punto, retorna.
+export const verificarEstadoPunto = async (req, res, next) => {
     try {
         const puntoInteres = await progreso.getPunto(req.params.id, req.body.punto_interes_id);
         if (!puntoInteres) {

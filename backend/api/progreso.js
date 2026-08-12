@@ -18,7 +18,6 @@ endpointsProgreso.get("/:id/:cuerpo_celeste_id", validarIdsParams, async (req, r
         const enProgreso = (resPlaneta !== undefined);
         res.status(200).json({puntosVisitados, planetaCompletado, enProgreso});
     } catch (error) {
-        console.error("Error en get progreso:", error);
         res.status(500).json({ error: "Error al obtener el progreso del vehículo." });
     }
 });
@@ -37,7 +36,6 @@ endpointsProgreso.patch("/:id/desbloquear", validarId, validarIdsPatchGeneral, v
         const resPuntoInteres = await progreso.desbloquearPunto(req.params.id, req.body.punto_interes_id, req.body.cuerpo_celeste_id);
         res.status(200).json({ mensaje: "¡Nuevo punto de interés descubierto!" });
     } catch (error) {
-        console.log("Error al desbloquear:", error);
         res.status(500).json({ error: "Error interno al intentar desbloquear el punto de interés." });
     }
 });
@@ -50,7 +48,6 @@ endpointsProgreso.patch("/:id/explorar", validarId, validarIdsPatchGeneral, veri
         const ok = await progreso.completarPlaneta(req.params.id, req.body.cuerpo_celeste_id);
         res.status(200).json({ mensaje: "¡Punto explorado con éxito!", combustible: req.body.recompensa, cuerpoCompletado: ok});
     } catch (error) {
-        console.log("Error en explorar:", error);
         res.status(500).json({ error: "Error interno al explorar el punto." });
     }
 });
@@ -64,7 +61,6 @@ endpointsProgreso.patch("/:id/completar", validarId, validarIdsPatchCompletar, m
         const ok = await progreso.completarPlaneta(req.params.id, req.body.cuerpo_celeste_id); // Verificar que exista el planeta
         res.status(200).json({mensaje: "Planeta completado!", cuerpoCompletado: ok});
     } catch (error){
-        console.log("Error en completar:", error);
         res.status(500).json({ error: "Error interno al querer completar el planeta." });
     }
 });
