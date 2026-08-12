@@ -81,28 +81,25 @@ export async function agregaPlaneta(inicializarSelects, selectPlaneta, formPlane
   }
 
   if (exito) {
-    alert("¡Guardado exitoso!");
     formPlaneta.reset();
     inicializarSelects();
+    const texto = id ? "¡Cuerpo celeste modificado con éxito!" : `¡Cuerpo celeste guardado con éxito!`;
+    return { titulo: "¡Operación Exitosa!", textoEstado: texto };
   } else {
-    alert("Ocurrió un error al guardar.");
+    return { titulo: "Operación Fallida", textoEstado: `Ocurrió un error al guardar el planeta.` };
   }
 }
   export async function borrarPlaneta (inicializarSelects, selectPlaneta, formPlaneta) {
     const id = selectPlaneta.value;
       if (!id) {
-        alert("Selecciona un planeta existente para borrar.");
-        return;
+        return { titulo: "Operación Fallida", textoEstado: "Seleccion'a un planeta existente para borrar." };
       }
-      if (confirm("¿Estás seguro de borrar este planeta?")) {
-    
-        const exito = await viaje.eliminarRegistro("cuerpos_celestes", id);
-        if (exito) {
-          alert("Planeta eliminado.");
-          formPlaneta.reset();
-          inicializarSelects();// Tiene que ser pasada por parámetro y ejecutada o tiene que devolver un flag tipo ok
-        } else {
-          alert("No se pudo eliminar.");
-        }
+      const exito = await viaje.eliminarRegistro("cuerpos_celestes", id);
+      if (exito) {
+        formPlaneta.reset();
+        inicializarSelects();
+        return { titulo: "¡Operación Exitosa!", textoEstado: "Planeta eliminado." };
+      } else {
+        return { titulo: "Operación Fallida", textoEstado: "No se pudo eliminar." };
       }
   }

@@ -3,6 +3,7 @@ import {mostrarNotificacion} from "../notificaciones.js";
 import * as viaje from "./solicitudes_crear_viaje.js";
 import * as planetas from "./solicitudes_cuerpos_celestes.js";
 import * as puntosDeInteres from "./solicitudes_punto_de_interes.js";
+import * as vehiculos from "./solicitudes_vehiculos.js";
 // Listas de imágenes de los planetas por fuera
 const imagenesPlanetas = [
   "../assets/img/agujero_negro.png",
@@ -154,12 +155,14 @@ selectPlaneta.addEventListener("change", async () => {
 // Guardar (Alta o Modificación) Planeta
 formPlaneta.addEventListener("submit", async (e) => { // Hacer una func aparte de Guardar
   e.preventDefault();
-  await planetas.agregaPlaneta(inicializarSelects, selectPlaneta, formPlaneta);
+  const { titulo, textoEstado} = await planetas.agregaPlaneta(inicializarSelects, selectPlaneta, formPlaneta);
+  await mostrarNotificacion(titulo,textoEstado);
 });
 
 // Borrar Planeta
 btnBorrarPlaneta.addEventListener("click", async () => { // Armar func aparte
-  planetas.borrarPlaneta(inicializarSelects, selectPlaneta, formPlaneta);
+  const { titulo, textoEstado} = await planetas.borrarPlaneta(inicializarSelects, selectPlaneta, formPlaneta);
+  await mostrarNotificacion(titulo,textoEstado);
 });
 // FORMULARIO VEHÍCULO 
 const formVehiculo = document.getElementById("tab-vehiculo");
@@ -168,63 +171,14 @@ const btnBorrarVehiculo = document.getElementById("btnBorrarVehiculo");
 
 // Cargar datos en el form si selecciona un vehículo existente
 selectVehiculo.addEventListener("change", async () => { // Función aparte de cargado
-  const id = selectVehiculo.value;
-  if (!id) {
-    formVehiculo.reset();
-    return;
-  }
-  const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${id}`);
-  const vehiculo = await resVehiculo.json();
-  if (vehiculo) {
-    document.getElementById("inputNombreVehiculo").value = vehiculo.nombre;
-    document.getElementById("inputMotor").value = vehiculo.motor;
-    document.getElementById("inputEstructura").value = vehiculo.estructura;
-    document.getElementById("inputCombustible").value = vehiculo.combustible;
-    document.getElementById("inputResistencia").value = vehiculo.resistencia;
-    document.getElementById("inputPuntos").value = vehiculo.puntos;
-  }
+  vehiculos.cargarVehiculos(selectVehiculo, formVehiculo);
 });
 
 // Guardar (Alta o Modificación) Vehículo
 formVehiculo.addEventListener("submit", async (e) => { // Función aparte de guardado
   e.preventDefault();
-  const id = selectVehiculo.value;
-  let vehiculo;
-  if (id){
-    const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${id}`);
-    vehiculo = await resVehiculo.json();
-    const puntosDisponibles = 9-parseInt(document.getElementById("inputEstructura").value)- parseInt(document.getElementById("inputResistencia").value) -parseInt(document.getElementById("inputMotor").value);
-    if (puntosDisponibles < parseInt(document.getElementById("inputPuntos").value)){
-        await mostrarNotificacion("Puntos disponibles excedidos", `Podés elegir tener como máximo ${puntosDisponibles} puntos de mejora.`);
-        return
-      }
-    }
-  const datos = {
-    nombre: document.getElementById("inputNombreVehiculo").value,
-    motor: parseInt(document.getElementById("inputMotor").value),
-    estructura: parseInt(document.getElementById("inputEstructura").value),
-    combustible: parseInt(document.getElementById("inputCombustible").value),
-    resistencia: parseInt(document.getElementById("inputResistencia").value),
-    puntos: parseInt(document.getElementById("inputPuntos").value),
-    punto_interes: id ? parseInt(vehiculo.punto_interes): 1,
-    ubicacion_id: id ? parseInt(vehiculo.punto_interes): 1
-  };
-
-  let exito = false;
-   
-  if (id) {
-    exito = await viaje.modificarRegistro("vehiculos", id, datos);
-  } else {
-    exito = await viaje.crearRegistro("vehiculos", datos);
-  }
-
-  if (exito) {
-    alert("¡Vehículo guardado con éxito!");
-    formVehiculo.reset();
-    inicializarSelects();
-  } else {
-    alert("Ocurrió un error al guardar el vehículo.");
-  }
+  const { titulo, textoEstado} = vehiculos.agregarVehiculos(selectVehiculo, inicializarSelects);
+  await mostrarNotificacion(titulo,textoEstado);
 });
 
 // Borrar Vehículo
