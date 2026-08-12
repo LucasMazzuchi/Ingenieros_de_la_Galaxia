@@ -77,7 +77,7 @@ export async function agregaPlaneta(inicializarSelects, selectPlaneta, formPlane
   if (id) {
     exito = await viaje.modificarRegistro("cuerpos_celestes", id, datos);
   } else {
-    exito = await crearRegistro("cuerpos_celestes", datos);
+    exito = await viaje.crearRegistro("cuerpos_celestes", datos);
   }
 
   if (exito) {

@@ -149,7 +149,7 @@ const btnBorrarPlaneta = document.getElementById("btnBorrarPlaneta");
 
 // Cargar datos en el form si selecciona uno existente (Modificación)
 selectPlaneta.addEventListener("change", async () => {   
-  await planetas.cargarPlanetas(selectPlaneta);
+  await planetas.cargarPlanetas(selectPlaneta, formPlaneta);
 });
 // Guardar (Alta o Modificación) Planeta
 formPlaneta.addEventListener("submit", async (e) => { // Hacer una func aparte de Guardar
@@ -159,7 +159,7 @@ formPlaneta.addEventListener("submit", async (e) => { // Hacer una func aparte d
 
 // Borrar Planeta
 btnBorrarPlaneta.addEventListener("click", async () => { // Armar func aparte
-  
+  planetas.borrarPlaneta(inicializarSelects, selectPlaneta, formPlaneta);
 });
 // FORMULARIO VEHÍCULO 
 const formVehiculo = document.getElementById("tab-vehiculo");
