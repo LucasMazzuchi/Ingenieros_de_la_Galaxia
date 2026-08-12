@@ -1,4 +1,4 @@
-import { API_URL, VEHICULOS_URL, MISIONES_URL, PROGRESO_URL } from "./constantes.js";
+import { API_URL, VEHICULOS_URL, PUNTOS_URL, PROGRESO_URL } from "./constantes.js";
 
 const listaVehiculos = document.getElementById("listaVehiculos");
 const btnMostrarForm = document.getElementById("btnMostrarForm");

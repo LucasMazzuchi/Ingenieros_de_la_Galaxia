@@ -1,11 +1,11 @@
 import { Router } from "express";
-import {validarIds, verificarEstadoMision} from "./verificaciones_progreso.js";
+import {validarIds, verificarEstadoPunto} from "./verificaciones_progreso.js";
 import { validarId } from "./validaciones_errores.js";
 import * as progreso from "../bd/progreso.js";
 import { getVehiculo } from "../bd/vehiculos.js";
-import { completarMision } from "../logica/misiones.js";
+import { completarPunto } from "../logica/puntos_interes.js";
 import {mejorarVehiculo} from "../logica/vehiculos.js";
-import { getMision, getAllMisiones } from "../bd/misiones.js";
+import { getPunto, getAllPuntos } from "../bd/puntos_interes.js";
 import { ORDER, ORDER_BY } from "../constantes.js";
 
 export const endpointsProgreso = Router();
@@ -15,7 +15,7 @@ export const endpointsProgreso = Router();
 // En caso de ocurrir un error, responde con un código 500 y el mensaje de error.
 endpointsProgreso.get("/:id/:cuerpo_celeste_id", validarIds, async (req, res) => {
     try {
-        const puntosVisitados = await progreso.getAllMisiones(req.params.id, req.params.cuerpo_celeste_id);
+        const puntosVisitados = await progreso.getAllPuntos(req.params.id, req.params.cuerpo_celeste_id);
         const resPlaneta = await progreso.getPlaneta(req.params.id, req.params.cuerpo_celeste_id);
         const planetaCompletado = resPlaneta !== undefined ? resPlaneta.completado : false;
         const enProgreso = (resPlaneta !== undefined);
@@ -33,47 +33,47 @@ endpointsProgreso.get("/:id/:cuerpo_celeste_id", validarIds, async (req, res) =>
 // En caso de ocurrir un error interno, responde con un código 500 y el mensaje de error.
 endpointsProgreso.patch("/:id/desbloquear", validarId, validarIds, async (req, res) => {
     try {
-        const actual = await getMision(req.body.mision_id);
+        const actual = await getPunto(req.body.punto_interes_id);
         const vehiculo = await getVehiculo(req.params.id);
-        const misiones = await getAllMisiones({
+        const puntosInteres = await getAllPuntos({
             cuerpo_celeste_id : req.body.cuerpo_celeste_id,
             [ORDER_BY] : "posicion",
             [ORDER] : "ASC"
         });
-        // Chequear que exista actual, vehículo y misiones, sino 404 con un msj de error dinámico.
+        // Chequear que exista actual, vehículo y puntosInterés, sino 404 con un msj de error dinámico.
         // Armar un middleware en lógica puntos de interés.
-        if (misiones.length > 2 && Math.abs(vehiculo.punto_interes-actual.posicion)>1){
+        if (puntosInteres.length > 2 && Math.abs(vehiculo.punto_interes-actual.posicion)>1){
                 return res.status(409).json({error : "No podés saltar a este punto, debés ir a uno más cercano para poder ir a este."});
         }
-        const actualEstado = await progreso.getMision(req.params.id, req.body.mision_id);
+        const actualEstado = await progreso.getPunto(req.params.id, req.body.punto_interes_id);
         if (actualEstado){
             return res.status(200).json({error : ""})             
         }
-        if (actual.posicion > 1 && misiones[0].id !== req.body.mision_id) {
-            const misionAnterior = await progreso.getMisionAnteriorEnPlaneta(req.body.cuerpo_celeste_id, actual.posicion);
-            console.log(misionAnterior); // Sacar
-            const estaDesbloqueada = await progreso.getMision(req.params.id, misionAnterior.id);
+        if (actual.posicion > 1 && puntosInteres[0].id !== req.body.punto_interes_id) {
+            const puntoInteresAnterior = await progreso.getPuntoAnteriorEnPlaneta(req.body.cuerpo_celeste_id, actual.posicion);
+            console.log(puntoInteresAnterior); // Sacar
+            const estaDesbloqueada = await progreso.getPunto(req.params.id, puntoInteresAnterior.id);
             if (!estaDesbloqueada) {
                 return res.status(403).json({ error: "No podés desbloquear este punto porque el anterior está bloqueado." });
             }
         }
         // Dejar afuera del middleware de acá para abajo.
         const yaVisitado = await progreso.getPlaneta(req.params.id, req.body.cuerpo_celeste_id);
-        if (actual.posicion === misiones[0].posicion && !yaVisitado){ // Pasar esto por el body con la verificación ya hecha como un bool 'primero'
+        if (actual.posicion === puntosInteres[0].posicion && !yaVisitado){ // Pasar esto por el body con la verificación ya hecha como un bool 'primero'
             const planetaVisitando = await progreso.agregarPlaneta(req.params.id, req.body.cuerpo_celeste_id);
         }
-        const resMision = await progreso.desbloquearMision(req.params.id, req.body.mision_id, req.body.cuerpo_celeste_id);
+        const resPuntoInteres = await progreso.desbloquearPunto(req.params.id, req.body.punto_interes_id, req.body.cuerpo_celeste_id);
         res.status(200).json({ mensaje: "¡Nuevo punto de interés descubierto!" });
     } catch (error) {
         console.log("Error al desbloquear:", error);
-        res.status(500).json({ error: "Error interno al intentar desbloquear la misión." });
+        res.status(500).json({ error: "Error interno al intentar desbloquear el punto de interés." });
     }
 });
 
 // El endpoint explora un punto de interés asociado al id del vehículo pasado por req.params 
 // y responde con un código 200, un mensaje de éxito, el combustible de recompensa y si el planeta 
 // fue completado. En caso de ocurrir un error, responde con un código 500 y el mensaje de error.
-endpointsProgreso.patch("/:id/explorar", validarId, validarIds, verificarEstadoMision, completarMision, mejorarVehiculo, async (req, res) => {
+endpointsProgreso.patch("/:id/explorar", validarId, validarIds, verificarEstadoPunto, completarPunto, mejorarVehiculo, async (req, res) => {
     try {
         const ok = await progreso.completarPlaneta(req.params.id, req.body.cuerpo_celeste_id);
         res.status(200).json({ mensaje: "¡Punto explorado con éxito!", combustible: req.body.recompensa, cuerpoCompletado: ok});

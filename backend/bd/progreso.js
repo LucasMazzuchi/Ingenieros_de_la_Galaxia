@@ -3,8 +3,8 @@ import { updateVehiculo } from "./vehiculos.js";
 
 // Trae el estado y los ids relacionados de todos los puntos de interés asociados con cuerpoCelesteId dentro de la tabla puntos_interes_vehiculo y con vehiculoId
 // dentro de la tabla intermedia entre puntos de interés y vehículos. 
-export const getAllMisiones = async (vehiculoId, cuerpoCelesteId) => {
-    const texto = `SELECT mv.mision_id, mv.vehiculo_id, mv.cuerpo_celeste_id, mv.completado, m.nombre FROM misiones_vehiculos mv, misiones m WHERE mv.mision_id = m.id AND mv.vehiculo_id = $1 AND m.cuerpo_celeste_id = $2 AND m.borrado = FALSE`;
+export const getAllPuntos = async (vehiculoId, cuerpoCelesteId) => {
+    const texto = `SELECT pv.punto_interes_id, pv.vehiculo_id, pv.cuerpo_celeste_id, pv.completado, p.nombre FROM puntos_interes_vehiculos pv, puntos_interes p WHERE pv.punto_interes_id = p.id AND pv.vehiculo_id = $1 AND p.cuerpo_celeste_id = $2 AND p.borrado = FALSE`;
     const res = await db.query(texto, [vehiculoId, cuerpoCelesteId]);
     return res.rows;
 };
@@ -17,23 +17,23 @@ export const getPlaneta = async (vehiculoId, cuerpoCelesteId) => {
 };
 
 // Retorna el punto de interés asociado en tabla puntos_interes_vehiculo con los ids pasados por parámetro.
-export const getMision = async (vehiculoId, misionId) => {
-    const texto = `SELECT * FROM misiones_vehiculos WHERE vehiculo_id = $1 AND mision_id = $2`;
-    const res = await db.query(texto, [vehiculoId, misionId]);
+export const getPunto = async (vehiculoId, puntoInteresId) => {
+    const texto = `SELECT * FROM puntos_interes_vehiculos WHERE vehiculo_id = $1 AND punto_interes_id = $2`;
+    const res = await db.query(texto, [vehiculoId, puntoInteresId]);
     return res.rows[0];
 };
 
 // Busca el punto de interés anterior en el mismo planeta basándose en el ID
-export const getMisionAnteriorEnPlaneta = async (cuerpoCelesteId, posicion) => {
-    const texto = `SELECT * FROM misiones WHERE cuerpo_celeste_id = $1 AND posicion < $2 AND borrado = FALSE ORDER BY posicion DESC LIMIT 1`;
+export const getPuntoAnteriorEnPlaneta = async (cuerpoCelesteId, posicion) => {
+    const texto = `SELECT * FROM puntos_interes WHERE cuerpo_celeste_id = $1 AND posicion < $2 AND borrado = FALSE ORDER BY posicion DESC LIMIT 1`;
     const res = await db.query(texto, [cuerpoCelesteId, posicion]);
     return res.rows[0];
 };
 
 // Marca el punto de interés asociado a puntoInteresId como completado para el vehiculo asociado a vehiculoId.
-export const completarMision = async (vehiculoId, misionId) => {
-    const texto = `UPDATE misiones_vehiculos SET completado = TRUE WHERE vehiculo_id = $1 AND mision_id = $2`;
-    const res = await db.query(texto, [vehiculoId, misionId]);
+export const completarPunto = async (vehiculoId, puntoInteresId) => {
+    const texto = `UPDATE puntos_interes_vehiculos SET completado = TRUE WHERE vehiculo_id = $1 AND punto_interes_id = $2`;
+    const res = await db.query(texto, [vehiculoId, puntoInteresId]);
     return res.rowCount == 1;
 };
 
@@ -46,19 +46,19 @@ export const sumarCombustible = async (vehiculoId, cantidad) => {
 
 // Cuenta cuántos puntos de interés tiene el planeta en total y cuántos completó la nave,
 export const chequearProgresoPlaneta = async (vehiculoId, cuerpoCelesteId) => {
-    const textoTotales = `SELECT COUNT(*) as total FROM misiones WHERE cuerpo_celeste_id = $1 AND borrado = FALSE`;
-    const misionesTotales = await db.query(textoTotales, [cuerpoCelesteId]);
+    const textoTotales = `SELECT COUNT(*) as total FROM puntos_interes WHERE cuerpo_celeste_id = $1 AND borrado = FALSE`;
+    const puntosTotales = await db.query(textoTotales, [cuerpoCelesteId]);
 
-    const textoCompletas = `SELECT COUNT(*) as completadas FROM misiones_vehiculos mv, misiones m WHERE mv.mision_id = m.id AND mv.vehiculo_id = $1 AND m.cuerpo_celeste_id = $2 AND mv.completado = TRUE AND m.borrado = FALSE`;
-    const misionesCompletadas = await db.query(textoCompletas, [vehiculoId, cuerpoCelesteId]);
-    return {totales: Number(misionesTotales.rows[0].total), completadas: Number(misionesCompletadas.rows[0].completadas)};
+    const textoCompletos = `SELECT COUNT(*) as completados FROM puntos_interes_vehiculos pv, puntos_interes p WHERE pv.punto_interes_id = p.id AND pv.vehiculo_id = $1 AND p.cuerpo_celeste_id = $2 AND pv.completado = TRUE AND p.borrado = FALSE`;
+    const puntosCompletados = await db.query(textoCompletos, [vehiculoId, cuerpoCelesteId]);
+    return {totales: Number(puntosTotales.rows[0].total), completadas: Number(puntosCompletados.rows[0].completados)};
 };
 
 
 // Crea el registro con completado = FALSE.
-export const desbloquearMision = async (vehiculoId, misionId, cuerpoCelesteId) => {
-    const texto = `INSERT INTO misiones_vehiculos (vehiculo_id, mision_id, cuerpo_celeste_id, completado) VALUES ($1, $2, $3, FALSE)`;
-    const res = await db.query(texto, [vehiculoId, misionId, cuerpoCelesteId]);
+export const desbloquearPunto = async (vehiculoId, puntoInteresId, cuerpoCelesteId) => {
+    const texto = `INSERT INTO puntos_interes_vehiculos (vehiculo_id, punto_interes_id, cuerpo_celeste_id, completado) VALUES ($1, $2, $3, FALSE)`;
+    const res = await db.query(texto, [vehiculoId, puntoInteresId, cuerpoCelesteId]);
     return res.rowCount === 1;
 };
 
@@ -69,10 +69,10 @@ export const completarPlaneta = async (vehiculoId, cuerpoCelesteId) => {
     return res.rowCount === 1;
 };
 
-// Agrega el cuerpo celeste asocciado a cuerpoCelesteId a la tabla intermedia entre cuerpos celestes y vehículos para mostrar que el vehiculo asociado a vehiculoId
+// Agrega el cuerpo celeste asociado a cuerpoCelesteId a la tabla intermedia entre cuerpos celestes y vehículos para mostrar que el vehiculo asociado a vehiculoId
 // tiene progreso.
 export const agregarPlaneta = async (vehiculoId, cuerpoCelesteId) => {
-    const textoCompletado = `INSERT INTO cuerpos_celestes_vehiculos (vehiculo_id, cuerpo_celeste_id, completado) VALUES ($1, $2, FALSE)`; // Cambiar el nombre de la var.
-    const res = await db.query(textoCompletado,[vehiculoId, cuerpoCelesteId]); // cambiar acá
+    const texto = `INSERT INTO cuerpos_celestes_vehiculos (vehiculo_id, cuerpo_celeste_id, completado) VALUES ($1, $2, FALSE)`;
+    const res = await db.query(texto,[vehiculoId, cuerpoCelesteId]);
     return res.rowCount === 1;
 };
