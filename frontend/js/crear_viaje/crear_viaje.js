@@ -1,5 +1,6 @@
-import * as constantes from "./constantes.js";
-import {mostrarNotificacion} from "./notificaciones.js";
+import * as constantes from "../constantes.js";
+import {mostrarNotificacion} from "../notificaciones.js";
+import {obtenerDatos} from "../crear_viaje/solicitudes_crear_viaje.js"
 // Listas de imágenes de los planetas por fuera
 const imagenesPlanetas = [
   "../assets/img/agujero_negro.png",
@@ -39,9 +40,9 @@ const imagenesPuntos = [
 
 
 // Crea una galería clickeable dentro de un contenedor, y guarda la elegida en un input hidden
-function crearSelectorImagenes(contenedorId, imagenes, inputHiddenId) {
+function crearSelectorImagenes(contenedorId, imagenes, inputIdimagen) {
   const contenedor = document.getElementById(contenedorId);
-  const inputHidden = document.getElementById(inputHiddenId);
+  const inputHidden = document.getElementById(inputIdimagen);
   contenedor.innerHTML = "";
 
   imagenes.forEach((url, index) => {
@@ -83,98 +84,9 @@ botonesTab.forEach(boton => {
   });
 });
 
-// Hace un fetch para obtener los datos de la URL pasada por recurso y lo devuelve, si ocurre
-// un error devuelve un arreglo vacío.
-async function obtenerDatos(recurso) {
-  try {
-    const res = await fetch(`${constantes.API_URL}/${recurso}`);
-    if (!res.ok) throw new Error(`Error al obtener ${recurso}`);
-    return await res.json();
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-};
-
-// Hace un fetch para crear una entidad con lo que contiene datos usando como URL recurso y
-// devuelve un booleano indicando si la creación fue exitosa.
-async function crearRegistro(recurso, datos) {
-  try {
-    const res = await fetch(`${constantes.API_URL}/${recurso}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datos)
-    });
-    return res.ok;
-  } catch (error) {
-    console.error("Error grave en el Fetch:", error);
-    return false;
-  }
-}
-
-// Hace un fetch para modificar la entidad asociada al id con lo que contiene datos usando
-// como URL recurso y devuelve un booleano indicando si la creación fue exitosa.
-async function modificarRegistro(recurso, id, datos) {
-  try {
-    const res = await fetch(`${constantes.API_URL}/${recurso}/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datos)
-    });
-    return res.ok;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-}
-
-// Hace un fetch para eliminar la entidad asociada a id usando como URL recurso y
-// devuelve un booleano indicando si la creación fue exitosa.
-async function eliminarRegistro(recurso, id) {
-  try {
-    const res = await fetch(`${constantes.API_URL}/${recurso}/${id}`, {
-      method: "DELETE"
-    });
-    return res.ok;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-}
-
-// La función arma el desplegable de las posiciones disponibles para crear o modificar un planeta.
-async function actualizarPosicionesPlanetas() {
-  const selectPosicion = document.getElementById("inputPosicion");
-  if (!selectPosicion) return;
-
-  // Obtenemos los planetas actuales
-  const planetas = await obtenerDatos("cuerpos_celestes"); // Cambiar por cte
-  const planetaIdSeleccionado = document.getElementById("selectPlaneta").value;
-
-  selectPosicion.innerHTML = '<option value="">-- Seleccione posición --</option>';
-
-  // Filtramos las posiciones ocupadas por otros planetas y las volvemos un entero.
-  const posicionesOcupadas = new Set(
-    planetas
-      .filter(planeta => planeta.id != planetaIdSeleccionado && planeta.posicion)
-      .map(planeta => parseInt(planeta.posicion))
-  );
-
-  const MAX_POSICIONES = 9;  
-
-  for (let i = 1; i <= MAX_POSICIONES; i++) {
-    if (!posicionesOcupadas.has(i)) {
-      const opcion = document.createElement("option");
-      opcion.value = i;
-      opcion.textContent = `${i}`;
-      selectPosicion.appendChild(opcion);
-    }
-  }
-}
-
 // LOGICA DE CONSULTA Y LLENADO DE SELECTS (Al cargar la página) 
 async function inicializarSelects() {
-  const planetas = await obtenerDatos("cuerpos_celestes"); //Cambiar cte
+  const planetas = await obtenerDatos(constantes.url);
   await actualizarPosicionesPlanetas();
   const selectPlaneta = document.getElementById("selectPlaneta");
   const selectPlanetaPunto = document.getElementById("selectPlanetaPunto"); // El que esta en la sección puntos de interés
