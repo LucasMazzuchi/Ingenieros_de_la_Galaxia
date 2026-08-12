@@ -5,11 +5,11 @@ import {validarEntrada, validarString, validarEntero, validarBool,
 // La función inicializa el diccionario de validadores y el de entrada para la entidad puntos de interés, valida la entrada mediante validarEntrada y llama a la
 // next. En caso de tener campos que no cumplan con los validadores, responde con un error 400 que contiene los campos inválidos y sus errores. Si ocurre un error
 // dentro de las validaciones, responde con un código 400 y los errores.
-export const validarMision = (req, res, next) => {
+export const validarPuntoInteres = (req, res, next) => {
     if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).json({ error: constantes.ERROR_BODY_VACIO });
     }
-    const reglasMision = {
+    const reglasPuntoInteres = {
     [constantes.NOMBRE]: validarString,
     [constantes.DESCRIPCION]: validarString,
     [constantes.POSICION]: validarEntero,
@@ -25,7 +25,7 @@ export const validarMision = (req, res, next) => {
     [constantes.CUERPO_CELESTE]: { campo: req.body.cuerpo_celeste_id, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE }
 
 };
-    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasMision, req.method, Object.keys(req.body), false);
+    const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasPuntoInteres, req.method, Object.keys(req.body), false);
         if (camposInvalidos.length !== 0) {
             return res.status(400).json({error: constantes.ERROR_CAMPOS, campos: camposInvalidos});
         }
@@ -40,7 +40,7 @@ export const validarMision = (req, res, next) => {
 // La función inicializa los diccionarios con los validadores y los campos permitidos para filtrar en la entidad puntos de interés, valida que los filtros
 // dentro de req sean correctos, los procesa, los carga en body y llama a next. En caso de haber filtros que no cumplen con los validadores, responde con un
 // código 400, los filtros equivocados y sus errores.
-export const validarFiltrosMision = (req, res, next) => {
+export const validarFiltrosPuntoInteres = (req, res, next) => {
     const regex = [constantes.ID, constantes.NOMBRE, constantes.CUERPO_CELESTE, constantes.POSICION].join('|');
     const regexOrdenarPor = new RegExp( `^(${regex})$`, "i");
 

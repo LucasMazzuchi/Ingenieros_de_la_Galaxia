@@ -33,10 +33,10 @@ export const validarIds = (req, res, next) => {
         } else {
             entrada = {
                 [constantes.CUERPO_CELESTE]: { campo: req.body.cuerpo_celeste_id, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE },
-                [constantes.MISION]: { campo: req.body.mision_id, min: 1, max: constantes.ID_MAX, error: constantes.MISION }
+                [constantes.PUNTO_INTERES]: { campo: req.body.punto_interes_id, min: 1, max: constantes.ID_MAX, error: constantes.PUNTO_INTERES }
             };
             reglasIds[constantes.CUERPO_CELESTE] = validarEntero;
-            reglasIds[constantes.MISION] = validarEntero;
+            reglasIds[constantes.PUNTO_INTERES] = validarEntero;
         }
     }
     const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasIds, req.method, Object.keys(datos), true);
@@ -53,17 +53,17 @@ export const validarIds = (req, res, next) => {
 // La función busca el estado del punto de interés asociado al id pasado por el cuerpo de req respecto al vehículo asociado al id pasado por parámetro en req
 // y llama a la función next, Si ocurre un error, responde. En caso de tener que descubrir otro punto primero responde con estado 403 junto con su error, si el punto fue explorado con estado 400, en otros
 // casos de error con un estado 500.
-export const verificarEstadoMision = async (req, res, next) => {// Si hay 0 misiones, o no se puede desubrir el punto, retorna.
+export const verificarEstadoPunto = async (req, res, next) => {// Si hay 0 puntos de interes, o no se puede desubrir el punto, retorna.
     try {
-        const mision = await progreso.getMision(req.params.id, req.body.mision_id);
-        if (!mision) {
+        const puntoInteres = await progreso.getPunto(req.params.id, req.body.punto_interes_id);
+        if (!puntoInteres) {
             return res.status(403).json({ error: "Tenés que descubrir este punto primero." });
         }
-        if (mision.completado) {
+        if (puntoInteres.completado) {
             return res.status(400).json({ error: "Este punto ya fue explorado por la nave." });
         }
         return next();
     } catch (error){
-        res.status(500).json({ error: "Error al verificar el estado de la misión." });
+        res.status(500).json({ error: "Error al verificar el estado del punto de interés." });
     }
 }
