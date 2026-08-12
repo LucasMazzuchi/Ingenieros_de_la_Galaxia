@@ -220,7 +220,8 @@ async function inicializarSelects() {
     function actualizarPuntosInteres () { // Pasar por params selectPunto, puntosInteres, planetaId
       selectPunto.innerHTML = '<option value="">-- Crear nuevo --</option>'; // Este hay que sacarlo afuera de la función
       const planetaId = parseInt(selectPlanetaPunto.value);
-      const puntosInteresFiltrados = !planetaId ? puntosInteres : puntosInteres.filter(function (puntoInteres) {
+      const puntosInteresSinTierra = puntosInteres.filter(function (puntoInteres){return puntoInteres.cuerpo_celeste_id !== 1});
+      const puntosInteresFiltrados = !planetaId ? puntosInteresSinTierra : puntosInteres.filter(function (puntoInteres) {
         return puntoInteres.cuerpo_celeste_id == planetaId;
       });
       puntosInteresFiltrados.forEach(puntoInteres => {
