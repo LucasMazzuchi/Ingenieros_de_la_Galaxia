@@ -61,17 +61,17 @@ function inicializarBotones(vehiculoId) {
             const vehiculo = await resEstadoVehiculo.json();
             // Armar func que solo devuelva el título, el texto y otrosCampos
             if (vehiculo[campo] >= 3) {
-                mostrarNotificacion(`El atributo ${campo} está al máximo`, "Utilizá tus puntos de mejora para los demás atributos.", false);
+                await mostrarNotificacion(`El atributo ${campo} está al máximo`, "Utilizá tus puntos de mejora para los demás atributos.");
                 return;
             }
             if (vehiculo.puntos <= 0) {
-                mostrarNotificacion("Sin Puntos", "La nave no tiene puntos de mejora disponibles.", false);
+                await mostrarNotificacion("Sin Puntos", "La nave no tiene puntos de mejora disponibles.");
                 return;
             }
             const otrosCampos = campos.filter(function (campoActual) {return campoActual !== campo});
             const campoInvalido = otrosCampos.filter(function (otroCampo){return vehiculo[otroCampo] < vehiculo[campo]});
             if (campoInvalido.length !== 0){
-                mostrarNotificacion("Mejora no disponible", `Tenés que mejorar primero todos los atributos al nivel ${vehiculo[campo]} para poder desbloquearla.`, false);
+                await mostrarNotificacion("Mejora no disponible", `Tenés que mejorar primero todos los atributos al nivel ${vehiculo[campo]} para poder desbloquearla.`);
                 return;
             }
             // Hasta acá
@@ -92,7 +92,10 @@ function inicializarBotones(vehiculoId) {
                 if (actualizarVehiculo.ok) {
                     // De acá para abajo afuera
                     await actualizarPantallaDesdeBD(vehiculoId);
-                    mostrarNotificacion("¡Mejora Aplicada!", `Se ha subido el atributo ${campo} al nivel ${vehiculo[campo] + 1}.`, false, 0, true, nivelNave);
+                    await mostrarNotificacion("¡Mejora Aplicada!", `Se ha subido el atributo ${campo} al nivel ${vehiculo[campo] + 1}.`, false, 0, true, nivelNave);
+                    if (nivelNave){
+                        await mostrarNotificacion("¡La nave subió de nivel!", `Alcanzaste el nivel ${nivelNave} en todos los componentes de la nave. Desbloquaste un nuevo aspecto.`);
+                    }
                 }
             } catch (error) {
                 console.error(`Error al mejorar ${campo}:`, error);
@@ -104,7 +107,7 @@ function inicializarBotones(vehiculoId) {
         const resActualVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoId}`);
         const vehiculo = await resActualVehiculo.json();
         if (vehiculo.combustible >= 100) {
-            mostrarNotificacion("Tanque Lleno", "El vehículo ya tiene el combustible al máximo.", false);
+            await mostrarNotificacion("Tanque Lleno", "El vehículo ya tiene el combustible al máximo.");
             return;
         }
         try {
@@ -116,7 +119,7 @@ function inicializarBotones(vehiculoId) {
 
             if (resCargado.ok) {
                 await actualizarPantallaDesdeBD(vehiculoId);
-                mostrarNotificacion("¡Tanque Lleno!", "Se ha cargado el combustible al 100%.", false);
+                await mostrarNotificacion("¡Tanque Lleno!", "Se ha cargado el combustible al 100%.");
             }
         } catch (error) {
             console.error("Error al recargar combustible:", error);
