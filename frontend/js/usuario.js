@@ -6,12 +6,42 @@ const formNuevoVehiculo = document.getElementById("formNuevoVehiculo");
 const btnCancelarNuevoVehiculo = document.getElementById("btnCancelarNuevoVehiculo");
 const inputNombreNuevoVehiculo = document.getElementById("inputNombreNuevoVehiculo");
 
-// Carga todos los vehículos dentro del menú de naves.
-async function cargarVehiculos() {
+// Carga todos los vehículos dentro del menú de naves e inicializa el formulario de crear vehículo.
+async function iniciarVehiculos() {
   try {
     const res = await fetch(`${API_URL}/${VEHICULOS_URL}`);
     const vehiculos = await res.json();
     pintarVehiculos(vehiculos);
+    // Guarda en la base de datos a la nave con el nombre elegido por el usuario, guarda el id en localStorage con seleccionarVehiculo y lo redirecciona a la página
+    // correspondiente.
+    formNuevoVehiculo.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nombre = inputNombreNuevoVehiculo.value.trim();
+    // Acpa cortar la interacción con la página.
+    if (!nombre) return;
+
+    const datosVehiculoNuevo = {
+      nombre: nombre,
+      motor: 1,
+      estructura: 1,
+      combustible: 100,
+      resistencia: 1,
+      ubicacion_id: 1,
+      punto_interes: 1,
+      puntos: 0
+    };
+
+    try {
+      const vehiculo = guardarVehiculo(datosVehiculoNuevo);
+      if (!vehiculo){
+        alert("No se pudo crear la nave. Intentalo de nuevo.");
+      }
+      await seleccionarVehiculo(vehiculo.id);
+    } catch (error) {
+      console.error("Error al crear el vehículo:", error);
+      alert("Ocurrió un error al crear el nave.");
+    }
+});
   } catch (error) {
     console.error("Error al obtener los vehículos:", error);
     listaVehiculos.innerHTML = `<p class="mensaje-vacio">No se pudo conectar con el servidor.</p>`;
@@ -24,7 +54,7 @@ function pintarVehiculos(vehiculos) {
 
   if (!vehiculos || vehiculos.length === 0) {
     listaVehiculos.innerHTML = `<p class="mensaje-vacio">Todavía no tenés ninguna Nave. ¡Creá una!</p>`;
-    mostrarFormulario();
+    mostrarFormularioNombre();
     return;
   }
 
@@ -43,14 +73,14 @@ function pintarVehiculos(vehiculos) {
 }
 
 // Resalta el formulario para el nombre de la nave.
-function mostrarFormulario() {
+function mostrarFormularioNombre() {
   formNuevoVehiculo.hidden = false;
   btnMostrarForm.hidden = true;
   inputNombreNuevoVehiculo.focus();
 }
 
 // Saca el resaltado del formulario para el nombre de la nave.
-function ocultarFormulario() {
+function ocultarFormularioNombre() {
   formNuevoVehiculo.hidden = true;
   btnMostrarForm.hidden = false;
   formNuevoVehiculo.reset();
@@ -76,45 +106,19 @@ async function seleccionarVehiculo(idVehiculo) {
   }
 }
 
-// Guarda en la base de datos a la nave con el nombre elegido por el usuario, guarda el id en localStorage con seleccionarVehiculo y lo redirecciona a la página
-// correspondiente.
-formNuevoVehiculo.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const nombre = inputNombreNuevoVehiculo.value.trim();
-  if (!nombre) return;
-  document.getElementById("btnCrearNuevoVehiculo").disabled = true;
-  const datosVehiculoNuevo = {
-    nombre: nombre,
-    motor: 1,
-    estructura: 1,
-    combustible: 100,
-    resistencia: 1,
-    ubicacion_id: 1,
-    punto_interes: 1,
-    puntos: 0
-  };
-
-  try {
-    const res = await fetch(`${API_URL}/${VEHICULOS_URL}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datosVehiculoNuevo)
-    });
-
-    if (!res.ok) {
-      alert("No se pudo crear la nave. Intentalo de nuevo.");
-      document.getElementById("btnCrearNuevoVehiculo").disabled = false;
-      return;
-    }
-    const resultado = await res.json();
-    const resVehiculo = await seleccionarVehiculo(resultado.id);
-  } catch (error) {
-    console.error("Error al crear el vehículo:", error);
-    document.getElementById("btnCrearNuevoVehiculo").disabled = false;
-    alert("Ocurrió un error al crear el nave.");
+async function guardarVehiculo(vehiculo) {
+  const res = await fetch(`${API_URL}/${VEHICULOS_URL}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(datosVehiculoNuevo)
+  });
+  if (!res.ok) {
+    return;
   }
-});
+  const resultado = await res.json();
+  return resultado;
+}
 
-btnMostrarForm.addEventListener("click", mostrarFormulario);
-btnCancelarNuevoVehiculo.addEventListener("click", ocultarFormulario);
-document.addEventListener("DOMContentLoaded", cargarVehiculos);
+btnMostrarForm.addEventListener("click", mostrarFormularioNombre);
+btnCancelarNuevoVehiculo.addEventListener("click", ocultarFormularioNombre);
+document.addEventListener("DOMContentLoaded", iniciarVehiculos);
