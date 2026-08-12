@@ -1,6 +1,7 @@
 // Conexión con la base de datos.
 import { Pool } from "pg";
 import {existsSync, readFileSync} from "fs";
+
 // Arma la conexión a la base de datos con las variables declaradas en el .env.
 export const db = new Pool({
   host: process.env.DB_HOST,
@@ -14,10 +15,8 @@ export const db = new Pool({
 // En caso de que no exista la base de datos lo imprime por la consola del backend.
 const _inicializarBd = async (ruta, encoding) => {
   try {
-    if (existsSync(ruta)) { // Sacar if  y dejar solo llamada readFileSync, manejar error directamente.
-      const sql = readFileSync(ruta, encoding);
-      await db.query(sql);
-    }
+    const sql = readFileSync(ruta, encoding);
+    await db.query(sql);
   } catch (error) {
     console.error("Error al levantar la base de datos: ", error);
   }
