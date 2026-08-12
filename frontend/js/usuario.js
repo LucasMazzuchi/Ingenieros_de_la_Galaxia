@@ -81,9 +81,8 @@ async function seleccionarVehiculo(idVehiculo) {
 formNuevoVehiculo.addEventListener("submit", async (e) => {
   e.preventDefault();
   const nombre = inputNombreNuevoVehiculo.value.trim();
-  // Acpa cortar la interacción con la página.
   if (!nombre) return;
-
+  document.getElementById("btnCrearNuevoVehiculo").disabled = true;
   const datosVehiculoNuevo = {
     nombre: nombre,
     motor: 1,
@@ -104,12 +103,14 @@ formNuevoVehiculo.addEventListener("submit", async (e) => {
 
     if (!res.ok) {
       alert("No se pudo crear la nave. Intentalo de nuevo.");
+      document.getElementById("btnCrearNuevoVehiculo").disabled = false;
       return;
     }
     const resultado = await res.json();
     const resVehiculo = await seleccionarVehiculo(resultado.id);
   } catch (error) {
     console.error("Error al crear el vehículo:", error);
+    document.getElementById("btnCrearNuevoVehiculo").disabled = false;
     alert("Ocurrió un error al crear el nave.");
   }
 });

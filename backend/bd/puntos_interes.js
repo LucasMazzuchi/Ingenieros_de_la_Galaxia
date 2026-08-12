@@ -38,21 +38,7 @@ export async function createPunto(puntoInteres) {
 export async function removePunto(posicion, cuerpoCelesteId, id){
     const navesConflicto = await verificarNaves(posicion, cuerpoCelesteId);
     if (navesConflicto.length !== 0){
-        const puntosInteres = await getAllPuntos({cuerpo_celeste_id: cuerpoCelesteId, "order_by": "posicion", "order": "ASC"});
-        let indice = 0;
-        puntosInteres.forEach(function (puntoInteres, index){
-            if (puntoInteres.posicion === posicion){
-                indice = index;
-            }
-        });
-        for(const vehiculo of navesConflicto){
-            if (puntosInteres.length > 1){
-                const nuevoIndice = indice > 0 ? indice - 1 : indice + 1;
-                const cambioNavePunto = await updateVehiculo(vehiculo.id, {punto_interes: puntosInteres[nuevoIndice].posicion});
-            } else {
-                const cambioNaveCuerpo = await updateVehiculo(vehiculo.id, {ubicacion_id: 1, punto_interes: 1});
-            }
-        };
+        await reacomodarVehiculos(posicion, navesConflicto, cuerpoCelesteId);
     }
     const solicitud = "UPDATE puntos_interes SET borrado = TRUE WHERE id=$1 AND borrado = FALSE RETURNING *";
     const res = await db.query(solicitud, [id]);
@@ -72,4 +58,24 @@ export async function updatePunto(id, puntoInteres){
 export async function cantidadPuntos(id){
     const res = await db.query("SELECT COUNT(*) FROM puntos_interes WHERE borrado=FALSE AND cuerpo_celeste_id=$1", [id]);
     return Number(res.rows[0].count);
+}
+
+// La función mueve los vehículos que se encuentran en el punto de interés insertado en posicion que está en el cuerpo celeste asociado a cuerpoCelesteId
+// hacia otro punto dentro del planeta o hacia la tierra en caso de no haberlos.
+async function reacomodarVehiculos(posicion, vehiculos, cuerpoCelesteId){
+    const puntosInteres = await getAllPuntos({cuerpo_celeste_id: cuerpoCelesteId, "order_by": "posicion", "order": "ASC"});
+    let indice = 0;
+    puntosInteres.forEach(function (puntoInteres, index){
+        if (puntoInteres.posicion === posicion){
+            indice = index;
+        }
+    });
+    for (const vehiculo of vehiculos){
+        if (puntosInteres.length > 1){
+            const nuevoIndice = indice > 0 ? indice - 1 : indice + 1;
+            const cambioNavePunto = await updateVehiculo(vehiculo.id, {punto_interes: puntosInteres[nuevoIndice].posicion});
+        } else {
+            const cambioNaveCuerpo = await updateVehiculo(vehiculo.id, {ubicacion_id: 1, punto_interes: 1});
+        }
+    };
 }

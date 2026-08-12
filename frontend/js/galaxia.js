@@ -50,7 +50,7 @@ async function pintarPlanetas(cuerpos_celestes, naveId) {
     if (estadoTierra.planetaCompletado){
       window.location.href = "estacion_espacial.html";
     } else {
-      mostrarNotificacion("No puede entrar a la estación","Desbloquee la nave completando todos los puntos en la Tierra.", false);
+      await mostrarNotificacion("No puede entrar a la estación","Desbloquee la nave completando todos los puntos en la Tierra.");
     }
   });
   // Hasta acá pintar Estación espacial
@@ -92,7 +92,7 @@ async function pintarPlanetas(cuerpos_celestes, naveId) {
         const errorNave = "Nave no desbloqueada, completa todos los puntos de interés del planeta Tierra para poder acceder a los demás." // Hacer cte
         const errorCombustible = "Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave o recarga combustible para poder viajar a otro."; // Hacer cte
         const textoError = estadoTierra.planetaCompletado ? errorCombustible : errorNave;
-        mostrarNotificacion("No puede entrar al planeta",textoError, false)
+        await mostrarNotificacion("No puede entrar al planeta",textoError)
       }
     });
 
@@ -111,7 +111,7 @@ async function iniciar () {
       console.log("planetas completados:", completados); // Sacar
       console.log("planetas totales", planetas.cuerpos.length); // Sacar
       if (completados === planetas.cuerpos.length){
-      mostrarNotificacion("Juego completado", "Si querés seguir jugando, podés modificar la galaxia o comenzar de nuevo creando otra nave.", false);
+        await mostrarNotificacion("Juego completado", "Si querés seguir jugando, podés modificar la galaxia o comenzar de nuevo creando otra nave.");
     }
 
 
