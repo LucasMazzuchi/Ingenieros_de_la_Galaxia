@@ -33,16 +33,11 @@ export async function createCuerpoCeleste(cuerpo) {
 }
 
 // Borra un cuerpo celeste por el id pasado por parámetro marcando la casilla borrado como true. En caso de que no exista el cuerpo celeste devuelve false, sino devuelve true en ok junto
-//  al cuerpo celeste borrado. Si el cuerpo celeste tiene puntos de interés que hacen referencia a él, devuelve ok en false, tieneDependientes en true y cuerpoCeleste en null. En el caso
+// al cuerpo celeste borrado. Si el cuerpo celeste tiene puntos de interés que hacen referencia a él, devuelve ok en false, tieneDependientes en true y cuerpoCeleste en null. En el caso
 // de no tener dependientes, devuelve en ok true, en cuerpoCeleste el cuerpo borrado y en tieneDependiendtes, false.
 export async function removeCuerpoCeleste(id) {
     const {puntosInteres, vehiculos} = await verificarDependencia(id);
-    for (const punto of puntosInteres){
-        await removePunto(punto.id);
-    }
-    for (const vehiculo of vehiculos){
-        await updateVehiculo(vehiculo.id, {ubicacion_id : 1, punto_interes: 0});
-    }
+    await manejarDependencias(puntosInteres, vehiculos);
     const consultaUpdate = "UPDATE cuerpos_celestes SET borrado = TRUE WHERE id = $1 AND borrado = FALSE RETURNING *";
     const resBorrado = await db.query(consultaUpdate, [id]);
     return { cuerpo: resBorrado.rows[0], puntosInteres: puntosInteres, vehiculos: vehiculos };
@@ -60,4 +55,14 @@ export async function updateCuerpoCeleste(id, cuerpo){
 export async function cantidadCuerposCelestes(){
     const res = await db.query(" SELECT COUNT(*) FROM cuerpos_celestes WHERE borrado=FALSE");
     return Number(res.rows[0].count);
+}
+
+// La función elimina los puntos de interés pasados por parámetro y mueva la posición de los vehiculos pasados por parámetro. 
+async function manejarDependencias(puntosInteres, vehiculos){
+    for (const punto of puntosInteres){
+        await removePunto(punto.id);
+    }
+    for (const vehiculo of vehiculos){
+        await updateVehiculo(vehiculo.id, {ubicacion_id : 1, punto_interes: 0});
+    }
 }

@@ -1,11 +1,11 @@
 import { Router } from "express";
 import * as cuerpos from "../bd/cuerpos_celestes.js";
-import { validarCuerpoCeleste, validarFiltrosCuerpoCeleste } from "./verificaciones_cuerpo_celeste.js";
+import { validarCuerpoCeleste, validarFiltrosCuerpoCeleste, validarTierra } from "./verificaciones_cuerpo_celeste.js";
 import * as constantes from "../constantes.js";
 import { validarId, manejarError } from "./validaciones_errores.js";
 import * as logica from "../logica/cuerpos_celestes.js";
 import { getVehiculo } from "../bd/vehiculos.js";
-import {removePunto} from "../bd/puntos_interes.js"
+
 export const endpointsCuerpoCeleste = Router();
 
 // El endpoint responde con un código 200 y todos los cuerpos celestes que cumplen con los filtros
@@ -25,7 +25,6 @@ endpointsCuerpoCeleste.get("/", validarFiltrosCuerpoCeleste, async (req, res) =>
                 };
             });
         }
-        
         res.status(200).json(listaCuerposCelestes);
     } catch(error) {
         const { estado, msjError } = manejarError(error);
@@ -74,15 +73,8 @@ endpointsCuerpoCeleste.post("/", validarCuerpoCeleste, async (req, res)=> {
 // Si se trata de modificar el cuerpo celeste con id 1 responde con un 403 y el mensaje de error.
 // En caso de no exisitir, responde con un código 404 y el mensaje de error. Si ocurre un error, responde con
 // un estado y un mensaje determinado por manejarError.
-endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req, res) => {
+endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, validarTierra, async (req, res) => {
     try{
-        if (RegExp("^1$").test(req.params.id)){
-            return res.status(403).json({error: "No se puede modificar la Tierra."});
-        }
-        const cuerpoCeleste = await cuerpos.getCuerpoCeleste(req.params.id) //Sacar
-        if (!cuerpoCeleste) {// Sacar
-            return res.status(404).json({error: constantes.ERROR_INEXISTENTE}); // Sacar
-        }
         if (!await cuerpos.updateCuerpoCeleste(req.params.id, req.body)){
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         }
@@ -97,18 +89,14 @@ endpointsCuerpoCeleste.patch("/:id", validarId, validarCuerpoCeleste, async (req
 // código 200, el mensaje de éxito y la entidad borrada. Si se trata de modificar el cuerpo celeste
 // con id 1 responde con un 403 y el mensaje de error. En caso de no exisitir, responde con un código 404
 // y el mensaje de error. Si ocurre un error, responde con un estado y un mensaje determinado por manejarError.
-endpointsCuerpoCeleste.delete("/:id", validarId, async (req, res) => {
+endpointsCuerpoCeleste.delete("/:id", validarId, validarTierra, async (req, res) => {
     try{
-        if (RegExp("^1$").test(req.params.id)){
-            return res.status(403).json({error: "No se puede modificar la Tierra."});
-        }
         const {cuerpo, puntosInteres, vehiculos} = await cuerpos.removeCuerpoCeleste(req.params.id);
         if (!cuerpo && puntosInteres.length === 0  && vehiculos.length === 0){
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         }
         res.status(200).json({exito : constantes.EXITO_CONSULTA("cuerpo celeste", "eliminada"), entidad : cuerpo});
     } catch (error) {
-        console.log(error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }

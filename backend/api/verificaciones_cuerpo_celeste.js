@@ -109,3 +109,11 @@ export const validarFiltrosCuerpoCeleste = (req, res, next) => {
     }
     next();
 };
+
+// La función valida si el id en req.params corresponde a Tierra. Si es el id 1, responde con un 403 y el error tierra, sino llama a la función next.
+export const validarTierra = (req, res, next) => {
+    if (RegExp("^1$").test(req.params.id)){
+        return res.status(403).json({error: constantes.ERROR_TIERRA});
+    }
+    next();
+};

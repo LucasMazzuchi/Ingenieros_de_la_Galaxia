@@ -40,7 +40,7 @@ async function iniciarPlaneta() {
         }
         if (!planetas[0].disponible) {
             window.location.href = "galaxia.html";// Lo devolvemos al mapa
-            mostrarNotificacion("Planeta no dsiponible", "Recorra los demás planetas disponibles para desbloquearlo.", false);
+            await mostrarNotificacion("Planeta no dsiponible", "Recorra los demás planetas disponibles para desbloquearlo.");
             return;
         }
         // Terminan verificaciones
@@ -70,12 +70,8 @@ async function iniciarPlaneta() {
             });
             const punto = !(await okPunto(naveId));
             const texto = punto ? constantes.PUNTO_DESBLOQUEADO : constantes.ERROR_PUNTO_MAX;
-            mostrarNotificacion("¡Planeta Explorado!",
-                `Visitaste todos los puntos de interés ${texto}. Podés volver a la galaxia para continuar tu viaje o mejorar tu nave.`,
-                false,
-                0,
-                punto,
-
+            await mostrarNotificacion("¡Planeta Explorado!",
+                `Visitaste todos los puntos de interés ${texto}. Podés volver a la galaxia para continuar tu viaje o mejorar tu nave.`
             )
         }
         // Termina verificación completado
@@ -275,9 +271,22 @@ async function manejarClickPunto(cuerpoCelesteId, puntoInteres, vehiculoId, coor
                 if (data.combustible === 0){
                     texto = "Se encontró combustible pero no se pudo aprovechar porque el tanque está lleno.";
                 }
-                const desbloqueaPunto = !(await okPunto(vehiculoId));
+                const desbloqueaPuntoMejora = !(await okPunto(vehiculoId));
                 const completado = estadoPlanetaAntes ? false : data.cuerpoCompletado;
-                mostrarNotificacion("Punto Completado!", texto, completado, cuerpoCelesteId, desbloqueaPunto);
+                await mostrarNotificacion("Punto Completado!", texto);
+                if (data.cuerpoCompletado){
+                    let textoMejora;
+                    if (cuerpoCelesteId !== 1){
+                        textoMejora = desbloqueaPuntoMejora ? constantes.PUNTO_DESBLOQUEADO : constantes.ERROR_PUNTO_MAX;
+                    }
+                    if (cuerpoCelesteId === 1){
+                        textoMejora = "y fuiste recompensado con una nave";
+                    }
+                    await mostrarNotificacion(
+                        "¡Planeta Explorado!", 
+                        `Visitaste todos los puntos de interés ${textoMejora}. Podés volver a la galaxia para continuar tu viaje o mejorar tu nave.`
+                    );
+                }
             }
             return true;
         } catch (error) {
@@ -294,7 +303,7 @@ async function manejarClickPunto(cuerpoCelesteId, puntoInteres, vehiculoId, coor
             const data = await resDesbloquear.json();
 
             if (!resDesbloquear.ok) {
-                mostrarNotificacion("Ruta Inválida", data.error || "Debe explorar el punto anterior primero.", false);
+                await mostrarNotificacion("Ruta Inválida", data.error || "Debe explorar el punto anterior primero.");
                 return false;
             }
 

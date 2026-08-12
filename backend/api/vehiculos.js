@@ -12,7 +12,6 @@ endpointsVehiculos.get("/", validarFiltrosVehiculo, async (req, res) => {
         const listaVehiculos = await vehiculos.getAllVehiculos(req.query, "vehiculo");
         res.status(200).json(listaVehiculos);
     } catch(error) {
-        console.log(error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }

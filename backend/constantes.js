@@ -107,6 +107,11 @@ export const ERROR_CONEXION = "Ocurrió un error con la conexión a la base de d
 export const CODIGO_REPETIDO = "23505";
 export const CODIGO_FK = "23503";
 
+export const ERROR_CERO_PUNTOS = "No hay puntos de interés registrados en este cuerpo celeste.";
+export const ERROR_DISTANCIA = "No podés saltar a este punto, debés ir a uno más cercano para poder ir a este.";
+export const ERROR_FALTA_PROGRESO = "No podés desbloquear este punto porque el anterior está bloqueado.";
+
+export const ERROR_TIERRA = "No se puede modificar la Tierra.";
 
 // Claves de vehículos.
 export const MOTOR = "motor";

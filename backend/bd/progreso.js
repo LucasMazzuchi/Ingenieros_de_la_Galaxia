@@ -48,7 +48,6 @@ export const sumarCombustible = async (vehiculoId, cantidad) => {
 export const chequearProgresoPlaneta = async (vehiculoId, cuerpoCelesteId) => {
     const textoTotales = `SELECT COUNT(*) as total FROM puntos_interes WHERE cuerpo_celeste_id = $1 AND borrado = FALSE`;
     const puntosTotales = await db.query(textoTotales, [cuerpoCelesteId]);
-
     const textoCompletos = `SELECT COUNT(*) as completados FROM puntos_interes_vehiculos pv, puntos_interes p WHERE pv.punto_interes_id = p.id AND pv.vehiculo_id = $1 AND p.cuerpo_celeste_id = $2 AND pv.completado = TRUE AND p.borrado = FALSE`;
     const puntosCompletados = await db.query(textoCompletos, [vehiculoId, cuerpoCelesteId]);
     return {totales: Number(puntosTotales.rows[0].total), completadas: Number(puntosCompletados.rows[0].completados)};

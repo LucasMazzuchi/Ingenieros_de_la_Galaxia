@@ -12,7 +12,6 @@ endpointsPuntosInteres.get("/", validarFiltrosPuntoInteres, async (req, res) => 
         const listaPuntos = await puntosInteres.getAllPuntos(req.query);
         res.status(200).json(listaPuntos);
     } catch(error) {
-        console.log(error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }
@@ -30,7 +29,6 @@ endpointsPuntosInteres.get("/:id", validarId, async (req, res) => {
             res.status(200).json(puntoInteres);
         }
     } catch (error) {
-        console.log(error);
         const {estado, msjError} = manejarError(error);
         res.status(estado).json({error : msjError});
     }
@@ -63,10 +61,10 @@ endpointsPuntosInteres.post("/", validarPuntoInteres, async (req, res)=> {
 // Si se trata de modificar el punto de interés con id 1 responde con un 403 y el mensaje de error.
 // En caso de no exisitir, responde con un código 404 y el mensaje de error. Si ocurre un error, responde con
 // un estado y un mensaje determinado por manejarError.
-endpointsPuntosInteres.patch("/:id", validarId, validarPuntoInteres, async (req, res) => { // Agregar validación para no poder modificar puntos en la Tierra.
+endpointsPuntosInteres.patch("/:id", validarId, validarPuntoInteres, async (req, res) => {
     try{
         if (req.body.cuerpo_celeste_id === 1) {
-            return res.status(403).json({error: "No se pueden modificar puntos de interés asociadas a la Tierra."})
+            return res.status(403).json({error: constantes.ERROR_TIERRA});
         }
         if (!await puntosInteres.updatePunto(req.params.id, req.body)){
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
@@ -93,7 +91,7 @@ endpointsPuntosInteres.delete("/:id", validarId, async (req, res) => {
         }
 
         if (puntoInteresGuardado.cuerpo_celeste_id === 1) {
-            return res.status(403).json({error: "No se pueden eliminar puntos de interés asociadas a la Tierra."});
+            return res.status(403).json({error: constantes.ERROR_TIERRA});
         }
         //Si no es de la Tierra, se borra
         const {ok, puntoInteres} = await puntosInteres.removePunto(parseInt(puntoInteresGuardado.posicion), parseInt(puntoInteresGuardado.cuerpo_celeste_id), req.params.id);

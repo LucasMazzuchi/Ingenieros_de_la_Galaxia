@@ -44,7 +44,6 @@ export const validarValorFiltro = (filtros, validadores) => {
             clave = filtro.substring(0, filtro.length-4);
         }
         if (!validadores[clave].regex.test(valor)){
-            console.log(filtro, valor);
             erroresValores.push(validadores[clave].error);
             continue;
         }
