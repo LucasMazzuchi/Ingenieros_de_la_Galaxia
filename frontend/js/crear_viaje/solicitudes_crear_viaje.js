@@ -56,3 +56,4 @@ async function eliminarRegistro(recurso, id) {
     return false;
   }
 }
+    

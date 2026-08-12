@@ -27,3 +27,60 @@ async function actualizarPosicionesPlanetas() {
     }
   }
 }
+
+ async function cargarPlanetas(selectPlaneta) {
+    const id = selectPlaneta.value;
+    await actualizarPosicionesPlanetas();
+    if (!id) {
+        formPlaneta.reset();
+        return;
+    }
+    const planetas = await obtenerDatos("cuerpos_celestes");
+    const planeta = planetas.find(item => item.id == id);
+    if (planeta) { // Inicializa los valores actuales de planeta
+        document.getElementById("inputNombre").value = planeta.nombre;
+        document.getElementById("inputDescripcion").value = planeta.descripcion;
+        document.getElementById("inputTipo").value = planeta.tipo;
+        document.getElementById("inputDiametro").value = planeta.diametro;
+        document.getElementById("inputGravedad").value = planeta.gravedad;
+        document.getElementById("inputTemperatura").value = planeta.temperatura;
+        document.getElementById("inputTerreno").value = planeta.terreno;
+        document.getElementById("inputHabitable").value = planeta.habitable.toString();
+        document.getElementById("inputPosicion").value = planeta.posicion;
+        document.getElementById("inputImagen").value = planeta.imagen;
+        document.getElementById("inputImagenFondo").value = planeta.imagen_fondo;
+    }
+  } 
+async function agregaPlaneta(selectPlaneta) {
+    
+  const id = selectPlaneta.value;
+  const datos = {
+    nombre: document.getElementById("inputNombre").value,
+    descripcion: document.getElementById("inputDescripcion").value,
+    tipo: parseInt(document.getElementById("inputTipo").value),
+    diametro: parseInt(document.getElementById("inputDiametro").value),
+    gravedad: parseFloat(document.getElementById("inputGravedad").value),
+    temperatura: parseInt(document.getElementById("inputTemperatura").value),
+    terreno: parseInt(document.getElementById("inputTerreno").value),
+    habitable: document.getElementById("inputHabitable").value === "true",
+    posicion: parseInt(document.getElementById("inputPosicion").value),
+    imagen: parseInt(document.getElementById("inputImagen").value),
+    imagen_fondo: parseInt(document.getElementById("inputImagenFondo").value)
+  };
+    
+  let exito = false;
+  if (id) {
+    exito = await modificarRegistro("cuerpos_celestes", id, datos);
+  } else {
+    exito = await crearRegistro("cuerpos_celestes", datos);
+  }
+
+  if (exito) {
+    alert("¡Guardado exitoso!");
+    formPlaneta.reset();
+    inicializarSelects();
+  } else {
+    alert("Ocurrió un error al guardar.");
+  }
+}
+  

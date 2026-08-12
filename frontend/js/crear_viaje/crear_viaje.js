@@ -86,7 +86,7 @@ botonesTab.forEach(boton => {
 
 // LOGICA DE CONSULTA Y LLENADO DE SELECTS (Al cargar la página) 
 async function inicializarSelects() {
-  const planetas = await obtenerDatos(constantes.url);
+  const planetas = await obtenerDatos(constantes.CUERPOS_URL);
   await actualizarPosicionesPlanetas();
   const selectPlaneta = document.getElementById("selectPlaneta");
   const selectPlanetaPunto = document.getElementById("selectPlanetaPunto"); // El que esta en la sección puntos de interés
@@ -111,7 +111,7 @@ async function inicializarSelects() {
   });
 
   // Cargar vehículos existentes en su select
-  const vehiculos = await obtenerDatos("vehiculos"); // cambiar cte
+  const vehiculos = await obtenerDatos(constantes.VEHICULOS_URL);
   const selectVehiculo = document.getElementById("selectVehiculo");
   if (selectVehiculo) {
     selectVehiculo.innerHTML = '<option value="">-- Crear nuevo --</option>';
@@ -124,124 +124,35 @@ async function inicializarSelects() {
   }
 
   // Cargar puntos de interés existentes en su select
-  const puntosInteres = await obtenerDatos(constantes.PUNTOS_URL); // Cambiar cte
+  const puntosInteres = await obtenerDatos(constantes.PUNTOS_URL);
   const selectPunto = document.getElementById("selectPunto");
   
   if (selectPunto && selectPlanetaPunto) {
-    
-    function actualizarPuntosInteres () { // Pasar por params selectPunto, puntosInteres, planetaId
-      selectPunto.innerHTML = '<option value="">-- Crear nuevo --</option>'; // Este hay que sacarlo afuera de la función
-      const planetaId = parseInt(selectPlanetaPunto.value);
-      const puntosInteresFiltrados = !planetaId ? puntosInteres : puntosInteres.filter(function (puntoInteres) {
-        return puntoInteres.cuerpo_celeste_id == planetaId;
-      });
-      puntosInteresFiltrados.forEach(puntoInteres => {
-        const opcion = document.createElement("option");
-        opcion.value = puntoInteres.id;
-        opcion.textContent = puntoInteres.nombre;
-        selectPunto.appendChild(opcion);
-      });
-    };
-    actualizarPuntosInteres();
-    function actualizarPosiciones() {// Pasar selectPosicion, planetaId, puntoInteresId, puntosInteres
-      const selectPosicion = document.getElementById("inputPosicionPunto"); // Va afuera
-      if (!selectPosicion) return; // Va afuera
-      selectPosicion.innerHTML = '<option value="">-- Seleccione posición --</option>'; // Va afuera
-
-      const planetaId = parseInt(selectPlanetaPunto.value); // Por parámetro
-      const puntoInteresId = parseInt(selectPunto.value); // Por parámetro
-
-      // Si no hay planeta seleccionado, no mostramos posiciones disponibles
-      if (!planetaId) return;
-
-      const puntosInteresDelPlaneta = new Set(puntosInteres.filter(function (puntoInteres) {
-        return (puntoInteres.cuerpo_celeste_id === planetaId && puntoInteres.id !== puntoInteresId);
-      }).map(function (puntoInteres) {return parseInt(puntoInteres.posicion)})); //Convierte todos los valores a entero.
-      for (let i = 1; i <= 3; i++) { // Hacer el 3 cte.
-        if (!puntosInteresDelPlaneta.has(i)) {
-          const opcion = document.createElement("option");
-          opcion.value = i;
-          opcion.textContent = `${i}`;
-          selectPosicion.appendChild(opcion);
-        }
-      }
-    };
-    actualizarPosiciones();
+    actualizarPuntosInteres(selectPunto, puntosInteres, parseInt(selectPlanetaPunto.value));
+    actualizarPosiciones(document.getElementById("inputPosicionPunto"), parseInt(selectPlanetaPunto.value), parseInt(selectPunto.value), puntosInteres);
     selectPlanetaPunto.addEventListener("change", function () {
-      actualizarPuntosInteres();
-      actualizarPosiciones();
+      actualizarPuntosInteres(selectPunto, puntosInteres, parseInt(selectPlanetaPunto.value));
+      actualizarPosiciones(document.getElementById("inputPosicionPunto"), parseInt(selectPlanetaPunto.value), parseInt(selectPunto.value), puntosInteres);
   });
     selectPunto.addEventListener("change", actualizarPosiciones);
   }
 }
 document.addEventListener("DOMContentLoaded", inicializarSelects);
 
-
 //  MANEJADORES DE FORMULARIOS (Alta, Modificación y Baja) 
-
 // FORMULARIO PLANETA 
 const formPlaneta = document.getElementById("tab-planeta");
 const selectPlaneta = document.getElementById("selectPlaneta");
 const btnBorrarPlaneta = document.getElementById("btnBorrarPlaneta");
 
 // Cargar datos en el form si selecciona uno existente (Modificación)
-selectPlaneta.addEventListener("change", async () => { // función de cargado aparte
-  const id = selectPlaneta.value;
-  await actualizarPosicionesPlanetas();
-  if (!id) {
-    formPlaneta.reset();
-    return;
-  }
-  const planetas = await obtenerDatos("cuerpos_celestes");
-  const planeta = planetas.find(item => item.id == id);
-  if (planeta) { // Inicializa los valores actuales de planeta
-    document.getElementById("inputNombre").value = planeta.nombre;
-    document.getElementById("inputDescripcion").value = planeta.descripcion;
-    document.getElementById("inputTipo").value = planeta.tipo;
-    document.getElementById("inputDiametro").value = planeta.diametro;
-    document.getElementById("inputGravedad").value = planeta.gravedad;
-    document.getElementById("inputTemperatura").value = planeta.temperatura;
-    document.getElementById("inputTerreno").value = planeta.terreno;
-    document.getElementById("inputHabitable").value = planeta.habitable.toString();
-    document.getElementById("inputPosicion").value = planeta.posicion;
-    document.getElementById("inputImagen").value = planeta.imagen;
-    document.getElementById("inputImagenFondo").value = planeta.imagen_fondo;
-  }
+selectPlaneta.addEventListener("change", async () => {   
+  await cargarPlanetas(selectPlaneta);
 });
-
 // Guardar (Alta o Modificación) Planeta
 formPlaneta.addEventListener("submit", async (e) => { // Hacer una func aparte de Guardar
   e.preventDefault();
-  const id = selectPlaneta.value;
-  
-  const datos = {
-    nombre: document.getElementById("inputNombre").value,
-    descripcion: document.getElementById("inputDescripcion").value,
-    tipo: parseInt(document.getElementById("inputTipo").value),
-    diametro: parseInt(document.getElementById("inputDiametro").value),
-    gravedad: parseFloat(document.getElementById("inputGravedad").value),
-    temperatura: parseInt(document.getElementById("inputTemperatura").value),
-    terreno: parseInt(document.getElementById("inputTerreno").value),
-    habitable: document.getElementById("inputHabitable").value === "true",
-    posicion: parseInt(document.getElementById("inputPosicion").value),
-    imagen: parseInt(document.getElementById("inputImagen").value),
-    imagen_fondo: parseInt(document.getElementById("inputImagenFondo").value)
-  };
-    
-  let exito = false;
-  if (id) {
-    exito = await modificarRegistro("cuerpos_celestes", id, datos);
-  } else {
-    exito = await crearRegistro("cuerpos_celestes", datos);
-  }
-
-  if (exito) {
-    alert("¡Guardado exitoso!");
-    formPlaneta.reset();
-    inicializarSelects();
-  } else {
-    alert("Ocurrió un error al guardar.");
-  }
+  await agregaPlaneta(selectPlaneta);
 });
 
 // Borrar Planeta
