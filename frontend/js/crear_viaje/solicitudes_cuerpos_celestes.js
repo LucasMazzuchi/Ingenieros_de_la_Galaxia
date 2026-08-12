@@ -1,10 +1,15 @@
+import * as constantes from "../constantes.js";
+import * as viaje from "../crear_viaje/solicitudes_crear_viaje.js";
 // La función arma el desplegable de las posiciones disponibles para crear o modificar un planeta.
-async function actualizarPosicionesPlanetas() {
+// Hace un fetch para obtener los datos de la URL pasada por recurso y lo devuelve, si ocurre
+// un error devuelve un arreglo vacío.
+
+export async function actualizarPosicionesPlanetas() {
   const selectPosicion = document.getElementById("inputPosicion");
   if (!selectPosicion) return;
 
   // Obtenemos los planetas actuales
-  const planetas = await obtenerDatos("cuerpos_celestes"); // Cambiar por cte
+  const planetas = await viaje.obtenerDatos("cuerpos_celestes"); // Cambiar por cte
   const planetaIdSeleccionado = document.getElementById("selectPlaneta").value;
 
   selectPosicion.innerHTML = '<option value="">-- Seleccione posición --</option>';
@@ -28,14 +33,14 @@ async function actualizarPosicionesPlanetas() {
   }
 }
 
- async function cargarPlanetas(selectPlaneta, formPlaneta) {
+export async function cargarPlanetas(selectPlaneta, formPlaneta) {
     const id = selectPlaneta.value;
     await actualizarPosicionesPlanetas();
     if (!id) {
         formPlaneta.reset();
         return;
     }
-    const planetas = await obtenerDatos("cuerpos_celestes");
+    const planetas = await viaje.obtenerDatos("cuerpos_celestes");
     const planeta = planetas.find(item => item.id == id);
     if (planeta) { // Inicializa los valores actuales de planeta
         document.getElementById("inputNombre").value = planeta.nombre;
@@ -51,7 +56,7 @@ async function actualizarPosicionesPlanetas() {
         document.getElementById("inputImagenFondo").value = planeta.imagen_fondo;
     }
   } 
-async function agregaPlaneta(selectPlaneta, formPlaneta) {
+export async function agregaPlaneta(inicializarSelects, selectPlaneta, formPlaneta) {
     
   const id = selectPlaneta.value;
   const datos = {
@@ -70,7 +75,7 @@ async function agregaPlaneta(selectPlaneta, formPlaneta) {
     
   let exito = false;
   if (id) {
-    exito = await modificarRegistro("cuerpos_celestes", id, datos);
+    exito = await viaje.modificarRegistro("cuerpos_celestes", id, datos);
   } else {
     exito = await crearRegistro("cuerpos_celestes", datos);
   }
@@ -83,7 +88,7 @@ async function agregaPlaneta(selectPlaneta, formPlaneta) {
     alert("Ocurrió un error al guardar.");
   }
 }
-  async function borrarPlaneta (selectPlaneta, formPlaneta) {
+  export async function borrarPlaneta (inicializarSelects, selectPlaneta, formPlaneta) {
     const id = selectPlaneta.value;
       if (!id) {
         alert("Selecciona un planeta existente para borrar.");
@@ -91,7 +96,7 @@ async function agregaPlaneta(selectPlaneta, formPlaneta) {
       }
       if (confirm("¿Estás seguro de borrar este planeta?")) {
     
-        const exito = await eliminarRegistro("cuerpos_celestes", id);
+        const exito = await viaje.eliminarRegistro("cuerpos_celestes", id);
         if (exito) {
           alert("Planeta eliminado.");
           formPlaneta.reset();

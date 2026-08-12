@@ -1,7 +1,8 @@
 import * as constantes from "../constantes.js";
 import {mostrarNotificacion} from "../notificaciones.js";
-import * as viaje from "../crear_viaje/solicitudes_crear_viaje.js"
-import * as planetas from "../crear_viaje/solicitudes_cuerpos_celestes.js";
+import * as viaje from "./solicitudes_crear_viaje.js";
+import * as planetas from "./solicitudes_cuerpos_celestes.js";
+import * as puntosDeInteres from "./solicitudes_punto_de_interes.js";
 // Listas de imágenes de los planetas por fuera
 const imagenesPlanetas = [
   "../assets/img/agujero_negro.png",
@@ -87,8 +88,8 @@ botonesTab.forEach(boton => {
 
 // LOGICA DE CONSULTA Y LLENADO DE SELECTS (Al cargar la página) 
 async function inicializarSelects() {
-  const planetas = await viaje.obtenerDatos(constantes.CUERPOS_URL);
-  await actualizarPosicionesPlanetas();
+  const planetas_lista = await viaje.obtenerDatos(constantes.CUERPOS_URL);
+  await planetas.actualizarPosicionesPlanetas();
   const selectPlaneta = document.getElementById("selectPlaneta");
   const selectPlanetaPunto = document.getElementById("selectPlanetaPunto"); // El que esta en la sección puntos de interés
   // Limpiar y poblar selects de planetas
@@ -100,7 +101,7 @@ async function inicializarSelects() {
       selectActual.innerHTML = '<option value="">-- Seleccione un planeta --</option>';
     }
 
-    planetas.forEach(planeta => {
+    planetas_lista.forEach(planeta => {
       if (planeta.nombre.toLowerCase().includes("tierra")) {
         return; 
       }
@@ -129,13 +130,13 @@ async function inicializarSelects() {
   const selectPunto = document.getElementById("selectPunto");
   
   if (selectPunto && selectPlanetaPunto) {
-    actualizarPuntosInteres(selectPunto, puntosInteres, parseInt(selectPlanetaPunto.value));
-    actualizarPosiciones(document.getElementById("inputPosicionPunto"), parseInt(selectPlanetaPunto.value), parseInt(selectPunto.value), puntosInteres);
+    puntosDeInteres.actualizarPuntosInteres(selectPunto, puntosInteres, parseInt(selectPlanetaPunto.value));
+    puntosDeInteres.actualizarPosiciones(document.getElementById("inputPosicionPunto"), parseInt(selectPlanetaPunto.value), parseInt(selectPunto.value), puntosInteres);
     selectPlanetaPunto.addEventListener("change", function () {
-      actualizarPuntosInteres(selectPunto, puntosInteres, parseInt(selectPlanetaPunto.value));
-      actualizarPosiciones(document.getElementById("inputPosicionPunto"), parseInt(selectPlanetaPunto.value), parseInt(selectPunto.value), puntosInteres);
+      puntosDeInteres.actualizarPuntosInteres(selectPunto, puntosInteres, parseInt(selectPlanetaPunto.value));
+      puntosDeInteres.actualizarPosiciones(document.getElementById("inputPosicionPunto"), parseInt(selectPlanetaPunto.value), parseInt(selectPunto.value), puntosInteres);
   });
-    selectPunto.addEventListener("change", actualizarPosiciones);
+    selectPunto.addEventListener("change", puntosDeInteres.actualizarPosiciones);
   }
 }
 document.addEventListener("DOMContentLoaded", inicializarSelects);
@@ -153,7 +154,7 @@ selectPlaneta.addEventListener("change", async () => {
 // Guardar (Alta o Modificación) Planeta
 formPlaneta.addEventListener("submit", async (e) => { // Hacer una func aparte de Guardar
   e.preventDefault();
-  await agregaPlaneta(selectPlaneta);
+  await agregaPlaneta(inicializarSelects, selectPlaneta, formPlaneta);
 });
 
 // Borrar Planeta
@@ -228,7 +229,7 @@ formVehiculo.addEventListener("submit", async (e) => { // Función aparte de gua
 
 // Borrar Vehículo
 btnBorrarVehiculo.addEventListener("click", async () => {
-  planeta.borrarPlaneta(selectPlaneta, formPlaneta);
+  planeta.borrarPlaneta(inicializarSelects, selectPlaneta, formPlaneta);
 });
 
 // FORMULARIO PUNTO DE INTERÉS
