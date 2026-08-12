@@ -21,11 +21,11 @@ export const armar_consulta = (id, entidad) => {
 // Verifica si un cuerpo celeste está siendo usado activamente por vehículos o puntos de interés
 // antes de permitir un borrado lógico.
 export const verificarDependencia = async (id) => {
-    const consultaMisiones = "SELECT * FROM misiones WHERE cuerpo_celeste_id = $1 AND borrado = FALSE";
+    const consultaPuntosInteres = "SELECT * FROM puntos_interes WHERE cuerpo_celeste_id = $1 AND borrado = FALSE";
     const consultaVehiculos = "SELECT * FROM vehiculos WHERE ubicacion_id = $1 AND borrado = FALSE";
-    const resMisiones = await db.query(consultaMisiones, [id]);
+    const resPuntosInteres = await db.query(consultaPuntosInteres, [id]);
     const resVehiculos = await db.query(consultaVehiculos, [id]);
-    return {misiones : resMisiones.rows, vehiculos : resVehiculos.rows};
+    return {puntosInteres : resPuntosInteres.rows, vehiculos : resVehiculos.rows};
 
 };
 

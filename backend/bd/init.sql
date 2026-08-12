@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS vehiculos (
     borrado BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE IF NOT EXISTS misiones (
+CREATE TABLE IF NOT EXISTS puntos_interes (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
     descripcion TEXT,
@@ -46,12 +46,12 @@ CREATE TABLE IF NOT EXISTS cuerpos_celestes_vehiculos (
     PRIMARY KEY (cuerpo_celeste_id, vehiculo_id)
 );
 
-CREATE TABLE IF NOT EXISTS misiones_vehiculos (
-    mision_id INT REFERENCES misiones(id),
+CREATE TABLE IF NOT EXISTS puntos_interes_vehiculos (
+    punto_interes_id INT REFERENCES puntos_interes(id),
     vehiculo_id INT REFERENCES vehiculos(id),
     cuerpo_celeste_id INT REFERENCES cuerpos_celestes(id),
     completado BOOLEAN DEFAULT FALSE,
-    PRIMARY KEY (mision_id, vehiculo_id, cuerpo_celeste_id)
+    PRIMARY KEY (punto_interes_id, vehiculo_id, cuerpo_celeste_id)
 );
 
 INSERT INTO cuerpos_celestes (nombre, descripcion, tipo, diametro, gravedad, temperatura, habitable, terreno, posicion, imagen, imagen_fondo)
@@ -69,7 +69,7 @@ VALUES
 ('Saturno', 'Un coloso de nubes arremolinadas y tormentas. Un caos gigante de alta presión. Te acercás y los escáneres pierden la calibración, arrojando falsos positivos, como si dentro de esas tormentas colosales hubiera estructuras sólidas en movimiento.', 2, 139820, 24.7, -110, FALSE, 2, 8, 8, 6);
 
 
-INSERT INTO misiones (nombre, descripcion, posicion, imagen, cuerpo_celeste_id)
+INSERT INTO puntos_interes (nombre, descripcion, posicion, imagen, cuerpo_celeste_id)
 VALUES 
 /*Tierra (ID 1)*/
 ('Estructura Alpha', 'Instalaciones sumergidas de origen incierto. Los paneles emiten pulsos como si estuvieran en modo de hibernación, esperando una secuencia de inicio. Fuimos a revisar y descubrimos que las compuertas fueron selladas desde adentro. Algo querían dejar encerrado.', 1, 1, 1),

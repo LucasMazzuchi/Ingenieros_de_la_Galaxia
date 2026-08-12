@@ -62,7 +62,7 @@ export const TIPO = "tipo";
 export const UBICACION = "ubicacion_id";
 export const POSICION = "posicion";
 export const VEHICULO = "vehiculo_id";
-export const MISION = "mision_id";
+export const PUNTO = "punto_interes_id";
 
 /* La función arma la consulta con los filtros que se le pasen, para la entidad especificada,
 comenzando con el texto ingresado por parámetro.*/
@@ -108,7 +108,6 @@ export const CODIGO_REPETIDO = "23505";
 export const CODIGO_FK = "23503";
 
 
-
 // Claves de vehículos.
 export const MOTOR = "motor";
 export const ESTRUCTURA = "estructura";
@@ -127,7 +126,7 @@ export const HABITABLE = "habitable";
 export const IMAGEN = "imagen";
 export const IMAGEN_FONDO = "imagen_fondo";
 
-// Claves de misiones.
+// Claves de puntos de interés.
 export const PORCENTAJE = "porcentaje";
 export const DISPONIBLE = "disponible";
 export const CUERPO_CELESTE = "cuerpo_celeste_id";
@@ -157,8 +156,7 @@ export const PUNTOS_MAX = 6;
 export const COMBUSTIBLE_MAX = 100;
 export const PUNTO_INTERES_MAX = 3;
 
-// Límites a parámetros de misiones.
+// Límites a parámetros de puntos de interes.
 export const PORCENTAJE_MAX = 100;
 export const LIMITE_MAX = 100;
-export const MISIONES_MAX = 3;
 export const IMAGEN_PUNTO_MAX = 5;
