@@ -28,7 +28,7 @@ async function actualizarPosicionesPlanetas() {
   }
 }
 
- async function cargarPlanetas(selectPlaneta) {
+ async function cargarPlanetas(selectPlaneta, formPlaneta) {
     const id = selectPlaneta.value;
     await actualizarPosicionesPlanetas();
     if (!id) {
@@ -51,7 +51,7 @@ async function actualizarPosicionesPlanetas() {
         document.getElementById("inputImagenFondo").value = planeta.imagen_fondo;
     }
   } 
-async function agregaPlaneta(selectPlaneta) {
+async function agregaPlaneta(selectPlaneta, formPlaneta) {
     
   const id = selectPlaneta.value;
   const datos = {
@@ -83,4 +83,21 @@ async function agregaPlaneta(selectPlaneta) {
     alert("Ocurrió un error al guardar.");
   }
 }
-  
+  async function borrarPlaneta (selectPlaneta, formPlaneta) {
+    const id = selectPlaneta.value;
+      if (!id) {
+        alert("Selecciona un planeta existente para borrar.");
+        return;
+      }
+      if (confirm("¿Estás seguro de borrar este planeta?")) {
+    
+        const exito = await eliminarRegistro("cuerpos_celestes", id);
+        if (exito) {
+          alert("Planeta eliminado.");
+          formPlaneta.reset();
+          inicializarSelects();// Tiene que ser pasada por parámetro y ejecutada o tiene que devolver un flag tipo ok
+        } else {
+          alert("No se pudo eliminar.");
+        }
+      }
+  }

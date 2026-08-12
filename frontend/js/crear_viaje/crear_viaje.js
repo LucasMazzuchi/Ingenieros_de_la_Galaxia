@@ -1,6 +1,7 @@
 import * as constantes from "../constantes.js";
 import {mostrarNotificacion} from "../notificaciones.js";
-import {obtenerDatos} from "../crear_viaje/solicitudes_crear_viaje.js"
+import * as viaje from "../crear_viaje/solicitudes_crear_viaje.js"
+import * as planetas from "../crear_viaje/solicitudes_cuerpos_celestes.js";
 // Listas de imágenes de los planetas por fuera
 const imagenesPlanetas = [
   "../assets/img/agujero_negro.png",
@@ -86,7 +87,7 @@ botonesTab.forEach(boton => {
 
 // LOGICA DE CONSULTA Y LLENADO DE SELECTS (Al cargar la página) 
 async function inicializarSelects() {
-  const planetas = await obtenerDatos(constantes.CUERPOS_URL);
+  const planetas = await viaje.obtenerDatos(constantes.CUERPOS_URL);
   await actualizarPosicionesPlanetas();
   const selectPlaneta = document.getElementById("selectPlaneta");
   const selectPlanetaPunto = document.getElementById("selectPlanetaPunto"); // El que esta en la sección puntos de interés
@@ -111,7 +112,7 @@ async function inicializarSelects() {
   });
 
   // Cargar vehículos existentes en su select
-  const vehiculos = await obtenerDatos(constantes.VEHICULOS_URL);
+  const vehiculos = await viaje.obtenerDatos(constantes.VEHICULOS_URL);
   const selectVehiculo = document.getElementById("selectVehiculo");
   if (selectVehiculo) {
     selectVehiculo.innerHTML = '<option value="">-- Crear nuevo --</option>';
@@ -124,7 +125,7 @@ async function inicializarSelects() {
   }
 
   // Cargar puntos de interés existentes en su select
-  const puntosInteres = await obtenerDatos(constantes.PUNTOS_URL);
+  const puntosInteres = await viaje.obtenerDatos(constantes.PUNTOS_URL);
   const selectPunto = document.getElementById("selectPunto");
   
   if (selectPunto && selectPlanetaPunto) {
@@ -157,22 +158,7 @@ formPlaneta.addEventListener("submit", async (e) => { // Hacer una func aparte d
 
 // Borrar Planeta
 btnBorrarPlaneta.addEventListener("click", async () => { // Armar func aparte
-  const id = selectPlaneta.value;
-  if (!id) {
-    alert("Selecciona un planeta existente para borrar.");
-    return;
-  }
-  if (confirm("¿Estás seguro de borrar este planeta?")) {
-
-    const exito = await eliminarRegistro("cuerpos_celestes", id);
-    if (exito) {
-      alert("Planeta eliminado.");
-      formPlaneta.reset();
-      inicializarSelects();// Tiene que ser pasada por parámetro y ejecutada o tiene que devolver un flag tipo ok
-    } else {
-      alert("No se pudo eliminar.");
-    }
-  }
+  
 });
 // FORMULARIO VEHÍCULO 
 const formVehiculo = document.getElementById("tab-vehiculo");
@@ -226,9 +212,9 @@ formVehiculo.addEventListener("submit", async (e) => { // Función aparte de gua
   let exito = false;
    
   if (id) {
-    exito = await modificarRegistro("vehiculos", id, datos);
+    exito = await viaje.modificarRegistro("vehiculos", id, datos);
   } else {
-    exito = await crearRegistro("vehiculos", datos);
+    exito = await viaje.crearRegistro("vehiculos", datos);
   }
 
   if (exito) {
@@ -241,23 +227,10 @@ formVehiculo.addEventListener("submit", async (e) => { // Función aparte de gua
 });
 
 // Borrar Vehículo
-btnBorrarVehiculo.addEventListener("click", async () => { // func aparte
-  const id = selectVehiculo.value;
-  if (!id) {
-    alert("Selecciona un vehículo existente para borrar.");
-    return;
-  }
-  if (confirm("¿Estás seguro de borrar este vehículo?")) {
-    const exito = await eliminarRegistro("vehiculos", id);
-    if (exito) {
-      alert("Vehículo eliminado.");
-      formVehiculo.reset();
-      inicializarSelects();
-    } else {
-      alert("No se pudo eliminar el vehículo.");
-    }
-  }
+btnBorrarVehiculo.addEventListener("click", async () => {
+  planeta.borrarPlaneta(selectPlaneta, formPlaneta);
 });
+
 // FORMULARIO PUNTO DE INTERÉS
 const formPunto = document.getElementById("tab-punto");
 const selectPunto = document.getElementById("selectPunto");
@@ -270,7 +243,7 @@ selectPunto.addEventListener("change", async () => { // Func aparte
     formPunto.reset();
     return;
   }
-  const puntosInteres = await obtenerDatos(constantes.PUNTOS_URL); 
+  const puntosInteres = await viaje.obtenerDatos(constantes.PUNTOS_URL); 
   const puntoInteres = puntosInteres.find(item => item.id == id);
   if (puntoInteres) {
     document.getElementById("selectPlanetaPunto").value = puntoInteres.cuerpo_celeste_id;
@@ -297,14 +270,14 @@ formPunto.addEventListener("submit", async (e) => { // Func aparte guardado
   };
   let exito = false;
   if (id) {
-    exito = await modificarRegistro(constantes.PUNTOS_URL, id, datos);
+    exito = await viaje.modificarRegistro(constantes.PUNTOS_URL, id, datos);
   } else {
     const puntoOcupado = puntosInteres.find(function (puntoInteres){ return puntoInteres.posicion === punto});
     if (puntoOcupado){
       alert("Ocurrió un error al guardar el punto de interés, ya existe un punto de interés en esta posición.");
     return;
   }
-    exito = await crearRegistro(constantes.PUNTOS_URL, datos);
+    exito = await viaje.crearRegistro(constantes.PUNTOS_URL, datos);
   }
 
   if (exito) {
@@ -324,7 +297,7 @@ btnBorrarPunto.addEventListener("click", async () => { // Func aparte
     return;
   }
   if (confirm("¿Estás seguro de borrar este punto de interés?")) {
-    const exito = await eliminarRegistro(constantes.PUNTOS_URL, id);
+    const exito = await viaje.eliminarRegistro(constantes.PUNTOS_URL, id);
     if (exito) {
       alert("Punto de interés eliminado.");
       formPunto.reset();
