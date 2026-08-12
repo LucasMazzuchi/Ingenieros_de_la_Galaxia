@@ -5,7 +5,7 @@ import * as constantes from "../constantes.js";
 import { validarId, manejarError } from "./validaciones_errores.js";
 import * as logica from "../logica/cuerpos_celestes.js";
 import { getVehiculo } from "../bd/vehiculos.js";
-import {removeMision} from "../bd/misiones.js"
+import {removePunto} from "../bd/puntos_interes.js"
 export const endpointsCuerpoCeleste = Router();
 
 // El endpoint responde con un código 200 y todos los cuerpos celestes que cumplen con los filtros
@@ -102,8 +102,8 @@ endpointsCuerpoCeleste.delete("/:id", validarId, async (req, res) => {
         if (RegExp("^1$").test(req.params.id)){
             return res.status(403).json({error: "No se puede modificar la Tierra."});
         }
-        const {cuerpo, misiones, vehiculos} = await cuerpos.removeCuerpoCeleste(req.params.id);
-        if (!cuerpo && misiones.length === 0  && vehiculos.length === 0){
+        const {cuerpo, puntosInteres, vehiculos} = await cuerpos.removeCuerpoCeleste(req.params.id);
+        if (!cuerpo && puntosInteres.length === 0  && vehiculos.length === 0){
             return res.status(404).json({error: constantes.ERROR_INEXISTENTE});
         }
         res.status(200).json({exito : constantes.EXITO_CONSULTA("cuerpo celeste", "eliminada"), entidad : cuerpo});

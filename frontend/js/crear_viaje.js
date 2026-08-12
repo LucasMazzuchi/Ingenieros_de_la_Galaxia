@@ -212,41 +212,41 @@ async function inicializarSelects() {
   }
 
   // Cargar puntos de interés existentes en su select
-  const misiones = await obtenerDatos("misiones"); // Cambiar cte
+  const puntosInteres = await obtenerDatos(constantes.PUNTOS_URL); // Cambiar cte
   const selectPunto = document.getElementById("selectPunto");
   
   if (selectPunto && selectPlanetaPunto) {
     
-    function actualizarMisiones () { // Pasar por params selectPunto, misiones, planetaId
+    function actualizarPuntosInteres () { // Pasar por params selectPunto, puntosInteres, planetaId
       selectPunto.innerHTML = '<option value="">-- Crear nuevo --</option>'; // Este hay que sacarlo afuera de la función
       const planetaId = parseInt(selectPlanetaPunto.value);
-      const misionesFiltradas = !planetaId ? misiones : misiones.filter(function (mision) {
-        return mision.cuerpo_celeste_id == planetaId;
+      const puntosInteresFiltrados = !planetaId ? puntosInteres : puntosInteres.filter(function (puntoInteres) {
+        return puntoInteres.cuerpo_celeste_id == planetaId;
       });
-      misionesFiltradas.forEach(puntoInteres => {
+      puntosInteresFiltrados.forEach(puntoInteres => {
         const opcion = document.createElement("option");
         opcion.value = puntoInteres.id;
         opcion.textContent = puntoInteres.nombre;
         selectPunto.appendChild(opcion);
       });
     };
-    actualizarMisiones();
-    function actualizarPosiciones() {// Pasar selectPosicion, planetaId, misionId, misiones
+    actualizarPuntosInteres();
+    function actualizarPosiciones() {// Pasar selectPosicion, planetaId, puntoInteresId, puntosInteres
       const selectPosicion = document.getElementById("inputPosicionPunto"); // Va afuera
       if (!selectPosicion) return; // Va afuera
       selectPosicion.innerHTML = '<option value="">-- Seleccione posición --</option>'; // Va afuera
 
       const planetaId = parseInt(selectPlanetaPunto.value); // Por parámetro
-      const misionId = parseInt(selectPunto.value); // Por parámetro
+      const puntoInteresId = parseInt(selectPunto.value); // Por parámetro
 
       // Si no hay planeta seleccionado, no mostramos posiciones disponibles
       if (!planetaId) return;
 
-      const misionesDelPlaneta = new Set(misiones.filter(function (mision) {
-        return (mision.cuerpo_celeste_id === planetaId && mision.id !== misionId);
-      }).map(function (mision) {return parseInt(mision.posicion)})); //Convierte todos los valores a entero.
+      const puntosInteresDelPlaneta = new Set(puntosInteres.filter(function (puntoInteres) {
+        return (puntoInteres.cuerpo_celeste_id === planetaId && puntoInteres.id !== puntoInteresId);
+      }).map(function (puntoInteres) {return parseInt(puntoInteres.posicion)})); //Convierte todos los valores a entero.
       for (let i = 1; i <= 3; i++) { // Hacer el 3 cte.
-        if (!misionesDelPlaneta.has(i)) {
+        if (!puntosInteresDelPlaneta.has(i)) {
           const opcion = document.createElement("option");
           opcion.value = i;
           opcion.textContent = `${i}`;
@@ -256,7 +256,7 @@ async function inicializarSelects() {
     };
     actualizarPosiciones();
     selectPlanetaPunto.addEventListener("change", function () {
-      actualizarMisiones();
+      actualizarPuntosInteres();
       actualizarPosiciones();
   });
     selectPunto.addEventListener("change", actualizarPosiciones);
@@ -435,20 +435,20 @@ btnBorrarVehiculo.addEventListener("click", async () => { // func aparte
     }
   }
 });
-// FORMULARIO PUNTO DE INTERÉS (Misiones)
+// FORMULARIO PUNTO DE INTERÉS
 const formPunto = document.getElementById("tab-punto");
 const selectPunto = document.getElementById("selectPunto");
 const btnBorrarPunto = document.getElementById("btnBorrarPunto");
 
-// Cargar datos en el form si selecciona una misión existente
+// Cargar datos en el form si selecciona un punto de interés existente
 selectPunto.addEventListener("change", async () => { // Func aparte
   const id = selectPunto.value;
   if (!id) {
     formPunto.reset();
     return;
   }
-  const misiones = await obtenerDatos("misiones");
-  const puntoInteres = misiones.find(item => item.id == id);
+  const puntosInteres = await obtenerDatos(constantes.PUNTOS_URL); 
+  const puntoInteres = puntosInteres.find(item => item.id == id);
   if (puntoInteres) {
     document.getElementById("selectPlanetaPunto").value = puntoInteres.cuerpo_celeste_id;
     document.getElementById("inputTituloPunto").value = puntoInteres.nombre;
@@ -462,8 +462,8 @@ selectPunto.addEventListener("change", async () => { // Func aparte
 formPunto.addEventListener("submit", async (e) => { // Func aparte guardado
   e.preventDefault();
   const id = selectPunto.value; // Poner el select del html como parámetro
-  const resMisiones = await fetch(`${constantes.API_URL}/${constantes.MISIONES_URL}?cuerpo_celeste_id=${parseInt(document.getElementById("selectPlanetaPunto").value)}`);
-  const misiones = await resMisiones.json();
+  const resPuntosInteres = await fetch(`${constantes.API_URL}/${constantes.PUNTOS_URL}?cuerpo_celeste_id=${parseInt(document.getElementById("selectPlanetaPunto").value)}`);
+  const puntosInteres = await resPuntosInteres.json();
   const punto = parseInt(document.getElementById("inputPosicionPunto").value);
   const datos = {
     cuerpo_celeste_id: parseInt(document.getElementById("selectPlanetaPunto").value),
@@ -474,14 +474,14 @@ formPunto.addEventListener("submit", async (e) => { // Func aparte guardado
   };
   let exito = false;
   if (id) {
-    exito = await modificarRegistro("misiones", id, datos);
+    exito = await modificarRegistro(constantes.PUNTOS_URL, id, datos);
   } else {
-    const puntoOcupado = misiones.find(function (mision){ return mision.posicion === punto});
+    const puntoOcupado = puntosInteres.find(function (puntoInteres){ return puntoInteres.posicion === punto});
     if (puntoOcupado){
       alert("Ocurrió un error al guardar el punto de interés, ya existe un punto de interés en esta posición.");
     return;
   }
-    exito = await crearRegistro("misiones", datos);
+    exito = await crearRegistro(constantes.PUNTOS_URL, datos);
   }
 
   if (exito) {
@@ -501,7 +501,7 @@ btnBorrarPunto.addEventListener("click", async () => { // Func aparte
     return;
   }
   if (confirm("¿Estás seguro de borrar este punto de interés?")) {
-    const exito = await eliminarRegistro("misiones", id);
+    const exito = await eliminarRegistro(constantes.PUNTOS_URL, id);
     if (exito) {
       alert("Punto de interés eliminado.");
       formPunto.reset();

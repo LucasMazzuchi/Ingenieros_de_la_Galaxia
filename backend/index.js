@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import {endpointsVehiculos} from "./api/vehiculos.js";
 import {endpointsCuerpoCeleste} from "./api/cuerpos_celestes.js";
-import {endpointsMisiones} from "./api/misiones.js";
+import {endpointsPuntosInteres} from "./api/puntos_interes.js";
 import { endpointsProgreso } from "./api/progreso.js";
 import { inicializarBd } from "./bd/pool.js";
 const app = express();
@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/vehiculos", endpointsVehiculos);
 app.use("/api/cuerpos_celestes", endpointsCuerpoCeleste);
-app.use("/api/misiones", endpointsMisiones);
+app.use("/api/puntos_interes", endpointsPuntosInteres);
 app.use("/api/progreso", endpointsProgreso);
 // Healthcheck, falta agregar el de la bd.
 app.get('/health', (req, res) => {
