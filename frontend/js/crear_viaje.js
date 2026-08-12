@@ -386,7 +386,7 @@ formVehiculo.addEventListener("submit", async (e) => { // Función aparte de gua
     vehiculo = await resVehiculo.json();
     const puntosDisponibles = 9-parseInt(document.getElementById("inputEstructura").value)- parseInt(document.getElementById("inputResistencia").value) -parseInt(document.getElementById("inputMotor").value);
     if (puntosDisponibles < parseInt(document.getElementById("inputPuntos").value)){
-        mostrarNotificacion("Puntos disponibles excedidos", `Podés elegir tener como máximo ${puntosDisponibles} puntos de mejora.`, false);
+        await mostrarNotificacion("Puntos disponibles excedidos", `Podés elegir tener como máximo ${puntosDisponibles} puntos de mejora.`);
         return
       }
     }
