@@ -46,7 +46,7 @@ async function pintarPlanetas(cuerpos_celestes, naveId) {
       `<div class="capa-oscura">Se necesita una nave.</div>`
     );
   }
-  document.getElementById("contenedorEstacion").addEventListener("click", () => {
+  document.getElementById("contenedorEstacion").addEventListener("click", async () => {
     if (estadoTierra.planetaCompletado){
       window.location.href = "estacion_espacial.html";
     } else {
