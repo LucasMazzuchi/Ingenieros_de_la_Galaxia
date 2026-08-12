@@ -149,12 +149,12 @@ const btnBorrarPlaneta = document.getElementById("btnBorrarPlaneta");
 
 // Cargar datos en el form si selecciona uno existente (Modificación)
 selectPlaneta.addEventListener("change", async () => {   
-  await cargarPlanetas(selectPlaneta);
+  await planetas.cargarPlanetas(selectPlaneta);
 });
 // Guardar (Alta o Modificación) Planeta
 formPlaneta.addEventListener("submit", async (e) => { // Hacer una func aparte de Guardar
   e.preventDefault();
-  await agregaPlaneta(inicializarSelects, selectPlaneta, formPlaneta);
+  await planetas.agregaPlaneta(inicializarSelects, selectPlaneta, formPlaneta);
 });
 
 // Borrar Planeta

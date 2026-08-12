@@ -15,33 +15,35 @@ async function iniciarVehiculos() {
     // Guarda en la base de datos a la nave con el nombre elegido por el usuario, guarda el id en localStorage con seleccionarVehiculo y lo redirecciona a la página
     // correspondiente.
     formNuevoVehiculo.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const nombre = inputNombreNuevoVehiculo.value.trim();
-    // Acpa cortar la interacción con la página.
-    if (!nombre) return;
+      e.preventDefault();
+      const nombre = inputNombreNuevoVehiculo.value.trim();
+      if (!nombre) return;
+      document.getElementById("btnCrearNuevoVehiculo").disabled = true;
+      const datosVehiculoNuevo = {
+        nombre: nombre,
+        motor: 1,
+        estructura: 1,
+        combustible: 100,
+        resistencia: 1,
+        ubicacion_id: 1,
+        punto_interes: 1,
+        puntos: 0
+      };
 
-    const datosVehiculoNuevo = {
-      nombre: nombre,
-      motor: 1,
-      estructura: 1,
-      combustible: 100,
-      resistencia: 1,
-      ubicacion_id: 1,
-      punto_interes: 1,
-      puntos: 0
-    };
-
-    try {
-      const vehiculo = guardarVehiculo(datosVehiculoNuevo);
-      if (!vehiculo){
-        alert("No se pudo crear la nave. Intentalo de nuevo.");
+      try {
+        const vehiculo = await guardarVehiculo(datosVehiculoNuevo);
+        if (!vehiculo){
+          alert("No se pudo crear la nave. Intentalo de nuevo.");
+          document.getElementById("btnCrearNuevoVehiculo").disabled = false;
+          return;
+        }
+        await seleccionarVehiculo(vehiculo.id);
+      } catch (error) {
+        console.error("Error al crear el vehículo:", error);
+        document.getElementById("btnCrearNuevoVehiculo").disabled = false;
+        alert("Ocurrió un error al crear la nave.");
       }
-      await seleccionarVehiculo(vehiculo.id);
-    } catch (error) {
-      console.error("Error al crear el vehículo:", error);
-      alert("Ocurrió un error al crear el nave.");
-    }
-});
+  });
   } catch (error) {
     console.error("Error al obtener los vehículos:", error);
     listaVehiculos.innerHTML = `<p class="mensaje-vacio">No se pudo conectar con el servidor.</p>`;
@@ -110,7 +112,7 @@ async function guardarVehiculo(vehiculo) {
   const res = await fetch(`${API_URL}/${VEHICULOS_URL}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(datosVehiculoNuevo)
+    body: JSON.stringify(vehiculo)
   });
   if (!res.ok) {
     return;
