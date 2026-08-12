@@ -3,7 +3,7 @@ import { updateVehiculo } from "./vehiculos.js";
 
 // Trae el estado y los ids relacionados de todos los puntos de interés asociados con cuerpoCelesteId dentro de la tabla puntos_interes_vehiculo y con vehiculoId
 // dentro de la tabla intermedia entre puntos de interés y vehículos. 
-export const getAllpuntos_interes = async (vehiculoId, cuerpoCelesteId) => {
+export const getAllPuntos = async (vehiculoId, cuerpoCelesteId) => {
     const texto = `SELECT pv.punto_interes_id, pv.vehiculo_id, pv.cuerpo_celeste_id, pv.completado, p.nombre FROM puntos_interes_vehiculos pv, puntos_interes p WHERE pv.punto_interes_id = p.id AND pv.vehiculo_id = $1 AND p.cuerpo_celeste_id = $2 AND p.borrado = FALSE`;
     const res = await db.query(texto, [vehiculoId, cuerpoCelesteId]);
     return res.rows;
@@ -50,7 +50,7 @@ export const chequearProgresoPlaneta = async (vehiculoId, cuerpoCelesteId) => {
     const puntosTotales = await db.query(textoTotales, [cuerpoCelesteId]);
 
     const textoCompletos = `SELECT COUNT(*) as completados FROM puntos_interes_vehiculos pv, puntos_interes p WHERE pv.punto_interes_id = p.id AND pv.vehiculo_id = $1 AND p.cuerpo_celeste_id = $2 AND pv.completado = TRUE AND p.borrado = FALSE`;
-    const puntosCompletados = await db.query(textoCompletas, [vehiculoId, cuerpoCelesteId]);
+    const puntosCompletados = await db.query(textoCompletos, [vehiculoId, cuerpoCelesteId]);
     return {totales: Number(puntosTotales.rows[0].total), completadas: Number(puntosCompletados.rows[0].completados)};
 };
 

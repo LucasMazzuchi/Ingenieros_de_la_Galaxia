@@ -115,6 +115,7 @@ export const RESISTENCIA= "resistencia";
 export const PUNTOS = "puntos";
 export const COMBUSTIBLE = "combustible";
 export const PUNTO_INTERES = "punto_interes";
+export const PUNTO_INTERES_ID = "punto_interes_id";
 
 
 // Claves de cuerpos celestes.

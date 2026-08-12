@@ -33,10 +33,10 @@ export const validarIds = (req, res, next) => {
         } else {
             entrada = {
                 [constantes.CUERPO_CELESTE]: { campo: req.body.cuerpo_celeste_id, min: 1, max: constantes.ID_MAX, error: constantes.CUERPO_CELESTE },
-                [constantes.PUNTO_INTERES]: { campo: req.body.punto_interes_id, min: 1, max: constantes.ID_MAX, error: constantes.PUNTO_INTERES }
+                [constantes.PUNTO_INTERES_ID]: { campo: req.body.punto_interes_id, min: 1, max: constantes.ID_MAX, error: constantes.PUNTO_INTERES }
             };
             reglasIds[constantes.CUERPO_CELESTE] = validarEntero;
-            reglasIds[constantes.PUNTO_INTERES] = validarEntero;
+            reglasIds[constantes.PUNTO_INTERES_ID] = validarEntero;
         }
     }
     const {errores, procesados, camposInvalidos} = validarEntrada(entrada, reglasIds, req.method, Object.keys(datos), true);
