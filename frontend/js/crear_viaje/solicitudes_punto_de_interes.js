@@ -1,8 +1,8 @@
 import * as constantes from "../constantes.js";
 import * as viaje from "../crear_viaje/solicitudes_crear_viaje.js";
 
-export function actualizarPuntosInteres (selectPunto, puntosInteres, planetaId) { // Pasar por params selectPunto, puntosInteres, planetaId
-    selectPunto.innerHTML = '<option value="">-- Crear nuevo --</option>'; // Este hay que sacarlo afuera de la función
+export function actualizarPuntosInteres (selectPunto, puntosInteres, planetaId) {
+    selectPunto.innerHTML = '<option value="">-- Crear nuevo --</option>';
     const puntosInteresFiltrados = !planetaId ? puntosInteres : puntosInteres.filter(function (puntoInteres) {
     return puntoInteres.cuerpo_celeste_id == planetaId;
     });
@@ -14,7 +14,7 @@ export function actualizarPuntosInteres (selectPunto, puntosInteres, planetaId) 
     });
 };
 
-export function actualizarPosiciones(selectPosicion, planetaId, puntoInteresId, puntosInteres) {// Pasar selectPosicion, planetaId, puntoInteresId, puntosInteres
+export function actualizarPosiciones(selectPosicion, planetaId, puntoInteresId, puntosInteres) {
     selectPosicion.innerHTML = '<option value="">-- Seleccione posición --</option>';
     const puntosInteresDelPlaneta = new Set(puntosInteres.filter(function (puntoInteres) {
     return (puntoInteres.cuerpo_celeste_id === planetaId && puntoInteres.id !== puntoInteresId);

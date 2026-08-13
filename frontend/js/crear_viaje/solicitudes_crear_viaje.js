@@ -1,6 +1,7 @@
+import * as constantes from "../constantes.js";
+
 // Hace un fetch para obtener los datos de la URL pasada por recurso y lo devuelve, si ocurre
 // un error devuelve un arreglo vacío.
-import * as constantes from "../constantes.js";
 export async function obtenerDatos(recurso) {
   try {
     const res = await fetch(`${constantes.API_URL}/${recurso}`);

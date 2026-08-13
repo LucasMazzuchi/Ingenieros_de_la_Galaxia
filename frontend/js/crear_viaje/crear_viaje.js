@@ -136,10 +136,17 @@ async function inicializarSelects() {
     selectPlanetaPunto.addEventListener("change", function () {
       puntosDeInteres.actualizarPuntosInteres(selectPunto, puntosInteres, parseInt(selectPlanetaPunto.value));
       puntosDeInteres.actualizarPosiciones(document.getElementById("inputPosicionPunto"), parseInt(selectPlanetaPunto.value), parseInt(selectPunto.value), puntosInteres);
-  });
-    selectPunto.addEventListener("change", puntosDeInteres.actualizarPosiciones);
+    });
+    selectPunto.addEventListener("change", function () {
+      puntosDeInteres.actualizarPosiciones(
+          document.getElementById("inputPosicionPunto"), 
+          parseInt(selectPlanetaPunto.value), 
+          parseInt(selectPunto.value), 
+          puntosInteres
+      );
+    });
   }
-}
+};
 document.addEventListener("DOMContentLoaded", inicializarSelects);
 
 //  MANEJADORES DE FORMULARIOS (Alta, Modificación y Baja) 
