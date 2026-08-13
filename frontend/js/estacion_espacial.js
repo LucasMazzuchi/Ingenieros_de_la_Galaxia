@@ -27,72 +27,44 @@ async function actualizarPantallaDesdeBD(vehiculoId) {
 // Actualiza los niveles de los campos motor, estructura, vehìculos y los deshabilita en caso
 // de tener al nivel 3 el campo.
 function pintarEstado(vehiculo) {
-    const campos = ["motor", "estructura", "resistencia"]; // Hacer cte
+    const campos = constantes.CAMPOS;
     const puntos = document.getElementById("datoPuntos");
-    if (puntos) { // Sacar la verificación y probar con 0
+    if (puntos) {
         puntos.textContent = vehiculo.puntos; 
     }
     campos.forEach((campo) => {
         const elemento = document.getElementById(`nivel-${campo}`);
         const boton = document.getElementById(`boton-${campo}`);
-        console.log(campo, "Encontrado:", !!boton, "Nivel:", vehiculo[campo], "Puntos:", vehiculo.puntos); // Sacar
         if (elemento) {
             elemento.textContent = vehiculo[campo];
         }
-        if (boton) { // Sacar la verificación
-            if (vehiculo[campo] >= 3 || vehiculo.puntos <= 0) {
-                boton.disabled = true;
-            }
+        if (vehiculo[campo] >= 3 || vehiculo.puntos <= 0) {
+            boton.disabled = true;
         }
     });
 }
 
-// La funfión inicializa los botones de mejora de los campos de vehículo junto con el de cargar combustible. Cuando ocurre una mejora o se carga combustible,
+// La función inicializa los botones de mejora de los campos de vehículo junto con el de cargar combustible. Cuando ocurre una mejora o se carga combustible,
 // muestra una notificación detallando la acción y el resultado con la función mostrarNotificación.
 function inicializarBotones(vehiculoId) {
-    const campos = ["motor", "estructura", "resistencia"]; // Hacer cte
+    const campos = constantes.CAMPOS;
 
-    campos.forEach((campo, index) => {
+    campos.forEach((campo) => {
         const boton = document.getElementById(`boton-${campo}`);
-        if (!boton) return; // Sacar la verificación
-
+        //Inicializar Botón mejora.
         boton.addEventListener("click", async () => {
             const resEstadoVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoId}`);
             const vehiculo = await resEstadoVehiculo.json();
-            // Armar func que solo devuelva el título, el texto y otrosCampos
-            if (vehiculo[campo] >= 3) {
-                await mostrarNotificacion(`El atributo ${campo} está al máximo`, "Utilizá tus puntos de mejora para los demás atributos.");
+            const { tituloCampos, textoCampos, otrosCampos } = verificarValidezMejora(vehiculo, campo, campos);
+            if (tituloCampos.length !== 0){
+                await mostrarNotificacion(tituloCampos, textoCampos);
                 return;
             }
-            if (vehiculo.puntos <= 0) {
-                await mostrarNotificacion("Sin Puntos", "La nave no tiene puntos de mejora disponibles.");
-                return;
-            }
-            const otrosCampos = campos.filter(function (campoActual) {return campoActual !== campo});
-            const campoInvalido = otrosCampos.filter(function (otroCampo){return vehiculo[otroCampo] < vehiculo[campo]});
-            if (campoInvalido.length !== 0){
-                await mostrarNotificacion("Mejora no disponible", `Tenés que mejorar primero todos los atributos al nivel ${vehiculo[campo]} para poder desbloquearla.`);
-                return;
-            }
-            // Hasta acá
-            // Armar func de mejora que devuelva ok, necesita como parámetros vehiculo, otros campos
-            let nivelNave = 0;
-            if (vehiculo[otrosCampos[0]] === vehiculo[otrosCampos[1]] && vehiculo[campo]+1 === vehiculo[otrosCampos[0]]){
-                nivelNave = vehiculo[campo]+1;
-            }
-            try {
-                const actualizarVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoId}`, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        [campo]: vehiculo[campo] + 1,
-                        puntos: vehiculo.puntos - 1
-                    })
-                });
-                if (actualizarVehiculo.ok) {
-                    // De acá para abajo afuera
+            const {ok, nivelNave} = await mejorarVehiculo(vehiculo, campo, otrosCampos);
+            try{
+                if (ok) {
                     await actualizarPantallaDesdeBD(vehiculoId);
-                    await mostrarNotificacion("¡Mejora Aplicada!", `Se ha subido el atributo ${campo} al nivel ${vehiculo[campo] + 1}.`, false, 0, true, nivelNave);
+                    await mostrarNotificacion("¡Mejora Aplicada!", `Se ha subido el atributo ${campo} al nivel ${vehiculo[campo] + 1}.`);
                     if (nivelNave){
                         await mostrarNotificacion("¡La nave subió de nivel!", `Alcanzaste el nivel ${nivelNave} en todos los componentes de la nave. Desbloquaste un nuevo aspecto.`);
                     }
@@ -102,25 +74,14 @@ function inicializarBotones(vehiculoId) {
             }
         });
     });
+    // Inicializar botón cargar Combustible
     const botonCargarCombustible = document.getElementById("btnRecargar");
-    botonCargarCombustible.addEventListener("click", async () => { // Func aparte de lógica que devuelva solo título y texto.
+    botonCargarCombustible.addEventListener("click", async () => {
         const resActualVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoId}`);
         const vehiculo = await resActualVehiculo.json();
-        if (vehiculo.combustible >= 100) {
-            await mostrarNotificacion("Tanque Lleno", "El vehículo ya tiene el combustible al máximo.");
-            return;
-        }
-        try {
-            const resCargado = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoId}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ combustible: 100 })
-            });
-
-            if (resCargado.ok) {
-                await actualizarPantallaDesdeBD(vehiculoId);
-                await mostrarNotificacion("¡Tanque Lleno!", "Se ha cargado el combustible al 100%.");
-            }
+        try{
+            const {tituloCombustible, textoCombustible} = await cargarCombustible(vehiculo);
+            await mostrarNotificacion(tituloCombustible, textoCombustible);
         } catch (error) {
             console.error("Error al recargar combustible:", error);
         }
@@ -129,4 +90,64 @@ function inicializarBotones(vehiculoId) {
         window.location.href = "galaxia.html"
     });
 }
+
+// La función verifica que la mejora del campo sea a un nivel menor o igual a 3, mayor a 0 y no difiera en más de 1 con el nivel de los demás campos.
+// Devuelve tituloCampos, textoCampos como cadenas vacías y otrosCampos con los campos que no se quiere mejorar cuando la mejora es válida. Sino devuelve
+// el título y el texto para imprimir por pantalla con mostrarNotificacion, otrosCampos es undefined.
+function verificarValidezMejora(vehiculo, campo, campos){
+    if (vehiculo[campo] >= 3) {
+        return{ tituloCampos: `El atributo ${campo} está al máximo`, textoCampos: "Utilizá tus puntos de mejora para los demás atributos.", otrosCampos: undefined};
+    }
+    if (vehiculo.puntos <= 0) {
+        return{ tituloCampos: "Sin Puntos", textoCampos: "La nave no tiene puntos de mejora disponibles.", otrosCampos: undefined };
+    }
+    const otrosCampos = campos.filter(function (campoActual) {return campoActual !== campo});
+    const campoInvalido = otrosCampos.filter(function (otroCampo){return vehiculo[otroCampo] < vehiculo[campo]});
+    if (campoInvalido.length !== 0){
+        return{ tituloCampos: "Mejora no disponible", textoCampos: `Tenés que mejorar primero todos los atributos al nivel ${vehiculo[campo]} para poder desbloquearla.`, otrosCampos: undefined };
+    }
+    return{ tituloCampos: "", textoCampos: "", otrosCampos: otrosCampos };
+}
+
+// La función mejora el campo del vehículo pasado por parámetro en un nivel y resta un punto de mejora. Si hay errores devuelve false, undefined, sino devuelve
+// true con el nivel al que sube la nave.
+async function mejorarVehiculo(vehiculo, campo, otrosCampos){
+    let nivelNave = 0;
+    if (vehiculo[otrosCampos[0]] === vehiculo[otrosCampos[1]] && vehiculo[campo]+1 === vehiculo[otrosCampos[0]]){
+        nivelNave = vehiculo[campo]+1;
+    }
+    try {
+        const actualizarVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculo.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                [campo]: vehiculo[campo] + 1,
+                puntos: vehiculo.puntos - 1
+            })
+        });
+    return {ok: true, nivelNave: nivelNave};
+    } catch (error){
+        return {ok: false, nivelNave: undefined};
+    }
+};
+
+// La función carga combustible en caso de ser necesario al vehículo pasado por parámetro. Devuelve el título y el texto para imprimir por pantalla con
+// la función mostrarNotificación.
+async function cargarCombustible(vehiculo) {
+    if (vehiculo.combustible >= 100) {
+            return{ tituloCombustible: "Tanque Lleno", textoCombustible: "El vehículo ya tiene el combustible al máximo." };
+        }
+    const resCargado = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculo.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ combustible: 100 })
+    });
+
+    if (resCargado.ok) {
+        await actualizarPantallaDesdeBD(vehiculo.id);
+        return { tituloCombustible: "¡Tanque Lleno!", textoCombustible: "Se ha cargado el combustible al 100%." };
+    }
+    return { tituloCombustible: "", textoCombustible: "" };
+};
+
 document.addEventListener("DOMContentLoaded", iniciarEstacion);
