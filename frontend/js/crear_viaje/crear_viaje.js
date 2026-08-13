@@ -138,12 +138,7 @@ async function inicializarSelects() {
       puntosDeInteres.actualizarPosiciones(document.getElementById("inputPosicionPunto"), parseInt(selectPlanetaPunto.value), parseInt(selectPunto.value), puntosInteres);
     });
     selectPunto.addEventListener("change", function () {
-      puntosDeInteres.actualizarPosiciones(
-          document.getElementById("inputPosicionPunto"), 
-          parseInt(selectPlanetaPunto.value), 
-          parseInt(selectPunto.value), 
-          puntosInteres
-      );
+      puntosDeInteres.actualizarPosiciones(document.getElementById("inputPosicionPunto"), parseInt(selectPlanetaPunto.value), parseInt(selectPunto.value), puntosInteres);
     });
   }
 };
@@ -160,14 +155,14 @@ selectPlaneta.addEventListener("change", async () => {
   await planetas.cargarPlanetas(selectPlaneta, formPlaneta);
 });
 // Guardar (Alta o Modificación) Planeta
-formPlaneta.addEventListener("submit", async (e) => { // Hacer una func aparte de Guardar
+formPlaneta.addEventListener("submit", async (e) => {
   e.preventDefault();
   const { titulo, textoEstado} = await planetas.agregaPlaneta(inicializarSelects, selectPlaneta, formPlaneta);
   await mostrarNotificacion(titulo,textoEstado);
 });
 
 // Borrar Planeta
-btnBorrarPlaneta.addEventListener("click", async () => { // Armar func aparte
+btnBorrarPlaneta.addEventListener("click", async () => {
   const { titulo, textoEstado} = await planetas.borrarPlaneta(inicializarSelects, selectPlaneta, formPlaneta);
   await mostrarNotificacion(titulo,textoEstado);
 });
@@ -177,12 +172,12 @@ const selectVehiculo = document.getElementById("selectVehiculo");
 const btnBorrarVehiculo = document.getElementById("btnBorrarVehiculo");
 
 // Cargar datos en el form si selecciona un vehículo existente
-selectVehiculo.addEventListener("change", async () => { // Función aparte de cargado
+selectVehiculo.addEventListener("change", async () => {
   vehiculos.cargarVehiculos(selectVehiculo, formVehiculo);
 });
 
 // Guardar (Alta o Modificación) Vehículo
-formVehiculo.addEventListener("submit", async (e) => { // Función aparte de guardado
+formVehiculo.addEventListener("submit", async (e) => {
   e.preventDefault();
   const { titulo, textoEstado} = vehiculos.agregarVehiculos(selectVehiculo, inicializarSelects);
   await mostrarNotificacion(titulo,textoEstado);
@@ -197,19 +192,27 @@ btnBorrarVehiculo.addEventListener("click", async () => {
 const formPunto = document.getElementById("tab-punto");
 const selectPunto = document.getElementById("selectPunto");
 const btnBorrarPunto = document.getElementById("btnBorrarPunto");
+const selectPlanetaPunto = document.getElementById("selectPlanetaPunto");
 
 // Cargar datos en el form si selecciona un punto de interés existente
-selectPunto.addEventListener("change", async () => { // Func aparte
+selectPunto.addEventListener("change", async () => {
  puntosDeInteres.cargarPuntoDeInteres(selectPunto, formPunto)
 });
 
+selectPlanetaPunto.addEventListener("change", async () => {
+    document.getElementById("inputTituloPunto").value = "";
+    document.getElementById("inputDescripcionPunto").value = "";
+    document.getElementById("inputPosicionPunto").value = "";
+    document.getElementById("inputImagenPunto").value = "";
+});
+
 // Guardar (Alta o Modificación) Punto de Interés
-formPunto.addEventListener("submit", async (e) => { // Func aparte guardado
+formPunto.addEventListener("submit", async (e) => {
   e.preventDefault();
   puntosDeInteres.agregarPuntoDeInteres(selectPunto, formPunto, inicializarSelects)
 });
 
 // Borrar Punto de Interés
-btnBorrarPunto.addEventListener("click", async () => { // Func aparte
+btnBorrarPunto.addEventListener("click", async () => {
   puntosDeInteres.borrarPuntoDeInteres(selectPunto, formPunto, inicializarSelects)
 });

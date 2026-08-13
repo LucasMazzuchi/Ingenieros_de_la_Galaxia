@@ -35,6 +35,10 @@ export async function cargarPuntoDeInteres(selectPunto, formPunto, obtenerDatos)
     formPunto.reset();
     return;
   }
+  const imagenes = document.getElementById("galeriaPuntos").querySelectorAll("img"); 
+  if (galeria) {
+    imagenes.forEach(imagen => imagen.classList.remove("seleccionada"));
+  }
   const puntosInteres = await viaje.obtenerDatos(constantes.PUNTOS_URL); 
   const puntoInteres = puntosInteres.find(item => item.id == id);
   if (puntoInteres) {
@@ -43,6 +47,7 @@ export async function cargarPuntoDeInteres(selectPunto, formPunto, obtenerDatos)
     document.getElementById("inputDescripcionPunto").value = puntoInteres.descripcion;
     document.getElementById("inputPosicionPunto").value = puntoInteres.posicion;
     document.getElementById("inputImagenPunto").value = puntoInteres.imagen;
+    imagenes[puntoInteres.imagen-1].classList.add("seleccionada");
   }
 }
 
