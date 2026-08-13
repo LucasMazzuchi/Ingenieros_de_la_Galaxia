@@ -1,5 +1,5 @@
-import * as constantes from "./constantes.js";
-import { mostrarNotificacion } from "./notificaciones.js";
+import * as constantes from "../constantes.js";
+import { mostrarNotificacion } from "../notificaciones.js";
 
 const contenedorMapa = document.getElementById("mapa-planeta");
 const panelPunto = document.getElementById("panelPunto");
@@ -89,7 +89,14 @@ async function pintarPuntosDeInteres(cuerpoCeleste, puntosInteres, vehiculoObjet
     const { puntosVisitados } = await resProgreso.json();
     let posNave = vehiculoObjetos.punto_interes-1;
     puntosInteres.forEach((puntoInteres) => { 
+        const coordenadas = coordenadasVisuales[puntoInteres.posicion-1];
         const divPunto = crearDivPunto(puntosVisitados, cuerpoCeleste, vehiculoObjetos, puntoInteres);
+        divPunto.addEventListener("click", async () => {
+        const exito = await manejarClickPunto(cuerpoCeleste.id, puntoInteres, vehiculoObjetos.id, coordenadas, vehiculo);
+        if (exito) {
+            divPunto.classList.remove("bloqueado");
+        }
+        });
         contenedorMapa.appendChild(divPunto);
     });
     crearTransicion(posNave);
@@ -172,19 +179,7 @@ async function manejarClickPunto(cuerpoCelesteId, puntoInteres, vehiculoId, coor
         }
     }
 };
-
-// La función devuelve la imagen de la nave correspondiente según sus atributos.
-function obtenerImagenNave(vehiculoDatos) {
-    const { motor, estructura, resistencia } = vehiculoDatos;
-    if (motor >= 3 && estructura >= 3 && resistencia >= 3) {
-        return "../assets/img/nivel3.png";
-    }
-    if (motor >= 2 && estructura >= 2 && resistencia >= 2) {
-        return "../assets/img/nivel2.png";
-    }
-    return "../assets/img/nave1.png";
-}
-
+////// salida_dinamica.js
 // La función inicializa los valores dentro del apartado con información del cuerpo celeste utilizando cuerpo_celeste.
 function rellenarApartadoIzquierda(cuerpo_celeste){
     document.getElementById("datoTipo").textContent = constantes.TIPOS_PLANETA[cuerpo_celeste.tipo];
@@ -217,7 +212,7 @@ function dibujarCamino(puntosDeInteres){
     })
     camino.setAttribute("points", puntos.join(" "));
 }
-
+//////////// frena salida_dinamica.js
 // Probar de meter en iniciar a lo último
 document.getElementById("btnCerrarPanelPunto").addEventListener("click", () => {
     panelPunto.classList.remove("visible");
@@ -229,7 +224,7 @@ botonInfo.addEventListener('click', () => {
     botonInfo.classList.toggle('abierto');
     botonInfo.querySelector('.flecha').textContent = panelPlaneta.classList.contains('abierto') ? '‹' : '›';
 });
-
+////////////// arranca de nuevo salida_dinamica.js
 // La función crea el div y ubica cada nave excepto la del usuario. 
 async function pintarVehiculos(vehiculos, vehiculoUsado){
     vehiculos.forEach( function (vehiculoActual){
@@ -265,8 +260,7 @@ function crearTransicion(posNave) {
     vehiculo.style.left = coordenadasVisuales[posNave].left;
     vehiculo.dataset.indiceActual = posNave;
     setTimeout(() => {vehiculo.style.transition = "top 1s ease, left 1s ease"}, 50);
-    
-}
+};
 
 function crearDivPunto(puntosVisitados, cuerpoCeleste, vehiculoObjetos, puntoInteres){
     const divPunto = document.createElement("div");
@@ -282,14 +276,22 @@ function crearDivPunto(puntosVisitados, cuerpoCeleste, vehiculoObjetos, puntoInt
         <img src="${imagenPunto}" alt="punto de interés">
         <p>${puntoInteres.nombre}</p>
     `;
-    divPunto.addEventListener("click", async () => {
-        const exito = await manejarClickPunto(cuerpoCeleste.id, puntoInteres, vehiculoObjetos.id, coordenadas, vehiculo);
-        if (exito) {
-            divPunto.classList.remove("bloqueado");
-        }
-    });
     return divPunto;
 }
+//////////// salida_dinamica.js
+//////////// obtener_imagenes.js
+// La función devuelve la imagen de la nave correspondiente según sus atributos.
+function obtenerImagenNave(vehiculoDatos) {
+    const { motor, estructura, resistencia } = vehiculoDatos;
+    if (motor >= 3 && estructura >= 3 && resistencia >= 3) {
+        return "../assets/img/nivel3.png";
+    }
+    if (motor >= 2 && estructura >= 2 && resistencia >= 2) {
+        return "../assets/img/nivel2.png";
+    }
+    return "../assets/img/nave1.png";
+}
+
 
 // Devuelve la ruta a la imagen que está asociada con imagenId.
 function buscarImagenFondo(imagenId) {
@@ -319,6 +321,9 @@ function buscarImagenPunto(imagenId){
     }
     return imagenes_punto[imagenId];
 }
+///////// termina obtener_imagenes.js
+
+////////// verificaciones_planeta.js
 
 // La función trae del backend el estado del punto de interés y si está completado devuelve true, sino false.
 async function okPunto (naveId){
@@ -375,7 +380,9 @@ async function estaCompletado(estado, puntosInteres, naveId, planetaId){
     return {tituloCompletado: "", textoCompletado: ""};
 }
 
-function inicializarUbicacion(vehiculoDatos, puntosInteres, naveId, planetaId) {
+///////// termina verificaciones_planeta.js
+
+async function inicializarUbicacion(vehiculoDatos, puntosInteres, naveId, planetaId) {
     let puntoActual = vehiculoDatos.punto_interes;
     if (vehiculoDatos.ubicacion_id !== planetaId){
         puntoActual = puntosInteres.length !== 0 ? puntosInteres[0].posicion : 1;
@@ -392,6 +399,6 @@ function inicializarUbicacion(vehiculoDatos, puntosInteres, naveId, planetaId) {
             punto_interes: vehiculoDatos.punto_interes
         })
     });
-return vehiculoDatos.punto_interes;
+    return vehiculoDatos.punto_interes;
 };
 document.addEventListener("DOMContentLoaded", iniciarPlaneta);
