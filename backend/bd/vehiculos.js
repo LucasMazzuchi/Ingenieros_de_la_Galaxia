@@ -1,6 +1,6 @@
 import { db } from "./pool.js";
 import { armar_consulta } from "./consultas.js";
-import {consulta, VEHICULOS_MAX} from "../constantes.js"
+import {consulta} from "../constantes.js"
 
 // Busca todos los vehículos, se puede filtrar por sus campos. El parámetro texto es la consulta y procesados son los datos.
 // Devuelve todos los vehículos que cumplan con los requisitos de filtrado. 
@@ -40,9 +40,4 @@ export async function updateVehiculo(id, vehiculo){
     const solicitud = `UPDATE vehiculos SET ${consulta} WHERE id=$${numeroId} AND borrado = FALSE`;
     const res = await db.query(solicitud, valores);
     return res.rowCount == 1;
-}
-// Cuenta la cantidad de vehículos que hay en la base de datos sin borrar.
-export async function cantidadVehiculos(){
-    const res = await db.query("SELECT COUNT(*) FROM vehiculos WHERE borrado=FALSE");
-    return Number(res.rows[0].count);
 }

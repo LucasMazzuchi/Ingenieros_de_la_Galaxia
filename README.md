@@ -35,7 +35,7 @@ docker compose up
 ```
 
 Una vez que la terminal indique que los contenedores están corriendo, abrí tu navegador  
-en `http://localhost:8080<BACKEND_PORT>` para acceder a la página inicial.
+en `http://localhost:<FRONTEND_PORT>` para acceder a la página inicial.
 
 ## Apagado
 ```bash
@@ -44,11 +44,17 @@ docker compose down
 ## Pantalla Inicial
 ![screenshot](imagenesReadme/bienvenida.png)
 
+## Selección de nave
+![screenshot](imagenesReadme/nave.png)
+
 ## Mapa de los planetas
 ![screenshot](imagenesReadme/mapa.png)
 
 ## Mapa de un planeta
 ![screenshot](imagenesReadme/planeta.png)
+
+## Estación espacial
+![screenshot](imagenesReadme/estacion.png)
 
 ## Interfaz de Creado
 ![screenshot](imagenesReadme/crear.png)

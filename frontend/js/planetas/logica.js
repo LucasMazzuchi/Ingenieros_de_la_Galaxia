@@ -1,0 +1,101 @@
+import * as constantes from "../constantes.js";
+import * as verificaciones from "./verificaciones_planeta.js";
+import * as busqueda from "./obtener_imagenes_textos.js";
+
+// La función solicita a la base de datos planetas, el vehículo manipulado por el usuario, los demás vehículos,
+// los puntos de interés y el estado de la nave respecto a los puntos de interés y planetas para devolverlos.
+export async function obtenerDatos(naveId, planetaId, vehiculo){
+    const planetas = await verificaciones.verificarDisponiblidad(naveId, planetaId);
+    const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
+    const vehiculoDatos = await resVehiculo.json();
+    vehiculo.src = (planetaId === 1) ? "../assets/img/auto1.png" : busqueda.obtenerImagenNave(vehiculoDatos);
+    const resVehiculos = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?ubicacion_id=${planetaId}`);
+    const vehiculos = await resVehiculos.json();
+    const resPuntosInteres = await fetch(`${constantes.API_URL}/${constantes.PUNTOS_URL}?cuerpo_celeste_id=${planetaId}&order_by=posicion&order=ASC`);
+    const puntosInteres = await resPuntosInteres.json();
+    const resEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${planetaId}`);
+    const estado = await resEstado.json();
+    return {planetas, vehiculoDatos, vehiculos, puntosInteres, estado};
+}
+
+// La función inicializa la posición del vehículo pasado por parámetro dependiendo del estado actual con el planeta.
+// Si es la primera vez que entra va al primer punto de interés, sino va al punto en el que estaba previamente.
+// En caso de no existir por modificación del planeta, va a un punto cercano. Retorna la posición actual del vehículo.
+export async function inicializarUbicacion(vehiculoDatos, puntosInteres, naveId, planetaId) {
+    let puntoActual = vehiculoDatos.punto_interes;
+    if (vehiculoDatos.ubicacion_id !== planetaId){
+        puntoActual = puntosInteres.length !== 0 ? puntosInteres[0].posicion : 1;
+        vehiculoDatos.punto_interes = puntoActual;
+    }
+    if (puntosInteres.length >= 1 && puntosInteres.filter(function (puntoInteres) {return puntoInteres.posicion === puntoActual}).length === 0){
+        vehiculoDatos.punto_interes = puntosInteres[0].posicion;
+    }
+    const actualizarVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            ubicacion_id : planetaId,
+            punto_interes: vehiculoDatos.punto_interes
+        })
+    });
+    return vehiculoDatos.punto_interes;
+};
+
+// La función completa el punto de interés pasado por parámetro para el vehículo asociado a vehiculoId
+// y retorna textoCombustible y textoMejora como cadenas con los mensajes de éxito a imprimir pantallas.
+// Si no se completó el punto de interés porque ya estaba completo o por otra razón, devuelve dos cadenas vacías. 
+export async function completarPuntoInteres(cuerpoCelesteId, vehiculoId, puntoInteres, panelPunto){
+    try {
+        const estadoPlanetaAntes = await verificaciones.planetaCompletado(cuerpoCelesteId, vehiculoId);
+        const resExplorar = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoId}/explorar`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cuerpo_celeste_id: cuerpoCelesteId, punto_interes_id: puntoInteres.id })
+        });
+        const data = await resExplorar.json();
+        if (data.error === constantes.ERROR_DISPONIBLE) { 
+            console.warn(data.error);
+            return {textoCombustible: "", textoMejora: ""};
+        }
+        document.getElementById("puntoNombre").textContent = puntoInteres.nombre;
+        document.getElementById("puntoDescripcion").textContent = puntoInteres.descripcion;
+        panelPunto.classList.add("visible");
+        if (!data.error){
+
+            const textoCombustible = await busqueda.obtenerTextoCombustible(data.combustible, estadoPlanetaAntes);
+            const completado = estadoPlanetaAntes ? false : data.cuerpoCompletado;
+            let textoMejora = completado ? await busqueda.obtenerTextoMejora(vehiculoId, cuerpoCelesteId) : "";
+            return { textoCombustible: textoCombustible, textoMejora: textoMejora };
+        }
+        return {textoCombustible: "", textoMejora: ""};
+    } catch (error) {
+        console.error("Error de red al explorar:", error);
+        return { textoCombustible: "", textoMejora: "" };
+    }
+};
+
+// La función desbloquea el punto de interés pasado por parámetro y retorna tituloError, textoError como dos
+// cadenas vacías. Si ocurre un error al desbloquea el punto, retorna en las dos variables los mensasjes de error
+// a imprimir por pantalla.
+export async function desbloquearPuntoInteres(vehiculoId, cuerpoCelesteId, puntoInteres){
+    try {
+        const resDesbloquear = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoId}/desbloquear`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cuerpo_celeste_id: cuerpoCelesteId, punto_interes_id: puntoInteres.id })
+        });
+        const data = await resDesbloquear.json();
+        if (!resDesbloquear.ok) {
+            const textoError = data.error || "Debe explorar el punto anterior primero.";
+            return {tituloError: "Ruta Inválida", textoError: textoError};
+        }
+        const actualizacionUbicacionVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ punto_interes: puntoInteres.posicion})
+        });
+        return {tituloError: "", textoError: ""};
+    } catch (error) {
+        return {tituloError: "Error de red al desbloquear:", textoError: error};
+    }
+}
