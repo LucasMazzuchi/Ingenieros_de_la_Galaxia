@@ -50,6 +50,15 @@ async function iniciarPlaneta() {
         document.getElementById("botonVolver").addEventListener("click", function () {
             window.location.href = "galaxia.html";
         });
+        document.getElementById("btnCerrarPanelPunto").addEventListener("click", () => {
+            panelPunto.classList.remove("visible");
+        });
+        botonInfo.addEventListener('click', () => {
+            panelPlaneta.classList.toggle('abierto');
+            botonInfo.classList.toggle('abierto');
+            botonInfo.querySelector('.flecha').textContent = panelPlaneta.classList.contains('abierto') ? '‹' : '›';
+        });
+
         
     } catch (error) {
         console.error("Error en iniciarPlaneta:", error);
@@ -120,16 +129,4 @@ async function manejarClickPunto(cuerpoCelesteId, puntoInteres, vehiculoId, coor
         return true;
     }
 };
-// Probar de meter en iniciar a lo último
-document.getElementById("btnCerrarPanelPunto").addEventListener("click", () => {
-    panelPunto.classList.remove("visible");
-});
-
-// Probar de meter en iniciar a lo último
-botonInfo.addEventListener('click', () => {
-    panelPlaneta.classList.toggle('abierto');
-    botonInfo.classList.toggle('abierto');
-    botonInfo.querySelector('.flecha').textContent = panelPlaneta.classList.contains('abierto') ? '‹' : '›';
-});
-
 document.addEventListener("DOMContentLoaded", iniciarPlaneta);
