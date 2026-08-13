@@ -31,14 +31,13 @@ export function actualizarPosiciones(selectPosicion, planetaId, puntoInteresId, 
 
 export async function cargarPuntoDeInteres(selectPunto, formPunto, obtenerDatos) {
   const id = selectPunto.value;
+  const imagenes = document.getElementById("galeriaPuntos").querySelectorAll("img"); 
   if (!id) {
     formPunto.reset();
+    imagenes.forEach(imagen => imagen.classList.remove("seleccionada"));
     return;
   }
-  const imagenes = document.getElementById("galeriaPuntos").querySelectorAll("img"); 
-  if (galeria) {
-    imagenes.forEach(imagen => imagen.classList.remove("seleccionada"));
-  }
+  imagenes.forEach(imagen => imagen.classList.remove("seleccionada"));
   const puntosInteres = await viaje.obtenerDatos(constantes.PUNTOS_URL); 
   const puntoInteres = puntosInteres.find(item => item.id == id);
   if (puntoInteres) {
@@ -47,11 +46,11 @@ export async function cargarPuntoDeInteres(selectPunto, formPunto, obtenerDatos)
     document.getElementById("inputDescripcionPunto").value = puntoInteres.descripcion;
     document.getElementById("inputPosicionPunto").value = puntoInteres.posicion;
     document.getElementById("inputImagenPunto").value = puntoInteres.imagen;
-    imagenes[puntoInteres.imagen-1].classList.add("seleccionada");
+    imagenes[parseInt(puntoInteres.imagen)-1].classList.add("seleccionada");
   }
 }
 
-export async function agregarPuntoDeInteres(selectPunto, modificarRegistro, crearRegistro, inicializarSelects) {
+export async function agregarPuntoDeInteres(selectPunto, formPunto, inicializarSelects) {
       const id = selectPunto.value;
       const resPuntosInteres = await fetch(`${constantes.API_URL}/${constantes.PUNTOS_URL}?cuerpo_celeste_id=${parseInt(document.getElementById("selectPlanetaPunto").value)}`);
       const puntosInteres = await resPuntosInteres.json();
@@ -78,11 +77,12 @@ export async function agregarPuntoDeInteres(selectPunto, modificarRegistro, crea
       if (exito) {
         alert("¡Punto de interés guardado con éxito!");
         formPunto.reset();
-        inicializarSelects();
+        await inicializarSelects();
+        const imagenes = document.getElementById("galeriaPuntos").querySelectorAll("img");
+        imagenes.forEach(imagen => imagen.classList.remove("seleccionada"));
       } else {
         alert("Ocurrió un error al guardar el punto de interés.");
       }
- 
 }
 export async function borrarPuntoDeInteres(selectPunto, formPunto, inicializarSelects) {
     const id = selectPunto.value;
@@ -95,7 +95,9 @@ export async function borrarPuntoDeInteres(selectPunto, formPunto, inicializarSe
     if (exito) {
       alert("Punto de interés eliminado.");
       formPunto.reset();
-      inicializarSelects();
+      await inicializarSelects();
+      const imagenes = document.getElementById("galeriaPuntos").querySelectorAll("img");
+      imagenes.forEach(imagen => imagen.classList.remove("seleccionada"));
     } else {
       alert("No se pudo eliminar el punto de interés.");
     }

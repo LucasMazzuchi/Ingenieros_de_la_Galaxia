@@ -204,6 +204,8 @@ selectPlanetaPunto.addEventListener("change", async () => {
     document.getElementById("inputDescripcionPunto").value = "";
     document.getElementById("inputPosicionPunto").value = "";
     document.getElementById("inputImagenPunto").value = "";
+    const imagenes = document.getElementById("galeriaPuntos").querySelectorAll("img");
+    imagenes.forEach(imagen => imagen.classList.remove("seleccionada"));
 });
 
 // Guardar (Alta o Modificación) Punto de Interés
