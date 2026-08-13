@@ -91,7 +91,9 @@ function inicializarBotones(vehiculoId) {
     });
 }
 
-
+// La función verifica que la mejora del campo sea a un nivel menor o igual a 3, mayor a 0 y no difiera en más de 1 con el nivel de los demás campos.
+// Devuelve tituloCampos, textoCampos como cadenas vacías y otrosCampos con los campos que no se quiere mejorar cuando la mejora es válida. Sino devuelve
+// el título y el texto para imprimir por pantalla con mostrarNotificacion, otrosCampos es undefined.
 function verificarValidezMejora(vehiculo, campo, campos){
     if (vehiculo[campo] >= 3) {
         return{ tituloCampos: `El atributo ${campo} está al máximo`, textoCampos: "Utilizá tus puntos de mejora para los demás atributos.", otrosCampos: undefined};
@@ -107,6 +109,8 @@ function verificarValidezMejora(vehiculo, campo, campos){
     return{ tituloCampos: "", textoCampos: "", otrosCampos: otrosCampos };
 }
 
+// La función mejora el campo del vehículo pasado por parámetro en un nivel y resta un punto de mejora. Si hay errores devuelve false, undefined, sino devuelve
+// true con el nivel al que sube la nave.
 async function mejorarVehiculo(vehiculo, campo, otrosCampos){
     let nivelNave = 0;
     if (vehiculo[otrosCampos[0]] === vehiculo[otrosCampos[1]] && vehiculo[campo]+1 === vehiculo[otrosCampos[0]]){
@@ -127,6 +131,8 @@ async function mejorarVehiculo(vehiculo, campo, otrosCampos){
     }
 };
 
+// La función carga combustible en caso de ser necesario al vehículo pasado por parámetro. Devuelve el título y el texto para imprimir por pantalla con
+// la función mostrarNotificación.
 async function cargarCombustible(vehiculo) {
     if (vehiculo.combustible >= 100) {
             return{ tituloCombustible: "Tanque Lleno", textoCombustible: "El vehículo ya tiene el combustible al máximo." };
