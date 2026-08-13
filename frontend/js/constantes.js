@@ -14,6 +14,9 @@ export const PUNTO3_LEFT = "20%";
 
 export const PUNTO_DESBLOQUEADO = "y obtuviste un punto de mejora"
 export const ERROR_PUNTO_MAX = "pero no obtuviste puntos de mejora, ya los adquiriste todos"
+export const ERROR_COMBUSTIBLE = "Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave o recarga combustible para poder viajar a otro.";
+export const ERROR_NAVE = "Nave no desbloqueada, completa todos los puntos de interés del planeta Tierra para poder acceder a los demás.";
+
 
 export const ERROR_COMPLETADO = "Este punto ya fue explorado por la nave.";
 export const ERROR_DISPONIBLE = "Error al verificar el estado del punto de interés.";

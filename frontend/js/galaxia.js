@@ -52,9 +52,7 @@ async function pintarPlanetas(cuerpos_celestes, naveId) {
       if (cuerpo.disponible && navePuedeViajar) {
         window.location.href = `planeta.html?id=${cuerpo.id}`;
       } else {
-        const errorNave = "Nave no desbloqueada, completa todos los puntos de interés del planeta Tierra para poder acceder a los demás." // Hacer cte
-        const errorCombustible = "Combustible insuficiente, completa todos los puntos de interés del planeta donde está la nave o recarga combustible para poder viajar a otro."; // Hacer cte
-        const textoError = estadoTierra.planetaCompletado ? errorCombustible : errorNave;
+        const textoError = estadoTierra.planetaCompletado ? constantes.ERROR_COMBUSTIBLE : constantes.ERROR_NAVE;
         await mostrarNotificacion("No puede entrar al planeta",textoError)
       }
     });
