@@ -211,10 +211,28 @@ selectPlanetaPunto.addEventListener("change", async () => {
 // Guardar (Alta o Modificación) Punto de Interés
 formPunto.addEventListener("submit", async (e) => {
   e.preventDefault();
-  puntosDeInteres.agregarPuntoDeInteres(selectPunto, formPunto, inicializarSelects)
+  
+  // 1. Ejecutamos la función y guardamos el objeto devuelto
+  const estado = await puntosDeInteres.agregarPuntoDeInteres(selectPunto, formPunto, inicializarSelects);
+  
+  // 2. Mostramos la notificación con el título y mensaje correspondientes
+  if (estado) {
+    await mostrarNotificacion(estado.titulo, estado.textoEstado);
+  }
 });
 
 // Borrar Punto de Interés
 btnBorrarPunto.addEventListener("click", async () => {
-  puntosDeInteres.borrarPuntoDeInteres(selectPunto, formPunto, inicializarSelects)
+  // Pedimos confirmación al usuario antes de proceder
+  if (!selectPunto.value) {
+    await mostrarNotificacion("Operación Fallida", "Seleccioná un punto de interés existente para borrar.");
+    return;
+  }
+
+  if (confirm("¿Estás seguro de borrar este punto de interés?")) {
+    const estado = await puntosDeInteres.borrarPuntoDeInteres(selectPunto, formPunto, inicializarSelects);
+    if (estado) {
+      await mostrarNotificacion(estado.titulo, estado.textoEstado);
+    }
+  }
 });
