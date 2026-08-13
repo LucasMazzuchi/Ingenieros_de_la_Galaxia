@@ -228,11 +228,8 @@ btnBorrarPunto.addEventListener("click", async () => {
     await mostrarNotificacion("Operación Fallida", "Seleccioná un punto de interés existente para borrar.");
     return;
   }
-
-  if (confirm("¿Estás seguro de borrar este punto de interés?")) {
-    const estado = await puntosDeInteres.borrarPuntoDeInteres(selectPunto, formPunto, inicializarSelects);
-    if (estado) {
-      await mostrarNotificacion(estado.titulo, estado.textoEstado);
-    }
+  const estado = await puntosDeInteres.borrarPuntoDeInteres(selectPunto, formPunto, inicializarSelects);
+  if (estado) {
+    await mostrarNotificacion(estado.titulo, estado.textoEstado);
   }
 });

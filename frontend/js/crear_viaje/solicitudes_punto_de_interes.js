@@ -52,6 +52,9 @@ export async function cargarPuntoDeInteres(selectPunto, formPunto, obtenerDatos)
 
 export async function agregarPuntoDeInteres(selectPunto, formPunto, inicializarSelects) {
     const id = selectPunto.value;
+    if (!document.getElementById("selectPlanetaPunto").value){
+      return {titulo: "Operación Fallida", textoEstado: "Selecciona un planeta para poder guardar el punto."};
+    }
     const resPuntosInteres = await fetch(`${constantes.API_URL}/${constantes.PUNTOS_URL}?cuerpo_celeste_id=${parseInt(document.getElementById("selectPlanetaPunto").value)}`);
     const puntosInteres = await resPuntosInteres.json();
     const punto = parseInt(document.getElementById("inputPosicionPunto").value);
