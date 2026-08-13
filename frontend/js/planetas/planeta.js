@@ -19,7 +19,7 @@ async function iniciarPlaneta() {
     const planetaId = parseInt(parametros.get("id"));
     const naveId = localStorage.getItem("vehiculoSeleccionadoId");
     try {
-        const planetas = verificarDisponiblidad(naveId, planetaId);
+        const planetas = await verificarDisponiblidad(naveId, planetaId);
         const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
         const vehiculoDatos = await resVehiculo.json();
         vehiculo.src = (planetaId === 1) ? "../assets/img/auto1.png" : obtenerImagenNave(vehiculoDatos);
@@ -90,7 +90,7 @@ async function pintarPuntosDeInteres(cuerpoCeleste, puntosInteres, vehiculoObjet
     let posNave = vehiculoObjetos.punto_interes-1;
     puntosInteres.forEach((puntoInteres) => { 
         const coordenadas = coordenadasVisuales[puntoInteres.posicion-1];
-        const divPunto = crearDivPunto(puntosVisitados, cuerpoCeleste, vehiculoObjetos, puntoInteres);
+        const divPunto = crearDivPunto(puntosVisitados, cuerpoCeleste, vehiculoObjetos, puntoInteres, coordenadas);
         divPunto.addEventListener("click", async () => {
         const exito = await manejarClickPunto(cuerpoCeleste.id, puntoInteres, vehiculoObjetos.id, coordenadas, vehiculo);
         if (exito) {
@@ -124,16 +124,16 @@ async function manejarClickPunto(cuerpoCelesteId, puntoInteres, vehiculoId, coor
             panelPunto.classList.add("visible");
             if (!data.error) {
                 let texto = `Combustible extraído: ${data.combustible}`
+                console.log("estadoPlanetaAntes", estadoPlanetaAntes);
                 if (estadoPlanetaAntes){
                     texto = "No obtuviste recompensas, el planeta ya estaba completado.";
-                }
-                if (data.combustible === 0){
+                } else if (data.combustible === 0){
                     texto = "Se encontró combustible pero no se pudo aprovechar porque el tanque está lleno.";
                 }
                 const desbloqueaPuntoMejora = !(await okPunto(vehiculoId));
                 const completado = estadoPlanetaAntes ? false : data.cuerpoCompletado;
                 await mostrarNotificacion("Punto Completado!", texto);
-                if (data.cuerpoCompletado){
+                if (completado){
                     let textoMejora;
                     if (cuerpoCelesteId !== 1){
                         textoMejora = desbloqueaPuntoMejora ? constantes.PUNTO_DESBLOQUEADO : constantes.ERROR_PUNTO_MAX;
@@ -262,7 +262,7 @@ function crearTransicion(posNave) {
     setTimeout(() => {vehiculo.style.transition = "top 1s ease, left 1s ease"}, 50);
 };
 
-function crearDivPunto(puntosVisitados, cuerpoCeleste, vehiculoObjetos, puntoInteres){
+function crearDivPunto(puntosVisitados, cuerpoCeleste, vehiculoObjetos, puntoInteres, coordenadas){
     const divPunto = document.createElement("div");
     divPunto.className = "punto-interes";
     if (!puntosVisitados.find(function (punto) {return punto.punto_interes_id === puntoInteres.id})) {
@@ -332,11 +332,12 @@ async function okPunto (naveId){
     return (postMejora["motor"]+postMejora["estructura"]+postMejora["resistencia"]+postMejora.puntos >= 9);
 };
 
-// La función trae del backend el estado del cuerpo celeste respectoy si está completado devuelve true, sino false.
+// La función trae del backend el estado del cuerpo celeste respecto al vehículo asociado a vehiculoId
+// y si está completado devuelve true, sino false.
 async function planetaCompletado(cuerpoCelesteId, vehiculoId){ // Pedir por parámetro vehiculoId también
-    const resCuerpoCeleste = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${cuerpoCelesteId}`);
+    const resCuerpoCeleste = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoId}/${cuerpoCelesteId}`);
     const cuerpoCeleste = await resCuerpoCeleste.json();
-    return cuerpoCeleste.completado;
+    return cuerpoCeleste.planetaCompletado;
 };
 
 async function verificarDisponiblidad(naveId, planetaId){
