@@ -35,7 +35,11 @@ export async function actualizarPosicionesPlanetas() {
 
 export async function cargarPlanetas(selectPlaneta, formPlaneta) {
     const id = selectPlaneta.value;
+    const imagenesPlanetas = document.getElementById("galeriaPlanetas").querySelectorAll("img");
+    const imagenesPlanetasFondo = document.getElementById("galeriaFondoPlaneta").querySelectorAll("img");
     await actualizarPosicionesPlanetas();
+    imagenesPlanetas.forEach(imagen => imagen.classList.remove("seleccionada"));
+    imagenesPlanetasFondo.forEach(imagen => imagen.classList.remove("seleccionada"));
     if (!id) {
         formPlaneta.reset();
         return;
@@ -54,8 +58,10 @@ export async function cargarPlanetas(selectPlaneta, formPlaneta) {
         document.getElementById("inputPosicion").value = planeta.posicion;
         document.getElementById("inputImagen").value = planeta.imagen;
         document.getElementById("inputImagenFondo").value = planeta.imagen_fondo;
+        imagenesPlanetas[parseInt(planeta.imagen)-1].classList.add("seleccionada");
+        imagenesPlanetasFondo[parseInt(planeta.imagen_fondo)-1].classList.add("seleccionada");
     }
-  } 
+};
 export async function agregaPlaneta(inicializarSelects, selectPlaneta, formPlaneta) {
     
   const id = selectPlaneta.value;
@@ -83,23 +89,33 @@ export async function agregaPlaneta(inicializarSelects, selectPlaneta, formPlane
   if (exito) {
     formPlaneta.reset();
     inicializarSelects();
+    const imagenesPlanetas = document.getElementById("galeriaPlanetas").querySelectorAll("img");
+    const imagenesPlanetasFondo = document.getElementById("galeriaFondoPlaneta").querySelectorAll("img");
+    imagenesPlanetas.forEach(imagen => imagen.classList.remove("seleccionada"));
+    imagenesPlanetasFondo.forEach(imagen => imagen.classList.remove("seleccionada"));
     const texto = id ? "¡Cuerpo celeste modificado con éxito!" : `¡Cuerpo celeste guardado con éxito!`;
     return { titulo: "¡Operación Exitosa!", textoEstado: texto };
   } else {
     return { titulo: "Operación Fallida", textoEstado: `Ocurrió un error al guardar el planeta.` };
   }
 }
-  export async function borrarPlaneta (inicializarSelects, selectPlaneta, formPlaneta) {
-    const id = selectPlaneta.value;
-      if (!id) {
-        return { titulo: "Operación Fallida", textoEstado: "Seleccion'a un planeta existente para borrar." };
-      }
-      const exito = await viaje.eliminarRegistro("cuerpos_celestes", id);
-      if (exito) {
-        formPlaneta.reset();
-        inicializarSelects();
-        return { titulo: "¡Operación Exitosa!", textoEstado: "Planeta eliminado." };
-      } else {
-        return { titulo: "Operación Fallida", textoEstado: "No se pudo eliminar." };
-      }
+
+export async function borrarPlaneta (inicializarSelects, selectPlaneta, formPlaneta) {
+  const id = selectPlaneta.value;
+  if (!id) {
+    return { titulo: "Operación Fallida", textoEstado: "Seleccion'a un planeta existente para borrar." };
   }
+  const exito = await viaje.eliminarRegistro("cuerpos_celestes", id);
+  if (exito) {
+    formPlaneta.reset();
+    inicializarSelects();
+    const imagenesPlanetas = document.getElementById("galeriaPlanetas").querySelectorAll("img");
+    const imagenesPlanetasFondo = document.getElementById("galeriaFondoPlaneta").querySelectorAll("img");
+    imagenesPlanetas.forEach(imagen => imagen.classList.remove("seleccionada"));
+    imagenesPlanetasFondo.forEach(imagen => imagen.classList.remove("seleccionada"));
+
+    return { titulo: "¡Operación Exitosa!", textoEstado: "Planeta eliminado." };
+  } else {
+    return { titulo: "Operación Fallida", textoEstado: "No se pudo eliminar." };
+  }
+}
