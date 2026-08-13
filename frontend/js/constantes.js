@@ -21,3 +21,4 @@ export const ERROR_PUNTOS_MAX = "pero no obtuviste puntos de mejora, ya obtuvist
 export const TIPOS_PLANETA = { 1: "Rocoso", 2: "Gaseoso", 3: "Helado"};
 export const TIPOS_TERRENO = { 1: "Desértico", 2: "Rocoso", 3: "Helado"};
 export const COORDENADAS_SVG = ["12,15", "78,50", "20,85"];
+export const CAMPOS = ["motor", "estructura", "resistencia"];
