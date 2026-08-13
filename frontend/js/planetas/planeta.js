@@ -22,16 +22,7 @@ async function iniciarPlaneta() {
     const planetaId = parseInt(parametros.get("id"));
     const naveId = localStorage.getItem("vehiculoSeleccionadoId");
     try {
-        const planetas = await verificaciones.verificarDisponiblidad(naveId, planetaId);
-        const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
-        const vehiculoDatos = await resVehiculo.json();
-        vehiculo.src = (planetaId === 1) ? "../assets/img/auto1.png" : busqueda.obtenerImagenNave(vehiculoDatos);
-        const resVehiculos = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?ubicacion_id=${planetaId}`);
-        const vehiculos = await resVehiculos.json();
-        const resPuntosInteres = await fetch(`${constantes.API_URL}/${constantes.PUNTOS_URL}?cuerpo_celeste_id=${planetaId}&order_by=posicion&order=ASC`);
-        const puntosInteres = await resPuntosInteres.json();
-        const resEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${planetaId}`);
-        const estado = await resEstado.json();
+        const {planetas, vehiculoDatos, vehiculos, puntosInteres, estado} = await logica.obtenerDatos(naveId, planetaId, vehiculo);
         if (!estado.planetaCompletado && vehiculoDatos.combustible<100 && !estado.enProgreso){
             return window.location.href = "galaxia.html";
         }
@@ -95,10 +86,10 @@ async function pintarPuntosDeInteres(cuerpoCeleste, puntosInteres, vehiculoObjet
         const coordenadas = coordenadasVisuales[puntoInteres.posicion-1];
         const divPunto = salida.crearDivPunto(puntosVisitados, cuerpoCeleste, vehiculoObjetos, puntoInteres, coordenadas);
         divPunto.addEventListener("click", async () => {
-        const exito = await manejarClickPunto(cuerpoCeleste.id, puntoInteres, vehiculoObjetos.id, coordenadas, vehiculo);
-        if (exito) {
-            divPunto.classList.remove("bloqueado");
-        }
+            const exito = await manejarClickPunto(cuerpoCeleste.id, puntoInteres, vehiculoObjetos.id, coordenadas, vehiculo);
+            if (exito) {
+                divPunto.classList.remove("bloqueado");
+            }
         });
         contenedorMapa.appendChild(divPunto);
     });

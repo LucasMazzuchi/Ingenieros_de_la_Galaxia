@@ -2,6 +2,20 @@ import * as constantes from "../constantes.js";
 import * as verificaciones from "./verificaciones_planeta.js";
 import * as busqueda from "./obtener_imagenes_textos.js";
 
+export async function obtenerDatos(naveId, planetaId, vehiculo){
+    const planetas = await verificaciones.verificarDisponiblidad(naveId, planetaId);
+    const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
+    const vehiculoDatos = await resVehiculo.json();
+    vehiculo.src = (planetaId === 1) ? "../assets/img/auto1.png" : busqueda.obtenerImagenNave(vehiculoDatos);
+    const resVehiculos = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?ubicacion_id=${planetaId}`);
+    const vehiculos = await resVehiculos.json();
+    const resPuntosInteres = await fetch(`${constantes.API_URL}/${constantes.PUNTOS_URL}?cuerpo_celeste_id=${planetaId}&order_by=posicion&order=ASC`);
+    const puntosInteres = await resPuntosInteres.json();
+    const resEstado = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${naveId}/${planetaId}`);
+    const estado = await resEstado.json();
+    return {planetas, vehiculoDatos, vehiculos, puntosInteres, estado};
+}
+
 export async function inicializarUbicacion(vehiculoDatos, puntosInteres, naveId, planetaId) {
     let puntoActual = vehiculoDatos.punto_interes;
     if (vehiculoDatos.ubicacion_id !== planetaId){
