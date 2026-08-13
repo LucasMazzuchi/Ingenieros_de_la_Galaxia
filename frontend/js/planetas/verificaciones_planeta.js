@@ -1,6 +1,5 @@
 import * as constantes from "../constantes.js";
 
-
 export async function verificarDisponiblidad(naveId, planetaId){
         if (!naveId) {
         window.location.href = "usuario.html";

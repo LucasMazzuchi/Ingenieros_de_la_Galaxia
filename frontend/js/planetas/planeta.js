@@ -1,6 +1,6 @@
 import * as constantes from "../constantes.js";
 import { mostrarNotificacion } from "../notificaciones.js";
-import * as imagenes from "./obtener_imagenes.js";
+import * as busqueda from "./obtener_imagenes_textos.js";
 import * as salida from "./salida_dinamica.js";
 import * as verificaciones from "./verificaciones_planeta.js";
 
@@ -25,7 +25,7 @@ async function iniciarPlaneta() {
         const planetas = await verificaciones.verificarDisponiblidad(naveId, planetaId);
         const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
         const vehiculoDatos = await resVehiculo.json();
-        vehiculo.src = (planetaId === 1) ? "../assets/img/auto1.png" : imagenes.obtenerImagenNave(vehiculoDatos);
+        vehiculo.src = (planetaId === 1) ? "../assets/img/auto1.png" : busqueda.obtenerImagenNave(vehiculoDatos);
         const resVehiculos = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}?ubicacion_id=${planetaId}`);
         const vehiculos = await resVehiculos.json();
         const resPuntosInteres = await fetch(`${constantes.API_URL}/${constantes.PUNTOS_URL}?cuerpo_celeste_id=${planetaId}&order_by=posicion&order=ASC`);
@@ -69,7 +69,7 @@ async function iniciarPlaneta() {
 async function dibujarDatosDelPlaneta(planeta, puntosInteres, vehiculoObjeto, vehiculos){
   try{
     document.getElementById("nombre-planeta").textContent = planeta.nombre; 
-    const ruta = imagenes.buscarImagenFondo(planeta.imagen_fondo);
+    const ruta = busqueda.buscarImagenFondo(planeta.imagen_fondo);
     contenedorMapa.style.backgroundImage = `url('${ruta}')`;
     contenedorMapa.style.backgroundSize = "cover";
     contenedorMapa.style.backgroundPosition = "center";
@@ -78,7 +78,7 @@ async function dibujarDatosDelPlaneta(planeta, puntosInteres, vehiculoObjeto, ve
     if (puntosInteres.length !== 0){
         salida.dibujarCamino(puntosInteres);
         pintarPuntosDeInteres(planeta, puntosInteres, vehiculoObjeto);
-        salida.pintarVehiculos(vehiculos, vehiculoObjeto);
+        salida.pintarVehiculos(vehiculos, vehiculoObjeto, coordenadasVisuales, contenedorMapa);
     }
   } catch (error){
     console.error("Error En la consulta de puntos de interés: ", error);
@@ -108,78 +108,25 @@ async function pintarPuntosDeInteres(cuerpoCeleste, puntosInteres, vehiculoObjet
 async function manejarClickPunto(cuerpoCelesteId, puntoInteres, vehiculoId, coordenadasDestino, vehiculoDOM) {
     const estamosAhi = ((vehiculoDOM.style.top === coordenadasDestino.top) && (vehiculoDOM.style.left === coordenadasDestino.left));
     if (estamosAhi) {
-        try {
-            const estadoPlanetaAntes = await verificaciones.planetaCompletado(cuerpoCelesteId, vehiculoId);
-            const resExplorar = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoId}/explorar`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ cuerpo_celeste_id: cuerpoCelesteId, punto_interes_id: puntoInteres.id })
-            });
-            const data = await resExplorar.json();
-            
-            if (data.error === constantes.ERROR_DISPONIBLE) { 
-                console.warn(data.error);
-                return false;
-            }
-            
-            document.getElementById("puntoNombre").textContent = puntoInteres.nombre;
-            document.getElementById("puntoDescripcion").textContent = puntoInteres.descripcion;
-            panelPunto.classList.add("visible");
-            if (!data.error) {
-                let texto = `Combustible extraído: ${data.combustible}`
-                console.log("estadoPlanetaAntes", estadoPlanetaAntes);
-                if (estadoPlanetaAntes){
-                    texto = "No obtuviste recompensas, el planeta ya estaba completado.";
-                } else if (data.combustible === 0){
-                    texto = "Se encontró combustible pero no se pudo aprovechar porque el tanque está lleno.";
-                }
-                const desbloqueaPuntoMejora = !(await verificaciones.okPunto(vehiculoId));
-                const completado = estadoPlanetaAntes ? false : data.cuerpoCompletado;
-                await mostrarNotificacion("Punto Completado!", texto);
-                if (completado){
-                    let textoMejora;
-                    if (cuerpoCelesteId !== 1){
-                        textoMejora = desbloqueaPuntoMejora ? constantes.PUNTO_DESBLOQUEADO : constantes.ERROR_PUNTO_MAX;
-                    }
-                    if (cuerpoCelesteId === 1){
-                        textoMejora = "y fuiste recompensado con una nave";
-                    }
-                    await mostrarNotificacion(
-                        "¡Planeta Explorado!", 
-                        `Visitaste todos los puntos de interés ${textoMejora}. Podés volver a la galaxia para continuar tu viaje o mejorar tu nave.`
-                    );
-                }
-            }
-            return true;
-        } catch (error) {
-            console.error("Error de red al explorar:", error);
-            return false;
+        const {textoCombustible, textoMejora} = await completarPuntoInteres(cuerpoCelesteId, vehiculoId, puntoInteres)
+        if (textoCombustible.length !== 0){
+            await mostrarNotificacion("Punto Completado!", textoCombustible);
         }
+        if (textoMejora.length !== 0){
+            await mostrarNotificacion(
+                "¡Planeta Explorado!", 
+                `Visitaste todos los puntos de interés ${textoMejora}. Podés volver a la galaxia para continuar tu viaje o mejorar tu nave.`
+            );
+        }
+        return false;
     } else {
-        try {
-            const resDesbloquear = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoId}/desbloquear`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ cuerpo_celeste_id: cuerpoCelesteId, punto_interes_id: puntoInteres.id })
-            });
-            const data = await resDesbloquear.json();
-
-            if (!resDesbloquear.ok) {
-                await mostrarNotificacion("Ruta Inválida", data.error || "Debe explorar el punto anterior primero.");
-                return false;
-            }
-
-            salida.viajarHacia(coordenadasDestino, vehiculo);
-            const actualizacionUbicacionVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoId}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ punto_interes: puntoInteres.posicion})
-            });
-            return true;
-        } catch (error) {
-            console.error("Error de red al desbloquear:", error);
+        const {tituloError, textoError} = await desbloquearPuntoInteres(vehiculoId, cuerpoCelesteId, puntoInteres);
+        if (tituloError.length !== 0){
+            await mostrarNotificacion(tituloError, textoError);
             return false;
         }
+        salida.viajarHacia(coordenadasDestino, vehiculo);
+        return true;
     }
 };
 // Probar de meter en iniciar a lo último
@@ -213,4 +160,57 @@ async function inicializarUbicacion(vehiculoDatos, puntosInteres, naveId, planet
     });
     return vehiculoDatos.punto_interes;
 };
+
+async function completarPuntoInteres(cuerpoCelesteId, vehiculoId, puntoInteres){
+    try {
+        const estadoPlanetaAntes = await verificaciones.planetaCompletado(cuerpoCelesteId, vehiculoId);
+        const resExplorar = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoId}/explorar`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cuerpo_celeste_id: cuerpoCelesteId, punto_interes_id: puntoInteres.id })
+        });
+        const data = await resExplorar.json();
+        if (data.error === constantes.ERROR_DISPONIBLE) { 
+            console.warn(data.error);
+            return {textoCombustible: "", textoMejora: ""};
+        }
+        document.getElementById("puntoNombre").textContent = puntoInteres.nombre;
+        document.getElementById("puntoDescripcion").textContent = puntoInteres.descripcion;
+        panelPunto.classList.add("visible");
+        if (!data.error){
+
+            const textoCombustible = await busqueda.obtenerTextoCombustible(data.combustible, estadoPlanetaAntes);
+            const completado = estadoPlanetaAntes ? false : data.cuerpoCompletado;
+            let textoMejora = completado ? await busqueda.obtenerTextoMejora(vehiculoId, cuerpoCelesteId) : "";
+            return { textoCombustible: textoCombustible, textoMejora: textoMejora };
+        }
+        return {textoCombustible: "", textoMejora: ""};
+    } catch (error) {
+        console.error("Error de red al explorar:", error);
+        return { textoCombustible: "", textoMejora: "" };
+    }
+};
+
+async function desbloquearPuntoInteres(vehiculoId, cuerpoCelesteId, puntoInteres){
+    try {
+        const resDesbloquear = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoId}/desbloquear`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cuerpo_celeste_id: cuerpoCelesteId, punto_interes_id: puntoInteres.id })
+        });
+        const data = await resDesbloquear.json();
+        if (!resDesbloquear.ok) {
+            const textoError = data.error || "Debe explorar el punto anterior primero.";
+            return {tituloError: "Ruta Inválida", textoError: textoError};
+        }
+        const actualizacionUbicacionVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${vehiculoId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ punto_interes: puntoInteres.posicion})
+        });
+        return {tituloError: "", textoError: ""};
+    } catch (error) {
+        return {tituloError: "Error de red al desbloquear:", textoError: error};
+    }
+}
 document.addEventListener("DOMContentLoaded", iniciarPlaneta);

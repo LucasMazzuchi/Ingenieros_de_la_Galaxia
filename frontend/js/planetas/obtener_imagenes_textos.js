@@ -1,3 +1,5 @@
+import { okPunto } from "./verificaciones_planeta.js";
+import * as constantes from "../constantes.js";
 
 // La función devuelve la imagen de la nave correspondiente según sus atributos.
 export function obtenerImagenNave(vehiculoDatos) {
@@ -40,3 +42,25 @@ export function buscarImagenPunto(imagenId){
     }
     return imagenes_punto[imagenId];
 }
+
+export async function obtenerTextoCombustible(combustible, estadoPlanetaAntes){
+    let textoCombustible = `Combustible extraído: ${combustible}`
+    if (estadoPlanetaAntes){
+        textoCombustible = "No obtuviste recompensas, el planeta ya estaba completado.";
+    } else if (combustible === 0){
+        textoCombustible = "Se encontró combustible pero no se pudo aprovechar porque el tanque está lleno.";
+    }
+    return textoCombustible;
+};
+
+export async function obtenerTextoMejora(vehiculoId, cuerpoCelesteId){
+    const desbloqueaPuntoMejora = !(await okPunto(vehiculoId));
+    let textoMejora;
+    if (cuerpoCelesteId !== 1){
+        textoMejora = desbloqueaPuntoMejora ? constantes.PUNTO_DESBLOQUEADO : constantes.ERROR_PUNTO_MAX;
+    }
+    if (cuerpoCelesteId === 1){
+        textoMejora = "y fuiste recompensado con una nave";
+    }
+    return textoMejora
+};

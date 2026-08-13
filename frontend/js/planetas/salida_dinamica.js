@@ -1,5 +1,5 @@
 import * as constantes from "../constantes.js";
-import * as imagenes from "./obtener_imagenes.js";
+import * as imagenes from "./obtener_imagenes_textos.js";
 // La función inicializa los valores dentro del apartado con información del cuerpo celeste utilizando cuerpo_celeste.
 export function rellenarApartadoIzquierda(cuerpo_celeste){
     document.getElementById("datoTipo").textContent = constantes.TIPOS_PLANETA[cuerpo_celeste.tipo];
@@ -34,7 +34,7 @@ export function dibujarCamino(puntosDeInteres){
 }
 
 // La función crea el div y ubica cada nave excepto la del usuario. 
-export async function pintarVehiculos(vehiculos, vehiculoUsado){
+export async function pintarVehiculos(vehiculos, vehiculoUsado, coordenadasVisuales, contenedorMapa){
     vehiculos.forEach( function (vehiculoActual){
         if (vehiculoActual.id === vehiculoUsado.id){
             return;
