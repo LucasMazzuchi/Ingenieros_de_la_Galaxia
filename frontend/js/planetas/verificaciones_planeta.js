@@ -1,5 +1,7 @@
 import * as constantes from "../constantes.js";
 
+// La función verifica que naveId, planetaId y planetas existan. Si es correcto, retorna planetas, sino
+// redirige al usuario a galaxia.html. 
 export async function verificarDisponiblidad(naveId, planetaId){
         if (!naveId) {
         window.location.href = "usuario.html";
@@ -36,6 +38,9 @@ export async function planetaCompletado(cuerpoCelesteId, vehiculoId){ // Pedir p
 
 
 
+// La función agrega y completa el planeta relacionado a planetaId en relación al vehíulo asociado a naveId si no
+// estaba completo y debía estarlo previamente. Retorna tituloCompletado y textoCompletado con cadenas vacías en
+// caso de estar completo, sino retorna los mensajes a imprimir por pantalla.
 export async function estaCompletado(estado, puntosInteres, naveId, planetaId){
     const puntosCompletados = estado.puntosVisitados.filter(function (puntoInteres){ return puntoInteres.completado});
     if (!estado.planetaCompletado && puntosInteres.length === puntosCompletados.length){

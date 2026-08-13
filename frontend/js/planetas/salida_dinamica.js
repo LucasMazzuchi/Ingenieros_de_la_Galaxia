@@ -1,5 +1,6 @@
 import * as constantes from "../constantes.js";
 import * as imagenes from "./obtener_imagenes_textos.js";
+
 // La función inicializa los valores dentro del apartado con información del cuerpo celeste utilizando cuerpo_celeste.
 export function rellenarApartadoIzquierda(cuerpo_celeste){
     document.getElementById("datoTipo").textContent = constantes.TIPOS_PLANETA[cuerpo_celeste.tipo];
@@ -61,6 +62,7 @@ export async function pintarVehiculos(vehiculos, vehiculoUsado, coordenadasVisua
     });
 };
 
+// La función crea la transición de la nave de un punto de interés a otro.
 export function crearTransicion(posNave, vehiculo, coordenadasVisuales) {
     vehiculo.style.display = "block";
     vehiculo.style.transition = "none";
@@ -70,6 +72,8 @@ export function crearTransicion(posNave, vehiculo, coordenadasVisuales) {
     setTimeout(() => {vehiculo.style.transition = "top 1s ease, left 1s ease"}, 50);
 };
 
+// La función crea el div para el punto de interés pasado por parámetro utlizando los datos
+// pasados como parámetros y lo devuelve.
 export function crearDivPunto(puntosVisitados, cuerpoCeleste, vehiculoObjetos, puntoInteres, coordenadas){
     const divPunto = document.createElement("div");
     divPunto.className = "punto-interes";

@@ -104,7 +104,9 @@ async function pintarPuntosDeInteres(cuerpoCeleste, puntosInteres, vehiculoObjet
     });
     salida.crearTransicion(posNave, vehiculo, coordenadasVisuales);
 };
-
+// La función se encarga de la lógica del div punto interés y retorna true en caso de desbloquear uno, sino rettorna false.
+// Si la nave esta sobre el punto de interés, se llama a completarPuntoInterés y se muestra por pantalla el resultado.
+// Sino se llama a desbloquearPuntoInteres y se muestra el error, en caso de haberlo, por pantalla.
 async function manejarClickPunto(cuerpoCelesteId, puntoInteres, vehiculoId, coordenadasDestino, vehiculoDOM) {
     const estamosAhi = ((vehiculoDOM.style.top === coordenadasDestino.top) && (vehiculoDOM.style.left === coordenadasDestino.left));
     if (estamosAhi) {

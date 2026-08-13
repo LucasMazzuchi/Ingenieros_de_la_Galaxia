@@ -2,6 +2,8 @@ import * as constantes from "../constantes.js";
 import * as verificaciones from "./verificaciones_planeta.js";
 import * as busqueda from "./obtener_imagenes_textos.js";
 
+// La función solicita a la base de datos planetas, el vehículo manipulado por el usuario, los demás vehículos,
+// los puntos de interés y el estado de la nave respecto a los puntos de interés y planetas para devolverlos.
 export async function obtenerDatos(naveId, planetaId, vehiculo){
     const planetas = await verificaciones.verificarDisponiblidad(naveId, planetaId);
     const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${naveId}`);
@@ -16,6 +18,9 @@ export async function obtenerDatos(naveId, planetaId, vehiculo){
     return {planetas, vehiculoDatos, vehiculos, puntosInteres, estado};
 }
 
+// La función inicializa la posición del vehículo pasado por parámetro dependiendo del estado actual con el planeta.
+// Si es la primera vez que entra va al primer punto de interés, sino va al punto en el que estaba previamente.
+// En caso de no existir por modificación del planeta, va a un punto cercano. Retorna la posición actual del vehículo.
 export async function inicializarUbicacion(vehiculoDatos, puntosInteres, naveId, planetaId) {
     let puntoActual = vehiculoDatos.punto_interes;
     if (vehiculoDatos.ubicacion_id !== planetaId){
@@ -36,6 +41,9 @@ export async function inicializarUbicacion(vehiculoDatos, puntosInteres, naveId,
     return vehiculoDatos.punto_interes;
 };
 
+// La función completa el punto de interés pasado por parámetro para el vehículo asociado a vehiculoId
+// y retorna textoCombustible y textoMejora como cadenas con los mensajes de éxito a imprimir pantallas.
+// Si no se completó el punto de interés porque ya estaba completo o por otra razón, devuelve dos cadenas vacías. 
 export async function completarPuntoInteres(cuerpoCelesteId, vehiculoId, puntoInteres, panelPunto){
     try {
         const estadoPlanetaAntes = await verificaciones.planetaCompletado(cuerpoCelesteId, vehiculoId);
@@ -66,6 +74,9 @@ export async function completarPuntoInteres(cuerpoCelesteId, vehiculoId, puntoIn
     }
 };
 
+// La función desbloquea el punto de interés pasado por parámetro y retorna tituloError, textoError como dos
+// cadenas vacías. Si ocurre un error al desbloquea el punto, retorna en las dos variables los mensasjes de error
+// a imprimir por pantalla.
 export async function desbloquearPuntoInteres(vehiculoId, cuerpoCelesteId, puntoInteres){
     try {
         const resDesbloquear = await fetch(`${constantes.API_URL}/${constantes.PROGRESO_URL}/${vehiculoId}/desbloquear`, {

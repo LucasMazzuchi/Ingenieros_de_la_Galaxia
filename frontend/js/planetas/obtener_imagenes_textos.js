@@ -42,7 +42,7 @@ export function buscarImagenPunto(imagenId){
     }
     return imagenes_punto[imagenId];
 }
-
+// Devuelve textoCombustible indicando el combustible extraído.
 export async function obtenerTextoCombustible(combustible, estadoPlanetaAntes){
     let textoCombustible = `Combustible extraído: ${combustible}`
     if (estadoPlanetaAntes){
@@ -53,6 +53,7 @@ export async function obtenerTextoCombustible(combustible, estadoPlanetaAntes){
     return textoCombustible;
 };
 
+// Devuelve textoMejora indicando la recompensa otorgada al vehiculo, con id: vehiculoId, por el planeta asociado a cuerpoCelesteId.
 export async function obtenerTextoMejora(vehiculoId, cuerpoCelesteId){
     const desbloqueaPuntoMejora = !(await okPunto(vehiculoId));
     let textoMejora;
