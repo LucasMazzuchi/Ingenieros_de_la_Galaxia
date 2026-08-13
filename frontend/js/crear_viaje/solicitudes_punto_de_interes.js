@@ -84,7 +84,6 @@ export async function agregarPuntoDeInteres(selectPunto, formPunto, inicializarS
         alert("Ocurrió un error al guardar el punto de interés.");
       }
 }
-
 export async function borrarPuntoDeInteres(selectPunto, formPunto, inicializarSelects) {
     const id = selectPunto.value;
   if (!id) {

@@ -166,6 +166,7 @@ btnBorrarPlaneta.addEventListener("click", async () => {
   const { titulo, textoEstado} = await planetas.borrarPlaneta(inicializarSelects, selectPlaneta, formPlaneta);
   await mostrarNotificacion(titulo,textoEstado);
 });
+
 // FORMULARIO VEHÍCULO 
 const formVehiculo = document.getElementById("tab-vehiculo");
 const selectVehiculo = document.getElementById("selectVehiculo");
