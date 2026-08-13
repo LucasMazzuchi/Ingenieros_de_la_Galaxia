@@ -166,6 +166,7 @@ btnBorrarPlaneta.addEventListener("click", async () => {
   const { titulo, textoEstado} = await planetas.borrarPlaneta(inicializarSelects, selectPlaneta, formPlaneta);
   await mostrarNotificacion(titulo,textoEstado);
 });
+
 // FORMULARIO VEHÍCULO 
 const formVehiculo = document.getElementById("tab-vehiculo");
 const selectVehiculo = document.getElementById("selectVehiculo");
@@ -179,13 +180,14 @@ selectVehiculo.addEventListener("change", async () => {
 // Guardar (Alta o Modificación) Vehículo
 formVehiculo.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const { titulo, textoEstado} = vehiculos.agregarVehiculos(selectVehiculo, inicializarSelects);
-  await mostrarNotificacion(titulo,textoEstado);
+  const { titulo, textoEstado} = await vehiculos.agregarVehiculos(selectVehiculo, inicializarSelects, formVehiculo);
+  await mostrarNotificacion(titulo, textoEstado);
 });
 
 // Borrar Vehículo
 btnBorrarVehiculo.addEventListener("click", async () => {
-  borrarVehiculo(selectVehiculo, formVehiculo)
+  const {titulo, textoEstado} = await vehiculos.borrarVehiculo(selectVehiculo, formVehiculo, inicializarSelects);
+  await mostrarNotificacion(titulo, textoEstado);
 });
 
 // FORMULARIO PUNTO DE INTERÉS
