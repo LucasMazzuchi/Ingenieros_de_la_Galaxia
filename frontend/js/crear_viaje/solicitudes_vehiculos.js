@@ -1,5 +1,6 @@
 import * as constantes from "../constantes.js";
 import { mostrarNotificacion } from "../notificaciones.js";
+import * as viaje from "../crear_viaje/solicitudes_crear_viaje.js";
 
 export async function cargarVehiculos(selectVehiculo, formVehiculo) {
     const id = selectVehiculo.value;
@@ -19,7 +20,7 @@ export async function cargarVehiculos(selectVehiculo, formVehiculo) {
       }
 };
 
-export async function agregarVehiculos(selectVehiculo, inicializarSelects, ){
+export async function agregarVehiculos(selectVehiculo, inicializarSelects, modificarRegistro, crearRegistro){
       const id = selectVehiculo.value;
       let vehiculo;
       if (id){
@@ -58,3 +59,22 @@ export async function agregarVehiculos(selectVehiculo, inicializarSelects, ){
         return { titulo: "Operación Fallida", textoEstado: `Ocurrió un error al guardar el vehículo.` };
       }
 };
+
+async function borrarVehiculo(selectVehiculo, formVehiculo, inicializarSelects) {
+    const id = selectVehiculo.value;
+  if (!id) {
+    alert("Selecciona un vehículo existente para borrar.");
+    return;
+  }
+  if (confirm("¿Estás seguro de borrar este vehículo?")) {
+    const exito = await eliminarRegistro("vehiculos", id);
+    if (exito) {
+      alert("Vehículo eliminado.");
+      formVehiculo.reset();
+      inicializarSelects();
+    } else {
+      alert("No se pudo eliminar el vehículo.");
+    }
+  }
+}
+

@@ -1,3 +1,6 @@
+import * as constantes from "../constantes.js";
+import * as viaje from "../crear_viaje/solicitudes_crear_viaje.js";
+
 export function actualizarPuntosInteres (selectPunto, puntosInteres, planetaId) { // Pasar por params selectPunto, puntosInteres, planetaId
     selectPunto.innerHTML = '<option value="">-- Crear nuevo --</option>'; // Este hay que sacarlo afuera de la función
     const puntosInteresFiltrados = !planetaId ? puntosInteres : puntosInteres.filter(function (puntoInteres) {
@@ -10,7 +13,6 @@ export function actualizarPuntosInteres (selectPunto, puntosInteres, planetaId) 
     selectPunto.appendChild(opcion);
     });
 };
-
 
 export function actualizarPosiciones(selectPosicion, planetaId, puntoInteresId, puntosInteres) {// Pasar selectPosicion, planetaId, puntoInteresId, puntosInteres
     selectPosicion.innerHTML = '<option value="">-- Seleccione posición --</option>';
@@ -27,3 +29,71 @@ export function actualizarPosiciones(selectPosicion, planetaId, puntoInteresId, 
     }
 };
 
+export async function cargarPuntoDeInteres(selectPunto, formPunto, obtenerDatos) {
+  const id = selectPunto.value;
+  if (!id) {
+    formPunto.reset();
+    return;
+  }
+  const puntosInteres = await viaje.obtenerDatos(constantes.PUNTOS_URL); 
+  const puntoInteres = puntosInteres.find(item => item.id == id);
+  if (puntoInteres) {
+    document.getElementById("selectPlanetaPunto").value = puntoInteres.cuerpo_celeste_id;
+    document.getElementById("inputTituloPunto").value = puntoInteres.nombre;
+    document.getElementById("inputDescripcionPunto").value = puntoInteres.descripcion;
+    document.getElementById("inputPosicionPunto").value = puntoInteres.posicion;
+    document.getElementById("inputImagenPunto").value = puntoInteres.imagen;
+  }
+}
+
+export async function agregarPuntoDeInteres(selectPunto, modificarRegistro, crearRegistro, inicializarSelects) {
+      const id = selectPunto.value;
+      const resPuntosInteres = await fetch(`${constantes.API_URL}/${constantes.PUNTOS_URL}?cuerpo_celeste_id=${parseInt(document.getElementById("selectPlanetaPunto").value)}`);
+      const puntosInteres = await resPuntosInteres.json();
+      const punto = parseInt(document.getElementById("inputPosicionPunto").value);
+      const datos = {
+        cuerpo_celeste_id: parseInt(document.getElementById("selectPlanetaPunto").value),
+        nombre: document.getElementById("inputTituloPunto").value,
+        descripcion: document.getElementById("inputDescripcionPunto").value,
+        posicion: parseInt(document.getElementById("inputPosicionPunto").value),
+        imagen: parseInt(document.getElementById("inputImagenPunto").value)
+      };
+      let exito = false;
+      if (id) {
+        exito = await viaje.modificarRegistro(constantes.PUNTOS_URL, id, datos);
+      } else {
+        const puntoOcupado = puntosInteres.find(function (puntoInteres){ return puntoInteres.posicion === punto});
+        if (puntoOcupado){
+          alert("Ocurrió un error al guardar el punto de interés, ya existe un punto de interés en esta posición.");
+        return;
+      }
+        exito = await viaje.crearRegistro(constantes.PUNTOS_URL, datos);
+      }
+    
+      if (exito) {
+        alert("¡Punto de interés guardado con éxito!");
+        formPunto.reset();
+        inicializarSelects();
+      } else {
+        alert("Ocurrió un error al guardar el punto de interés.");
+      }
+ 
+}
+export async function borrarPuntoDeInteres(selectPunto, formPunto, inicializarSelects) {
+    const id = selectPunto.value;
+  if (!id) {
+    alert("Selecciona un punto de interés existente para borrar.");
+    return;
+  }
+  if (confirm("¿Estás seguro de borrar este punto de interés?")) {
+    const exito = await viaje.eliminarRegistro(constantes.PUNTOS_URL, id);
+    if (exito) {
+      alert("Punto de interés eliminado.");
+      formPunto.reset();
+      inicializarSelects();
+    } else {
+      alert("No se pudo eliminar el punto de interés.");
+    }
+  }
+    
+}
