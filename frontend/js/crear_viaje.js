@@ -479,18 +479,18 @@ formPunto.addEventListener("submit", async (e) => { // Func aparte guardado
   } else {
     const puntoOcupado = puntosInteres.find(function (puntoInteres){ return puntoInteres.posicion === punto});
     if (puntoOcupado){
-      alert("Ocurrió un error al guardar el punto de interés, ya existe un punto de interés en esta posición.");
-    return;
+      await mostrarNotificacion("Posición ocupada", "Ocurrió un error al guardar el punto de interés, ya existe un punto de interés en esta posición.");
+      return;
   }
     exito = await crearRegistro(constantes.PUNTOS_URL, datos);
   }
 
   if (exito) {
-    alert("¡Punto de interés guardado con éxito!");
+    await mostrarNotificacion("¡Operación exitosa!", "¡Punto de interés guardado con éxito!");
     formPunto.reset();
     inicializarSelects();
   } else {
-    alert("Ocurrió un error al guardar el punto de interés.");
+    await mostrarNotificacion("Operación fallida", "Ocurrió un error al guardar el punto de interés.");
   }
 });
 
@@ -498,17 +498,17 @@ formPunto.addEventListener("submit", async (e) => { // Func aparte guardado
 btnBorrarPunto.addEventListener("click", async () => { // Func aparte
   const id = selectPunto.value;
   if (!id) {
-    alert("Selecciona un punto de interés existente para borrar.");
+    await mostrarNotificacion("Atención", "Selecciona un punto de interés existente para borrar.");
     return;
   }
   if (confirm("¿Estás seguro de borrar este punto de interés?")) {
     const exito = await eliminarRegistro(constantes.PUNTOS_URL, id);
     if (exito) {
-      alert("Punto de interés eliminado.");
+      await mostrarNotificacion("¡Operación exitosa!", "Punto de interés eliminado.");
       formPunto.reset();
       inicializarSelects();
     } else {
-      alert("No se pudo eliminar el punto de interés.");
+      await mostrarNotificacion("Operación fallida", "No se pudo eliminar el punto de interés.");
     }
   }
 });
