@@ -20,17 +20,16 @@ export async function cargarVehiculos(selectVehiculo, formVehiculo) {
       }
 };
 
-export async function agregarVehiculos(selectVehiculo, inicializarSelects, modificarRegistro, crearRegistro){
+export async function agregarVehiculos(selectVehiculo, inicializarSelects, formVehiculo){
       const id = selectVehiculo.value;
       let vehiculo;
+      const puntosDisponibles = 9-parseInt(document.getElementById("inputEstructura").value)- parseInt(document.getElementById("inputResistencia").value) -parseInt(document.getElementById("inputMotor").value);
+        if (puntosDisponibles < parseInt(document.getElementById("inputPuntos").value)){
+            return { titulo: "Puntos disponibles excedidos", textoEstado: `Podés elegir tener como máximo ${puntosDisponibles} puntos de mejora.` };
+          }
       if (id){
         const resVehiculo = await fetch(`${constantes.API_URL}/${constantes.VEHICULOS_URL}/${id}`);
         vehiculo = await resVehiculo.json();
-        const puntosDisponibles = 9-parseInt(document.getElementById("inputEstructura").value)- parseInt(document.getElementById("inputResistencia").value) -parseInt(document.getElementById("inputMotor").value);
-        if (puntosDisponibles < parseInt(document.getElementById("inputPuntos").value)){
-            await mostrarNotificacion("Puntos disponibles excedidos", `Podés elegir tener como máximo ${puntosDisponibles} puntos de mejora.`);
-            return { titulo: "Puntos disponibles excedidos", textoEstado: `Podés elegir tener como máximo ${puntosDisponibles} puntos de mejora.` };
-          }
         }
       const datos = {
         nombre: document.getElementById("inputNombreVehiculo").value,
@@ -60,21 +59,19 @@ export async function agregarVehiculos(selectVehiculo, inicializarSelects, modif
       }
 };
 
-async function borrarVehiculo(selectVehiculo, formVehiculo, inicializarSelects) {
-    const id = selectVehiculo.value;
+export async function borrarVehiculo(selectVehiculo, formVehiculo, inicializarSelects) {
+  const id = selectVehiculo.value;
   if (!id) {
     alert("Selecciona un vehículo existente para borrar.");
     return;
   }
-  if (confirm("¿Estás seguro de borrar este vehículo?")) {
-    const exito = await eliminarRegistro("vehiculos", id);
-    if (exito) {
-      alert("Vehículo eliminado.");
-      formVehiculo.reset();
-      inicializarSelects();
-    } else {
-      alert("No se pudo eliminar el vehículo.");
-    }
+    
+  if (await viaje.eliminarRegistro("vehiculos", id)) {
+    formVehiculo.reset();
+    inicializarSelects();
+    return { titulo: "Operación Exitosa", textoEstado: `¡Vehículo borrado con éxito!` };
+  } else {
+    return { titulo: "Operación Fallida", textoEstado: `Ocurrió un error al borrar el vehículo.` };
   }
 }
 

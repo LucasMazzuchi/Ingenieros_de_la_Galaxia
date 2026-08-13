@@ -179,13 +179,14 @@ selectVehiculo.addEventListener("change", async () => {
 // Guardar (Alta o Modificación) Vehículo
 formVehiculo.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const { titulo, textoEstado} = vehiculos.agregarVehiculos(selectVehiculo, inicializarSelects);
-  await mostrarNotificacion(titulo,textoEstado);
+  const { titulo, textoEstado} = await vehiculos.agregarVehiculos(selectVehiculo, inicializarSelects, formVehiculo);
+  await mostrarNotificacion(titulo, textoEstado);
 });
 
 // Borrar Vehículo
 btnBorrarVehiculo.addEventListener("click", async () => {
-  borrarVehiculo(selectVehiculo, formVehiculo)
+  const {titulo, textoEstado} = await vehiculos.borrarVehiculo(selectVehiculo, formVehiculo, inicializarSelects);
+  await mostrarNotificacion(titulo, textoEstado);
 });
 
 // FORMULARIO PUNTO DE INTERÉS
